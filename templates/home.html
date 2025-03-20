@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpiderNET</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            display: flex;
+            background-color: #f8f9fa;
+        }
+        .main-content {
+            flex: 1; /* Hace que ocupe el espacio restante */
+            min-height: 100vh; /* Se asegura de que tenga una altura completa */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: url('https://picsum.photos/1920/1080') no-repeat center center;
+            background-size: cover;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #2a3f54;
+            color: white;
+            height: 100vh;
+            padding-top: 20px;
+            position: fixed;
+        }
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .menu {
+            list-style: none;
+        }
+        .menu li {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+        }
+        .menu li a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        .menu li i {
+            margin-right: 10px;
+        }
+        .menu li:hover {
+            background: #1e2a38;
+        }
+        .submenu {
+            display: none;
+            list-style: none;
+            padding-left: 20px;
+        }
+        .menu li.active .submenu {
+            display: block;
+        }
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>SpiderNET</h2>
+        <ul class="menu">
+            <li>
+                <a href="#"><i class="fas fa-home"></i> Escritorio</a>
+            </li>
+            <li class="dropdown">
+                <a href="#"><i class="fas fa-users"></i> Clientes</a>
+                <ul class="submenu">
+                    <li><a href="#">Lista de Clientes</a></li>
+                    <li><a href="#">Nuevo Cliente</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="#"><i class="fas fa-dollar-sign"></i>Pagos</a>
+                <ul class="submenu">
+                    <li><a href="#">Pagos internet</a></li>
+                    <li><a href="#">Egresos</a></li>
+                    <li><a href="#">Corte de caja</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="#"><i class="fas fa-network-wired"></i> Gestión </a>
+                <ul class="submenu">
+                    <li><a href="{{ url_for('servicios') }}">Servicios extras</a></li>
+                    <li><a href="#">Paquetes de internet</a></li>
+                    <li><a href="#">Equipos</a></li>
+                    <li><a href="#">Antenas AP</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="#"><i class="fa-solid fa-wifi"></i> Microtiks</a>
+                <ul class="submenu">
+                    <li><a href="#">Lista de Microtiks</a></li>
+                    <li><a href="#">Nuevo Microtik</a></li>
+                    <li><a href="#">DHCP</a></li>
+                    <li><a href="#">PPPoE</a></li>
+                </ul>
+            </li>
+            
+
+            <li class="dropdown">
+                <a href="#"><i class="fa-solid fa-link"></i> VPN WireGuard</a>
+                <ul class="submenu">
+                    <li><a href="#">Conectar microtik</a></li>
+                </ul>
+            </li>
+
+
+            
+            <li class="dropdown">
+                <a href="#"><i class="fas fa-user"></i> Usuarios</a>
+                <ul class="submenu">
+                    <li><a href="#">Lista de Usuarios</a></li>
+                    <li><a href="#">Nuevo Usuario</a></li>
+                </ul>
+            </li>
+
+        </ul>
+    </div>
+    <div class="main-content">
+    </div>
+
+    <script>
+        document.querySelectorAll('.dropdown').forEach(item => {
+            item.addEventListener('click', function() {
+                this.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>

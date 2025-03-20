@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Servicio</title>
+    <link rel="stylesheet" href="/static/srtyle_servicios.css">
+        <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+
+
+    <div class="table-container">
+        <body>
+            <div class="form-container">
+                <h2><i class="fas fa-tools"></i> Crear Servicio</h2>
+                <form action="/almacenar" method="POST">
+                    <div class="input-group">
+                        <label for="nombre"><i class="fas fa-tag"></i> Nombre</label>
+                        <input type="text" id="nombre" name="nombre" placeholder="Ej. Servicio de Internet" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="descripcion"><i class="fas fa-align-left"></i> Descripción</label>
+                        <textarea id="descripcion" name="descripcion" placeholder="Describe el servicio..." required></textarea>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="precio"><i class="fas fa-dollar-sign"></i> Precio</label>
+                        <input type="number" id="precio" name="precio" placeholder="Ej. 500" required>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button type="submit" class="save-btn"><i class="fas fa-save"></i> Guardar</button>
+                        <button class="cancel-btn"><a href="{{ url_for('dashboard') }}">Cancelar</a></button>
+                    </div>
+                </form>
+            </div>
+        <h2>Servicios Guardados</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Precio</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for c in pkg %}
+                <tr>
+                    <td>{{ c[0] }}</td> <!-- Id -->
+                    <td>{{ c[1] }}</td> <!-- Nombre -->
+                    <td>{{ c[2] }}</td> <!-- Descripcion -->
+                    <td>{{ c[3] }}</td> <!-- Precio -->
+                    <td>
+                        <!-- Botón para abrir el modal -->
+                        <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editarModal{{ c[0] }}">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+
+                        <!-- Modal de edición -->
+                        <div class="modal fade" id="editarModal{{ c[0] }}" tabindex="-1" aria-labelledby="editarModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Editar Servicio</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                    </div>
+                                    <form action="{{ url_for('editar_servicio', id=c[0]) }}" method="POST">
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="nombre" class="form-label">Nombre</label>
+                                                <input type="text" class="form-control" name="nombre" value="{{ c[1] }}" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="descripcion" class="form-label">Descripción</label>
+                                                <textarea class="form-control" name="descripcion" required>{{ c[2] }}</textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="precio" class="form-label">Precio</label>
+                                                <input type="number" class="form-control" name="precio" value="{{ c[3] }}" required>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botón para eliminar -->
+                        <form action="{{ url_for('eliminar_servicio', id=c[0]) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro que deseas eliminar este servicio?');">
+                                <i class="fas fa-trash-alt"></i> Eliminar
+                            </button>
+                        </form>                       
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
