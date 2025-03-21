@@ -26,3 +26,43 @@ def almacenarServicio(nombre, descripcion, precio):
     except Exception as r:
         print(r)
         return False
+    
+def almacenarPaquetes(nombre, velocidad, precio):
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+        
+        cursor = cn.cursor()
+        sql = "INSERT INTO paquetes (nombre, velocidad, precio) VALUES (%s,%s,%s)"
+        cursor.execute(sql, (nombre, velocidad, precio))
+
+        cn.commit()
+        cursor.close()
+        cn.close()
+
+        return True
+
+    except Exception as r:
+        print(r)
+        return False
+    
+def almacenarAntenas(nombre, modelo, usuario, password, ip):
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+
+        cursor = cn.cursor()
+        sql = "INSERT INTO antenasap (nombre, modelo, usuario, password, ip) VALUES (%s,%s,%s,%s,%s)"
+        cursor.execute(sql, (nombre, modelo, usuario, password, ip))
+
+        cn.commit()
+        cursor.close()
+        cn.close()
+
+        return True
+    
+    except Exception as r:
+        print(r)
+        return False
