@@ -59,3 +59,22 @@ def editarAntena(nombre, modelo, usuario, password, ip, id):
     except Exception as r:
         print(r)
         return False
+    
+def editarUsuario(nombre, usuario, password, id):
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+        cursor = cn.cursor()
+        rol = 0
+        sql = "UPDATE usuarios SET nombre = %s, usuario = %s, password = %s, rol = %s WHERE id = %s"        
+        cursor.execute(sql, (nombre, usuario, password, rol, id))
+
+        cn.commit()
+        cursor.close()
+        cn.close()
+        return True
+
+    except Exception as r:
+        print(r)
+        return False

@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from bk_login import validacion_usuario
-from bk_insert_elements import almacenarServicio, almacenarPaquetes, almacenarAntenas
-from bk_consultas import consultarServicios, consultarPaquetes, consultarAntenas
+from bk_insert_elements import almacenarServicio, almacenarPaquetes, almacenarAntenas, almacenarUsuario
+from bk_consultas import consultarServicios, consultarPaquetes, consultarAntenas, consultarUsuarios
 from bk_delete import eliminarServicio, eliminarPaquete, eliminarAntena
-from bk_update import editarServicio, editarPaquete, editarAntena
+from bk_update import editarServicio, editarPaquete, editarAntena, editarUsuario
 
 app = Flask(__name__)
 
@@ -185,5 +185,40 @@ def eliminar_antena(id):
         return render_template("error.html"), 500
 
 #------------------------------------------------CRUD DE ANTENAS----------------------------------
+
+#------------------------------------------------CRUD DE USUARIOS----------------------------------
+@app.route("/usuarios")
+def usuarios():
+    userAlma = consultarUsuarios()
+    return render_template("usuarios.html", usuariossAlmace=userAlma)
+
+@app.route("/almacenar_usuarios", methods=["POST"])
+def almacenar_usuarios():
+    if request.method == "POST":
+        nombre = request.form.get("nombre")
+        usuario = request.form.get("username")
+        password = request.form.get("password")
+
+        ok = almacenarUsuario(nombre, usuario, password)
+        if ok:
+            return redirect(url_for("usuarios"))
+        else:
+            return render_template("error.html"), 500
+        
+@app.route("/editar_usuarios/<int:id>", methods=["POST"])
+def editar_usuarios(id):
+    if request.method == "POST":
+        nombre = request.form.get("nombre")
+        usuario = request.form.get("usuario")
+        password = request.form.get("password")
+
+        ok = editarUsuario(nombre, usuario, password, id)
+        if ok:
+            return redirect(url_for("usuarios"))
+        else:
+            return render_template("error.html"), 500
+    
+#------------------------------------------------CRUD DE USUARIOS----------------------------------
+
 
 app.run(debug=True)

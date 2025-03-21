@@ -66,3 +66,24 @@ def almacenarAntenas(nombre, modelo, usuario, password, ip):
     except Exception as r:
         print(r)
         return False
+    
+def almacenarUsuario(nombre, usuario, password):
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+
+        cursor = cn.cursor()
+        rol = 0
+        sql = "INSERT INTO usuarios (nombre, usuario, password, rol) VALUES (%s,%s,%s,%s)"
+        cursor.execute(sql, (nombre,usuario,password,rol))
+
+        cn.commit()
+        cursor.close()
+        cn.close()
+
+        return True
+
+    except Exception as r:
+        print(r)
+        return False
