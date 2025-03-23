@@ -3,7 +3,7 @@ from d_consultas import consutlarPaquete, consutlarAntena, consultarServicio, co
 from d_insert import insertarCliente, insertMicrotik
 from d_eliminar import eliminar_cliente_chido, eliminarMicrotik
 from d_update import actualizarCliete, actualizarMicrotik
-from ssh_pcq import bloquear_cliente_address_list, desbloqueo_mantecoso, get_interfaces, creacionAddressList, crearQueueParent, crearQueueSimple
+from ssh_pcq import bloquear_cliente_address_list, desbloqueo_mantecoso, get_interfaces, creacionAddressList, crearQueueParent, crearQueueSimple, eliminarSimpleQueue, aplicarFirewall
 app = Flask(__name__)
 app.secret_key = 'zerocuatro04/2025'  # Necesario para usar flash
 #------------------------------------------------RUTAS CUANDO OCURRE UN ERROR----------------------------------
@@ -263,7 +263,44 @@ def cargar_queue():
             flash("No encontramos las credenciales del mcirotik", "danger")
             return redirect(url_for("lista_clientes"))
 
-    
+ 
+@app.route("/eliminar_queue_simple", methods=["POST"])
+def eliminar_queue_simple():
+    if request.method == "POST":
+        microtik = request.form.get("microtik")
+        direccion_ip = request.form.get("direccionIp")
+        print(f"Datos capturados {microtik} con {direccion_ip}")
+
+        credenciales = consultarCredenciales(nombre=microtik)
+
+        if credenciales:
+            delete = eliminarSimpleQueue(credenciales, direccion_ip)
+            if delete:
+                flash("Queue eliminado con exito", "success")
+                return redirect(url_for("lista_clientes"))
+            else:
+                flash("No eliminar el queue", "danger")
+                return redirect(url_for("lista_clientes"))
+            
+        else:
+            flash(f"No encontramos credenciales para el mcirotiks {microtik}", "danger")
+            return redirect(url_for("lista_clientes"))
+
+@app.route("/aplicar_reglas", methods=["POST"])
+def aplicar_reglas():
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        host = request.form.get("direccion_ip")
+        port = request.form.get("port")
+        
+        ok = aplicarFirewall(host, port, username, password)
+        if ok:
+            flash("Reglas aplicadas con exito", "success")
+            return redirect(url_for("lista_microtiks"))
+        else:
+            flash("No logramos aplicar las reglas", "danger")
+            return redirect(url_for("lista_microtiks"))
 
 #------------------------------------------------RUTA DE LOS MICROTIKS CRUD----------------------------------
 

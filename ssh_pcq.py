@@ -320,6 +320,80 @@ def crearQueueSimple(nombre, direccion_ip, max_limit, credenciales, parent, tiem
         return False
 
 
-def eliminarSimpleQueue():
-    pass
-    #[admin@MikroTik] > /queue/simple/remove [find where target=172.168.10.0/32]
+def eliminarSimpleQueue(credenciales, direccion_ip):
+    """_summary_
+
+    Args:
+        credenciales (string): una tupla con las credenciales
+        direccion_ip (strind): un string con la direccion ip
+
+    Returns:
+        bool : retorna false si falla la ejecucion del comando o true en su exitp
+    """
+    sub_red = "/32"
+    username = credenciales[0]
+    password = credenciales[1]
+    host = credenciales[2]
+    port = credenciales[3]
+
+    comando = f"/queue/simple/remove [find where target={direccion_ip}{sub_red}]"
+
+    try:
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        ssh.connect(host, port, username, password)
+        stdin, stdout, stderr = ssh.exec_command(comando)
+
+        salida = stdout.read().decode()
+        errores = stderr.read().decode()
+
+        if errores:
+            print(f"Errores en ejecucion del comando {errores}")
+            ssh.close()
+        
+        ssh.close()
+        return True
+    
+    except Exception as r:
+        print(f"Error en conexion SSH {r}")
+        return False
+    
+def aplicarFirewall(host, port, username, password):
+    comandos = [
+        "/ip/firewall/filter/add chain=forward action=drop src-address-list=corte comment=corteDeInternet",
+        "/ip/firewall/filter/add chain=forward action=drop dst-address-list=corte comment=corteDeInternet",
+        "/ip/firewall/nat/add chain=srcnat action=masquerade src-address-list=Internet",
+        "/ip/firewall/nat/add chain=srcnat action=masquerade dst-address-list=Internet",
+        "/system/ntp/client/set enabled=yes servers=162.159.200.1,216.239.35.0",
+        "/system/clock/set time-zone-name=America/Mexico_City time-zone-autodetect=no"
+    ]
+
+    # Crear cliente SSH
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # Aceptar claves automáticamente
+
+    try:
+        print(f"Conectando a {host}:{port}...")
+        client.connect(hostname=host, port=port, username=username, password=password, timeout=10)
+
+        for comando in comandos:
+            print(f"Ejecutando: {comando}")
+            stdin, stdout, stderr = client.exec_command(comando)
+            
+            salida = stdout.read().decode().strip()
+            error = stderr.read().decode().strip()
+
+            if salida:
+                print(f"✔️ Salida: {salida}")
+
+            if error:
+                print(f"❌ Error: {error}")
+
+    except Exception as e:
+        print(f"⚠️ Error al conectar o ejecutar comandos: {e}")
+        return False
+
+    finally:
+        client.close()
+        print("Conexión cerrada.")
+        return True

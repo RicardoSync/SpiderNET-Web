@@ -329,6 +329,39 @@
                           </div>
                         </div>
 
+                        <!-- Modal para cargar Queue -->
+                        <div class="modal fade text-dark" id="elimanr_queue{{ cliente[0] }}" tabindex="-1" aria-labelledby="elimanr_queue{{ cliente[0] }}" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="elimanr_queue{{ cliente[0] }}">Eliminar Queue</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                              </div>
+                              <form action="{{ url_for('eliminar_queue_simple', id=cliente[0]) }}" method="POST">
+                                <div class="modal-body">
+                                  <div class="mb-3">
+                                    <label for="nombre{{ cliente[0] }}" class="form-label">Nombre</label>
+                                    <input type="text" class="form-control" name="nombre" id="nombre{{ cliente[0] }}" value="{{ cliente[1] }}" required/>
+                                  </div>
+                                  <div class="mb-3">
+                                    <label for="direccionIp{{ cliente[0] }}" class="form-label">Dirección IP</label>
+                                    <input type="text" class="form-control" name="direccionIp" id="direccionIp{{ cliente[0] }}" value="{{ cliente[4] }}" required/>
+                                  </div>
+                                  <div class="mb-3">
+                                    <label for="microtik{{ cliente[0] }}" class="form-label">Microtik</label>
+                                    <input type="text" class="form-control" name="microtik" id="microtik{{ cliente[0] }}" value="{{ cliente[8] }}" required/>
+                                  </div>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="submit" class="btn btn-primary btn-custom">Eliminar Queue</button>
+                                  <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Cerrar</button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+
+
                         <!-- Botón para eliminar -->
                         <form action="{{ url_for('eliminar_cliente', id=cliente[0]) }}" method="POST" class="d-inline">
                           <button type="submit" class="btn btn-danger btn-sm btn-custom" onclick="return confirm('¿Seguro que deseas eliminar este cliente?');">
@@ -350,14 +383,10 @@
                           <i class="bi bi-bar-chart-steps"></i>
                         </button>
 
-
-                        
-                        <!-- Botón para velocidad (internet) -->
-                        <form action="" method="POST" class="d-inline">
-                            <button type="submit" class="btn btn-info btn-sm btn-custom">
-                              <i class="bi bi-reception-2"></i>
-                            </button>
-                        </form>
+                        <!-- Botón para cargar eliminar  Queue -->
+                        <button type="button" class="btn btn-primary btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="#elimanr_queue{{ cliente[0] }}">
+                          <i class="bi bi-reception-2"></i>
+                        </button>
                         
                         <!-- Botón para dinero -->
                         <form action="" method="POST" class="d-inline">
@@ -365,7 +394,8 @@
                           <i class="bi bi-cash"></i> <!-- Icono de dinero -->
                           </button>
                       </form>
-                        <!-- Modal para bloquear un cliente -->
+
+                      <!-- Modal para bloquear un cliente -->
                         <div class="modal fade text-dark" id="bloqueoClienteModal{{ cliente[0] }}" tabindex="-1" aria-labelledby="modalRegistrarLabel" aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
