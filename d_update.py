@@ -27,3 +27,21 @@ def actualizarCliete(nombre, paquete, direccion_ip, dia_corte, ap, servicio, mic
     except Exception as r:
         print(r)
         return False
+    
+def actualizarMicrotik(nombre, ip, username, password, port, id):
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+
+        cursor = cn.cursor()
+        sql = "UPDATE credenciales_microtik SET nombre = %s, ip = %s, username = %s, password = %s, port = %s WHERE id =%s"
+        cursor.execute(sql, (nombre, ip, username, password, port, id))
+        cn.commit()
+        cursor.close()
+        cn.close()
+
+        return True
+    except Exception as r:
+        print(r)
+        return False

@@ -88,3 +88,23 @@ def insertarCliente(nombre, paquete, ip_cliente, dia_corte, antena_ap, servicio,
     except Exception as r:
         print(f"Error al insertar cliente: {r}")
         return False
+
+
+def insertMicrotik(nombre, ip, username, password, port):
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+
+        cursor = cn.cursor()
+        sql = "INSERT INTO credenciales_microtik (nombre, ip, username, password, port) VALUES (%s,%s,%s,%s,%s)"
+        cursor.execute(sql, (nombre, ip, username, password, port))
+
+        cn.commit()
+        cursor.close()
+        cn.close()
+        return True
+    
+    except Exception as r:
+        print(r)
+        return False

@@ -1,0 +1,9 @@
+<div class="mb-3">
+    <label for="selectInterface">Selecciona una interfaz:</label>
+    <select id="selectInterface" name="interface" class="form-select">
+      {% for interface in interfaces %}
+        <option value="{{ interface }}">{{ interface }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  

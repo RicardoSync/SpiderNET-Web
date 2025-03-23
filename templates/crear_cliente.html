@@ -1,40 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/style_client_form.css">
-    <title>Crear cliente</title>
-</head>
-<body>
-    <form action="/crear_cliente" method="POST">
-        <input type="text" name="name" id="name" placeholder="Ricardo Escobedo">
-        <select name="lsita_paquetes" id="lsita_paquetes">
-            {% for paquete in paquetes %}
-            <option value="{{ paquete }}">{{ paquete }}</option>
-            {% endfor %}
-        </select>
-        <input type="text" name="ip_cliente" id="ip_cliente" placeholder="192.168.10.254">
-        <input type="number" name="dia_corte" id="dia_corte" placeholder="25">
+<!-- HTML -->
+<form action="/crear_cliente" method="POST">
+    <!-- Nombre -->
+    <input type="text" name="nombreNuevo" id="name" placeholder="Ricardo Escobedo">
 
-        <select name="lista_antenas" id="lista_antenas">
-            {% for antena in antens%}
-            <option value="{{ antena }}">{{ antena }}</option>
-            {%endfor%}
-        </select>
+    <!-- Paquete -->
+    <select name="lsita_paquetes" id="lsita_paquetes">
+        {% for paquete in paquetes %}
+          <option value="{{ paquete }}">{{ paquete }}</option>
+        {% endfor %}
+    </select>
 
-        <select name="lista_servicio" id="lista_servicio">
-            {% for servicio in servicios%}
-            <option value="{{ servicio }}">{{ servicio }}</option>
-            {%endfor%}
-        </select>
+    <!-- IP del cliente -->
+    <input type="text" name="direccionip" id="ip_cliente" placeholder="192.168.10.254">
 
-        <select name="lista_microtik" id="lista_microtik">
-            {% for microtik in microtiks%}
-            <option value="{{ microtik }}">{{ microtik }}</option>
-            {%endfor%}
-        </select>
-        <button type="submit">Guardar cliente</button>
-    </form>
-</body>
-</html>
+    <!-- Día de corte -->
+    <input type="number" name="dia_corte" id="dia_corte" placeholder="25">
+
+    <!-- Lista de antenas -->
+    <select name="lista_antenas" id="lista_antenas">
+        {% for antena in antens %}
+          <option value="{{ antena }}">{{ antena }}</option>
+        {% endfor %}
+    </select>
+
+    <!-- Lista de servicios -->
+    <select name="lista_servicio" id="lista_servicio">
+        {% for servicio in servicios %}
+          <option value="{{ servicio }}">{{ servicio }}</option>
+        {% endfor %}
+    </select>
+
+    <!-- Lista de MikroTik -->
+    <select name="lista_microtik" id="lista_microtik">
+        {% for microtik in microtiks %}
+          <option value="{{ microtik }}">{{ microtik }}</option>
+        {% endfor %}
+    </select>
+
+    <button type="submit">Guardar cliente</button>
+</form>
