@@ -1,9 +1,9 @@
 from flask import Flask, render_template, redirect, session, request, url_for, flash
-from d_consultas import consutlarPaquete, consutlarAntena, consultarServicio, consultarMicrotik, consultarClientes, consultarCredenciales, consultarMicrotikTodo
+from d_consultas import consutlarPaquete, consutlarAntena, consultarServicio, consultarMicrotik, consultarClientes, consultarCredenciales, consultarMicrotikTodo, consultarVelocidadPaquete
 from d_insert import insertarCliente, insertMicrotik
 from d_eliminar import eliminar_cliente_chido, eliminarMicrotik
 from d_update import actualizarCliete, actualizarMicrotik
-from ssh_pcq import bloquear_cliente_address_list, desbloqueo_mantecoso, get_interfaces, creacionAddressList
+from ssh_pcq import bloquear_cliente_address_list, desbloqueo_mantecoso, get_interfaces, creacionAddressList, crearQueueParent, crearQueueSimple
 app = Flask(__name__)
 app.secret_key = 'zerocuatro04/2025'  # Necesario para usar flash
 #------------------------------------------------RUTAS CUANDO OCURRE UN ERROR----------------------------------
@@ -211,6 +211,60 @@ def configuracion_pcq():
         else:
             flash("Tenemos problemas con su creacion", "danger")
             return redirect(url_for("lista_microtiks"))
+        
+
+@app.route("/crear_queue_parent", methods=["POST"])
+def crear_queue_parent():
+
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        host = request.form.get("ip")
+        direccion_ip = request.form.get("address")
+        ether = request.form.get("interface")
+        port = request.form.get("port") 
+        name = request.form.get("nameParent")
+        max_limit = request.form.get("max_limit")
+
+        ok = crearQueueParent(name, direccion_ip, max_limit, host,
+                              port, username, password)
+
+        if ok:
+            flash("Creacion de cola exitoso!", "success")        
+            return redirect(url_for("lista_microtiks"))
+        else:
+            flash("No logramos crear la cola", "danger")
+            return redirect(url_for("lista_microtiks"))
+
+@app.route("/cargar_queue", methods=["POST"])
+def cargar_queue():
+    if request.method == "POST":
+        nombre = request.form.get("nombre")
+        direccion_ip = request.form.get("direccionIp")
+        paquete = request.form.get("paquete")
+        microtik = request.form.get("microtik")
+        parent = request.form.get("queueParent")
+
+        credenciales = consultarCredenciales(nombre=microtik)
+
+        if credenciales:
+            max_limit = consultarVelocidadPaquete(nombre=paquete)
+            if max_limit:
+                ok = crearQueueSimple(nombre, direccion_ip, max_limit=max_limit[0], credenciales=credenciales, parent=parent, tiempo="20s/20s")
+                if ok:
+                    flash(f"Queue Simple integrada como hija de {parent} con su rafaga", "success")
+                    return redirect(url_for("lista_clientes"))
+                else:
+                    flash("No logramos crear el Queue hija", "danger")
+            else:
+                flash("No tenemos velocidad en el paquete", "danger")
+                return redirect(url_for("lista_clientes"))
+        else:
+            flash("No encontramos las credenciales del mcirotik", "danger")
+            return redirect(url_for("lista_clientes"))
+
+    
+
 #------------------------------------------------RUTA DE LOS MICROTIKS CRUD----------------------------------
 
 app.run(debug=True)

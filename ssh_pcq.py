@@ -204,5 +204,122 @@ def creacionAddressList(username, password, host, port, direccion_ip, ether):
         print(f"Error en la conexión SSH: {error}")
         return False
 
+def crearQueueParent(name, direccion_ip, max_limit, host, port, username, password):
+    try:
+        # Eliminar espacios al inicio y final, y quitar todos los espacios intermedios
+        name = name.strip()            # elimina espacios al inicio y final
+        name = re.sub(r'\s+', '', name) # elimina todos los espacios
 
-#"/ip/dhcp-server/add name="+name + " interface="+interfaz + " address-pool=" + pool +" disabled=no comment="+comentario;
+        # Opcionalmente, eliminar cualquier carácter que no sea una letra (mayúsculas o minúsculas)
+        name = re.sub(r'[^A-Za-z]', '', name)
+
+        cliente_ssh = paramiko.SSHClient()
+        cliente_ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        cliente_ssh.connect(host, port=port, username=username, password=password)
+        address = obtener_subred(direccion_ip)
+        comando = f"/queue/simple/add name={name} target={address} max-limit={max_limit}"
+
+        print(f"Comando enviado: {comando}")
+
+        stdin, stdout, stderr = cliente_ssh.exec_command(comando)
+        stdin.flush()
+        salida = stdout.read().decode()
+        errores = stderr.read().decode()
+    
+        if errores:
+            print(f"Errores con el comando SSH {errores}")
+            cliente_ssh.close()
+            return False
+        
+        cliente_ssh.close()
+        return True
+    
+    except Exception as r:
+        print(f"Error en conexion SSH {r}")
+        return False
+    
+
+def extract_number(s):
+    """Extrae el valor numérico de una cadena, por ejemplo, '15M' → 15.0"""
+    match = re.search(r"(\d+(?:\.\d+)?)", s)
+    if match:
+        return float(match.group(1))
+    return 0.0
+
+def crearQueueSimple(nombre, direccion_ip, max_limit, credenciales, parent, tiempo):
+        # Eliminar espacios al inicio y final, y quitar todos los espacios intermedios
+    nombre = nombre.strip()            # elimina espacios al inicio y final
+    nombre = re.sub(r'\s+', '', nombre) # elimina todos los espacios
+
+        # Opcionalmente, eliminar cualquier carácter que no sea una letra (mayúsculas o minúsculas)
+    nombre = re.sub(r'[^A-Za-z]', '', nombre)   
+        # Eliminar espacios al inicio y final, y quitar todos los espacios intermedios
+    parent = parent.strip()            # elimina espacios al inicio y final
+    parent = re.sub(r'\s+', '', parent) # elimina todos los espacios
+
+        # Opcionalmente, eliminar cualquier carácter que no sea una letra (mayúsculas o minúsculas)
+    parent = re.sub(r'[^A-Za-z]', '', parent)   
+    """
+    Crea un cliente en queue simple con rafaga.
+    
+    Parámetros:
+      - nombre: nombre del cliente.
+      - direccion_ip: target IP del cliente.
+      - max_limit: string con el formato "15M/15M" (subida/bajada).
+      - credenciales: tupla con (username, password, host, port).
+      - parent: nombre del queue parent.
+      - tiempo: burst time.
+    """
+    username, password, host, port = credenciales
+
+    # Extraer valores numéricos de max_limit
+    parts = max_limit.split('/')
+    max_upload = extract_number(parts[0])   # Ej.: "15M" → 15.0
+    max_download = extract_number(parts[1]) # Ej.: "15M" → 15.0
+
+    # Calcular Burst Limit (1.5x del Max Limit)
+    burst_upload = max_upload * 1.5
+    burst_download = max_download * 1.5
+
+    # Calcular Burst Threshold (75% del Max Limit)
+    threshold_upload = max_upload * 0.75
+    threshold_download = max_download * 0.75
+
+    # Formatear los valores agregando la "M" al final
+    burst_limit = f"{burst_upload:.0f}M/{burst_download:.0f}M"
+    burst_threshold = f"{threshold_upload:.1f}M/{threshold_download:.1f}M"
+
+    try:
+        # Conexión SSH a MikroTik
+        cliente_ssh = paramiko.SSHClient()
+        cliente_ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        cliente_ssh.connect(host, port=int(port), username=username, password=password)
+
+        # Construir el comando
+        comando = (
+            f"/queue/simple/add name={nombre} target={direccion_ip} max-limit={max_limit} "
+            f"parent={parent} burst-limit={burst_limit} burst-threshold={burst_threshold} burst-time={tiempo}"
+        )
+        print(f"Comando enviado: {comando}")
+
+        stdin, stdout, stderr = cliente_ssh.exec_command(comando)
+        stdin.flush()
+        salida = stdout.read().decode()
+        errores = stderr.read().decode()
+
+        if errores:
+            print(f"Errores con el comando SSH: {errores}")
+            cliente_ssh.close()
+            return False
+
+        cliente_ssh.close()
+        return True
+
+    except Exception as e:
+        print(f"Error en conexión SSH: {e}")
+        return False
+
+
+def eliminarSimpleQueue():
+    pass
+    #[admin@MikroTik] > /queue/simple/remove [find where target=172.168.10.0/32]

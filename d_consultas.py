@@ -145,3 +145,21 @@ def consultarClientes():
     except Exception as r:
         print(r)
         return []  # Devuelve una lista vacía en caso de error
+
+def consultarVelocidadPaquete(nombre):
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+
+        cursor = cn.cursor()
+        cursor.execute("SELECT velocidad FROM paquetes WHERE nombre = %s", (nombre,))
+        resultado = cursor.fetchone()
+
+        cursor.close()
+        cn.close()
+
+        return resultado
+    except Exception as r:
+        print(f"Error en consulta de paquete {r}")
+        return False

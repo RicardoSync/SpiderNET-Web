@@ -130,7 +130,12 @@
                         <button class="btn btn-warning btn-sm btn-custom configurar-btn" data-id="{{ mikrotik[0] }}" data-bs-toggle="modal" data-bs-target="#configuracionPCQModel{{ mikrotik[0] }}">
                           <i class="bi bi-gear-fill"></i>
                         </button>
-                        
+                        <!-- Botón para el modal de Queue Parent -->
+                        <button class="btn btn-warning btn-sm btn-custom configurar-btn" data-id="{{ mikrotik[0] }}" data-bs-toggle="modal" data-bs-target="#creacionParentQueue{{ mikrotik[0] }}">
+                          <i class="bi bi-bar-chart-steps"></i>
+                        </button>
+
+
                         <!-- Modal de edición -->
                         <div class="modal fade text-dark" id="editarModal{{ mikrotik[0] }}" tabindex="-1" aria-labelledby="editarModalLabel{{ mikrotik[0] }}" aria-hidden="true">
                           <div class="modal-dialog">
@@ -234,6 +239,57 @@
                                   </form>
                                 </div>
                               </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Modal para crear Queue Parent -->
+                        <div class="modal fade text-dark" id="creacionParentQueue{{ mikrotik[0] }}" tabindex="-1" aria-labelledby="creacionParentQueueLabel{{ mikrotik[0] }}" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="creacionParentQueueLabel{{ mikrotik[0] }}">Crear Queue Parent</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                              </div>
+                              <form action="{{ url_for('crear_queue_parent') }}" method="POST">
+                                <div class="modal-body">
+                                  <!-- Información de conexión (similar al modal de edición) -->
+                                  <div class="mb-3">
+                                    <label for="username{{ mikrotik[0] }}" class="form-label">Username</label>
+                                    <input type="text" class="form-control" name="username" id="username{{ mikrotik[0] }}" value="{{ mikrotik[2] }}" required/>
+                                  </div>
+                                  <div class="mb-3">
+                                    <label for="password{{ mikrotik[0] }}" class="form-label">Password</label>
+                                    <input type="password" class="form-control" name="password" id="password{{ mikrotik[0] }}" value="{{ mikrotik[3] }}" required/>
+                                  </div>
+                                  <div class="mb-3">
+                                    <label for="ip{{ mikrotik[0] }}" class="form-label">Dirección IP</label>
+                                    <input type="text" class="form-control" name="ip" id="ip{{ mikrotik[0] }}" value="{{ mikrotik[4] }}" required/>
+                                  </div>
+                                  <div class="mb-3">
+                                    <label for="port{{ mikrotik[0] }}" class="form-label">Puerto</label>
+                                    <input type="number" class="form-control" name="port" id="port{{ mikrotik[0] }}" value="{{ mikrotik[5] }}" required/>
+                                  </div>
+                                  <!-- Configuración de Queue Parent -->
+                                  <div class="mb-3">
+                                    <label for="nameParent{{ mikrotik[0] }}" class="form-label">Nombre Queue Parent</label>
+                                    <input type="text" class="form-control" name="nameParent" id="nameParent{{ mikrotik[0] }}" placeholder="Nombre del Queue Parent" required/>
+                                  </div>
+                                  <div class="mb-3">
+                                    <label for="address{{ mikrotik[0] }}" class="form-label">IP para Queue Parent</label>
+                                    <input type="text" class="form-control" name="address" id="address{{ mikrotik[0] }}" placeholder="IP para Queue Parent" required/>
+                                  </div>
+                                  <div class="mb-3">
+                                    <label for="max_limit{{ mikrotik[0] }}" class="form-label">Max Limit</label>
+                                    <label for="nota{{ mikrotik[0] }}">Debe seguir estrictamente el formato (10M/10M) para que funcione</label>
+                                    <input type="text" class="form-control" name="max_limit" id="max_limit{{ mikrotik[0] }}" placeholder="10M/10M" required/>
+                                  </div>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="submit" class="btn btn-success">Crear Queue Parent</button>
+                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                </div>
+                              </form>
                             </div>
                           </div>
                         </div>

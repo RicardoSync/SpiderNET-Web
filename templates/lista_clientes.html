@@ -280,6 +280,55 @@
                             </div>
                           </div>
                         </div>
+
+                        <!-- Modal para cargar Queue -->
+                        <div class="modal fade text-dark" id="cargar_queue{{ cliente[0] }}" tabindex="-1" aria-labelledby="cargar_queueLabel{{ cliente[0] }}" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="cargar_queueLabel{{ cliente[0] }}">Cargar Queue</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                              </div>
+                              <form action="{{ url_for('cargar_queue', id=cliente[0]) }}" method="POST">
+                                <div class="modal-body">
+                                  <div class="mb-3">
+                                    <label for="nombre{{ cliente[0] }}" class="form-label">Nombre</label>
+                                    <input type="text" class="form-control" name="nombre" id="nombre{{ cliente[0] }}" value="{{ cliente[1] }}" required/>
+                                  </div>
+                                  <div class="mb-3">
+                                    <label for="direccionIp{{ cliente[0] }}" class="form-label">Dirección IP</label>
+                                    <input type="text" class="form-control" name="direccionIp" id="direccionIp{{ cliente[0] }}" value="{{ cliente[4] }}" required/>
+                                  </div>
+                                  <div class="mb-3">
+                                    <label for="paquete{{ cliente[0] }}" class="form-label">Paquete</label>
+                                    <select name="paquete" id="paquete{{ cliente[0] }}" class="form-control">
+                                      {% for paquete in paquetes %}
+                                        <option value="{{ paquete }}">{{ paquete }}</option>
+                                      {% endfor %}
+                                    </select>
+                                  </div>
+                                  <div class="mb-3">
+                                    <label for="microtik{{ cliente[0] }}" class="form-label">Microtik</label>
+                                    <select name="microtik" id="microtik{{ cliente[0] }}" class="form-control">
+                                      {% for microtik in microtiks %}
+                                        <option value="{{ microtik }}">{{ microtik }}</option>
+                                      {% endfor %}
+                                    </select>
+                                  </div>
+                                  <div class="mb-3">
+                                    <label for="queueParent{{ cliente[0] }}" class="form-label">Nombre de QueueParent</label>
+                                    <input type="text" class="form-control" name="queueParent" id="queueParent{{ cliente[0] }}"required/>
+                                  </div>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="submit" class="btn btn-primary btn-custom">Guardar cambios</button>
+                                  <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Cerrar</button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+
                         <!-- Botón para eliminar -->
                         <form action="{{ url_for('eliminar_cliente', id=cliente[0]) }}" method="POST" class="d-inline">
                           <button type="submit" class="btn btn-danger btn-sm btn-custom" onclick="return confirm('¿Seguro que deseas eliminar este cliente?');">
@@ -296,27 +345,26 @@
                             <i class="bi bi-unlock-fill"></i>
                         </button>
 
-                        <!-- Botón para router -->
+                        <!-- Botón para cargar Queue -->
+                        <button type="button" class="btn btn-primary btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="#cargar_queue{{ cliente[0] }}">
+                          <i class="bi bi-bar-chart-steps"></i>
+                        </button>
+
+
+                        
+                        <!-- Botón para velocidad (internet) -->
                         <form action="" method="POST" class="d-inline">
-                            <button type="submit" class="btn btn-primary btn-sm btn-custom">
-                            <i class="bi bi-router"></i> <!-- Icono de router -->
+                            <button type="submit" class="btn btn-info btn-sm btn-custom">
+                              <i class="bi bi-reception-2"></i>
                             </button>
                         </form>
                         
                         <!-- Botón para dinero -->
                         <form action="" method="POST" class="d-inline">
-                            <button type="submit" class="btn btn-success btn-sm btn-custom">
-                            <i class="bi bi-cash"></i> <!-- Icono de dinero -->
-                            </button>
-                        </form>
-                        
-                        <!-- Botón para velocidad (internet) -->
-                        <form action="" method="POST" class="d-inline">
-                            <button type="submit" class="btn btn-info btn-sm btn-custom">
-                            <i class="bi bi-speedometer2"></i> <!-- Icono de velocidad -->
-                            </button>
-                        </form>
-
+                          <button type="submit" class="btn btn-success btn-sm btn-custom">
+                          <i class="bi bi-cash"></i> <!-- Icono de dinero -->
+                          </button>
+                      </form>
                         <!-- Modal para bloquear un cliente -->
                         <div class="modal fade text-dark" id="bloqueoClienteModal{{ cliente[0] }}" tabindex="-1" aria-labelledby="modalRegistrarLabel" aria-hidden="true">
                             <div class="modal-dialog">
