@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Microtik</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons (opcional para íconos) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+  
+  <!-- Estilos personalizados -->
+  <style>
+    body {
+      background-color: #1e1e1e; /* Fondo oscuro */
+      color: #fff;
+    }
+    /* Navbar superior */
+    .navbar {
+      background-color: #2b2b2b;
+      border-bottom: 1px solid #444;
+    }
+    .navbar-brand {
+      font-weight: 500;
+    }
+    /* Panel lateral */
+    .sidebar {
+      background-color: #2b2b2b;
+      min-height: 100vh;
+      border-right: 1px solid #444;
+    }
+    .sidebar .nav-link {
+      color: #fff;
+    }
+    .sidebar .nav-link:hover {
+      background-color: #343434;
+    }
+    /* Card y tabla */
+    .card {
+      background-color: #2b2b2b;
+      border: none;
+    }
+    .card-header {
+      background-color: #2b2b2b;
+      border-bottom: 1px solid #444;
+      font-weight: 500;
+    }
+    .table thead th {
+      background-color: #3b3b3b;
+      color: #ffca28;
+    }
+    .table-striped > tbody > tr:nth-of-type(odd) {
+      background-color: #2a2a2a;
+    }
+    .table-striped > tbody > tr:nth-of-type(even) {
+      background-color: #232323;
+    }
+    .table-hover tbody tr:hover {
+      background-color: #343434;
+    }
+    /* Botones */
+    .btn-custom {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-custom:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+    }
+  </style>
+</head>
+<body>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="container mt-2">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <!-- Navbar superior -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+      <a class="navbar-brand text-white" href="#">
+        <i class="bi bi-speedometer"></i> Microtik
+      </a>
+      <!-- Botón + para abrir modal de Registrar MikroTik -->
+      <button class="btn btn-success btn-sm ms-auto btn-custom" data-bs-toggle="modal" data-bs-target="#modalRegistrar">
+        <i class="bi bi-plus-lg"></i> Nuevo
+      </button>
+    </div>
+  </nav>
+
+  <!-- Layout con panel lateral y contenido -->
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Panel Lateral -->
+      <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+        <div class="position-sticky pt-3">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('lista_clientes')}}">
+                <i class="bi bi-house-fill"></i> Panel de Control
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- Contenido principal -->
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <div class="my-4">
+          <div class="card">
+            <div class="card-header">
+            </div>
+            <div class="card-body">
+              <!-- Tabla de MikroTik -->
+              <div class="table-responsive">
+                <table id="miTabla" class="table table-dark table-striped table-hover align-middle">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Nombre</th>
+                      <th>Username</th>
+                      <th>Password</th>
+                      <th>Dirección IP</th>
+                      <th>Puerto</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for mikrotik in microtiks %}
+                    <tr>
+                      <td>{{ mikrotik[0] }}</td>
+                      <td>{{ mikrotik[1] }}</td>
+                      <td>{{ mikrotik[2] }}</td>
+                      <td>{{ mikrotik[3] }}</td>
+                      <td>{{ mikrotik[4] }}</td>
+                      <td>{{ mikrotik[5] }}</td>
+                      <td>
+                        <!-- Botón para editar -->
+                        <button class="btn btn-warning btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="#editarModal{{ mikrotik[0] }}">
+                          <i class="bi bi-pencil-square"></i>
+                        </button>
+                        <!-- Modal de edición -->
+                        <div class="modal fade text-dark" id="editarModal{{ mikrotik[0] }}" tabindex="-1" aria-labelledby="editarModalLabel{{ mikrotik[0] }}" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="editarModalLabel{{ mikrotik[0] }}">Editar MikroTik</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                              </div>
+                              <form action="{{ url_for('editar_mikrotik', id=mikrotik[0]) }}" method="POST">
+                                <div class="modal-body">
+                                  <div class="mb-3">
+                                    <label for="nombre{{ mikrotik[0] }}" class="form-label">Nombre</label>
+                                    <input type="text" class="form-control" name="nombre" id="nombre{{ mikrotik[0] }}" value="{{ mikrotik[1] }}" required/>
+                                  </div>
+                                  <div class="mb-3">
+                                    <label for="username{{ mikrotik[0] }}" class="form-label">Username</label>
+                                    <input type="text" class="form-control" name="username" id="username{{ mikrotik[0] }}" value="{{ mikrotik[2] }}" required/>
+                                  </div>
+                                  <div class="mb-3">
+                                    <label for="password{{ mikrotik[0] }}" class="form-label">Password</label>
+                                    <input type="password" class="form-control" name="password" id="password{{ mikrotik[0] }}" value="{{ mikrotik[3] }}" required/>
+                                  </div>
+                                  <div class="mb-3">
+                                    <label for="ip{{ mikrotik[0] }}" class="form-label">Dirección IP</label>
+                                    <input type="text" class="form-control" name="ip" id="ip{{ mikrotik[0] }}" value="{{ mikrotik[4] }}" required/>
+                                  </div>
+                                  <div class="mb-3">
+                                    <label for="port{{ mikrotik[0] }}" class="form-label">Puerto</label>
+                                    <input type="number" class="form-control" name="port" id="port{{ mikrotik[0] }}" value="{{ mikrotik[5] }}" required/>
+                                  </div>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="submit" class="btn btn-primary btn-custom">Guardar cambios</button>
+                                  <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Cerrar</button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- Botón para eliminar -->
+                        <form action="{{ url_for('eliminar_mikrotik', id=mikrotik[0]) }}" method="POST" class="d-inline">
+                          <button type="submit" class="btn btn-danger btn-sm btn-custom" onclick="return confirm('¿Seguro que deseas eliminar este MikroTik?');">
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </form>
+
+                        <button class="btn btn-warning btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="#configuracionModal{{ mikrotik[0] }}">
+                            <i class="bi bi-gear-fill"></i>
+                          </button>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Modal para Registrar nuevo MikroTik -->
+  <div class="modal fade text-dark" id="modalRegistrar" tabindex="-1" aria-labelledby="modalRegistrarLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalRegistrarLabel">Registrar MikroTik</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <form action="{{ url_for('crear_mikrotik') }}" method="POST">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="nombreNuevo" class="form-label">Nombre</label>
+              <input type="text" class="form-control" name="nombreNuevo" id="nombreNuevo" required/>
+            </div>
+            <div class="mb-3">
+              <label for="usernameNuevo" class="form-label">Username</label>
+              <input type="text" class="form-control" name="usernameNuevo" id="usernameNuevo" required/>
+            </div>
+            <div class="mb-3">
+              <label for="passwordNuevo" class="form-label">Password</label>
+              <input type="password" class="form-control" name="passwordNuevo" id="passwordNuevo" required/>
+            </div>
+            <div class="mb-3">
+              <label for="ipNuevo" class="form-label">Dirección IP</label>
+              <input type="text" class="form-control" name="ipNuevo" id="ipNuevo" required/>
+            </div>
+            <div class="mb-3">
+              <label for="portNuevo" class="form-label">Puerto</label>
+              <input type="number" class="form-control" name="portNuevo" id="portNuevo" required/>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success btn-custom">Guardar</button>
+            <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

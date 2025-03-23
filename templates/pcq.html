@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCQ (Per Connection Queue)</title>
+
+</head>
+
+<body>
+    <form action="/consultar_dhcp_leases" method="POST">
+        <select name="lista_microtik" id="lista_microtik">
+            {% for nombre in nombres %}
+            <option value="{{ nombre }}">{{ nombre }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Clientes DHCP</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ADDRESS</th>
+                <th>MAC-ADDRESS</th>
+                <th>HOST-NAME</th>
+                <th>SERVER</th>
+                <th>STATUS</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cliente in dhcp_clientes %}
+            <tr>
+                <td>{{ cliente[0] }}</td>
+                <td>{{ cliente[1] }}</td>
+                <td>{{ cliente[2] }}</td>
+                <td>{{ cliente[3] }}</td>
+                <td>{{ cliente[4] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+
+</html>

@@ -1,0 +1,109 @@
+/* General settings */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #121212;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    transition: background-color 0.3s ease;
+}
+
+/* Table container */
+table {
+    width: 100%;
+    max-width: 1200px;
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    margin: 20px 0;
+    border-spacing: 0;
+    animation: fadeIn 1s ease-in;
+}
+
+/* Table headers */
+thead {
+    background-color: #333;
+}
+
+thead td {
+    padding: 12px;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 2px solid #444;
+    color: #ff9800;
+}
+
+/* Table rows */
+tbody tr {
+    background-color: #222;
+    transition: background-color 0.3s ease;
+}
+
+tbody tr:hover {
+    background-color: #333;
+}
+
+/* Table cells */
+tbody td {
+    padding: 12px;
+    text-align: center;
+    color: #bbb;
+    border-bottom: 1px solid #444;
+}
+
+/* Table cells hover effect */
+tbody td:hover {
+    background-color: #444;
+    cursor: pointer;
+}
+
+/* Button styles */
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #ff9800;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #e68900;
+    transform: translateY(-2px);
+}
+
+/* Add subtle animations */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    table {
+        max-width: 100%;
+        font-size: 14px;
+    }
+
+    button {
+        font-size: 16px;
+    }
+}

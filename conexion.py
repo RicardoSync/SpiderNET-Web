@@ -5,7 +5,7 @@ def conexion():
         con = mysql.connector.Connect(
             host="localhost",
             port="3306",
-            user="root",
+            username="root",
             password="zerocuatro04",
             database="spidernet"
         )
@@ -13,4 +13,4 @@ def conexion():
     
     except Exception as r:
         print(r)
-        return None
+        return False

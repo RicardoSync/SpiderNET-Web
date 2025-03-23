@@ -1,12 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
-from bk_login import validacion_usuario
-from bk_insert_elements import almacenarServicio, almacenarPaquetes, almacenarAntenas, almacenarUsuario
-from bk_consultas import consultarServicios, consultarPaquetes, consultarAntenas, consultarUsuarios
-from bk_delete import eliminarServicio, eliminarPaquete, eliminarAntena
-from bk_update import editarServicio, editarPaquete, editarAntena, editarUsuario
-
+from flask import Flask, render_template, redirect, session, request, url_for, flash
+from d_consultas import consutlarPaquete, consutlarAntena, consultarServicio, consultarMicrotik, consultarClientes, consultarCredenciales, consultarMicrotikTodo
+from d_insert import insertarCliente
+from d_eliminar import eliminar_cliente_chido
+from d_update import actualizarCliete
+from ssh_pcq import bloquear_cliente_address_list, desbloqueo_mantecoso
 app = Flask(__name__)
-
+app.secret_key = 'zerocuatro04/2025'  # Necesario para usar flash
 #------------------------------------------------RUTAS CUANDO OCURRE UN ERROR----------------------------------
 
 # Error 404 (Página no encontrada)
@@ -20,205 +19,131 @@ def error_interno(error):
     return render_template("error.html"), 500
 #------------------------------------------------RUTAS CUANDO OCURRE UN ERROR----------------------------------
 
-#------------------------------------------------INICIO DEL SISTEMA----------------------------------
-#ruta raiz a donde se dirigue el usuario al entrar
-@app.route("/", methods=["POST", "GET"])
-def home():
+
+
+#------------------------------------------------RUTA DE LOS CLIENTES CRUD----------------------------------
+@app.route("/crear_cliente", methods=["POST"]) #sirve para obtener al cliente y almacenarlo
+def crear_cliente():
     if request.method == "POST":
-        username = request.form.get("username") #obtenemos la informacion de los campos
-        password = request.form.get("password")
+        nombre = request.form.get("nombreNuevo")
+        paquete = request.form.get("lsita_paquetes")
+        ip_cliente = request.form.get("direccionip")
+        dia_corte = request.form.get("dia_corte")
+        antena_ap = request.form.get("lista_perrona_de_las_antenas_dios_mio")
+        servicio = request.form.get("servicios_disponibles_chidotes")
+        microtik = request.form.get("lista_microtik")
 
-        rol = validacion_usuario(username, password) #hacemos la comprobacion
-        if rol:
-            return redirect(url_for("dashboard"))
-        else:
-            return render_template("error.html"), 500
-
-    return render_template("login.html")
-
-
-#ruta para el dashboard que estamos llamando 
-@app.route("/dashboard")
-def dashboard():
-    return render_template("home.html")
-#------------------------------------------------INICIO DEL SISTEMA----------------------------------
-
-
-
-#------------------------------------------------CRUD DE LOS SERVICIOS----------------------------------
-#ruta de servicios html llamado desde html
-@app.route("/servicios")
-def servicios():
-    serviciosAlmacenados = consultarServicios()
-    return render_template("servicios.html", pkg=serviciosAlmacenados)
-
-
-#ruta para poder obtener los datos con get, y almacenarlos
-@app.route("/almacenar", methods=["POST"])
-def almacenar_servicios():
-    if request.method == "POST":
-        nombreServicio = request.form.get("nombre")
-        descripcionServicio = request.form.get("descripcion")
-        precioServicio = request.form.get("precio")
-
-        ok = almacenarServicio(nombreServicio, descripcionServicio, precioServicio)
-
+        ok = insertarCliente(nombre, paquete, ip_cliente, dia_corte, antena_ap, servicio, microtik)
+        print(nombre, paquete, ip_cliente, dia_corte, antena_ap, servicio, microtik)
         if ok:
-            return redirect(url_for("servicios"))
+            return redirect(url_for("lista_clientes"))
         else:
             return render_template("error.html"), 500
 
+@app.route("/lista_clientes")
+def lista_clientes():
+    cliente = consultarClientes()
+    antenas = consutlarAntena()
+    paquetes = consutlarPaquete()
+    return render_template("lista_clientes.html", clientes=cliente, antens=antenas, paquetes=paquetes, servicios=consultarServicio(), microtiks=consultarMicrotik())
 
-@app.route("/eliminar_servicio/<int:id>", methods=["POST"])
-def eliminar_servicio(id):
-    print(id)
-    ok = eliminarServicio(id)
-
-    if ok:
-        return redirect(url_for("servicios"))
-    else:
-        return render_template("error.html"), 500
-
-@app.route("/editar_servicio/<int:id>", methods=["POST"])
-def editar_servicio(id):
-    nombre = request.form["nombre"]
-    descripcion = request.form["descripcion"]
-    precio = request.form["precio"]
-
-    ok = editarServicio(nombre, descripcion, precio, id)
-
-    print(nombre, descripcion, precio, id)
-    if ok:
-        return redirect(url_for("servicios"))  # si es true recarga la pagina
-    else:
-        return render_template("error.html"), 500
-#------------------------------------------------CRUD DE LOS SERVICIOS----------------------------------
-
-
-
-#------------------------------------------------CRUD DE LOS PAQUETES----------------------------------
-@app.route("/paquetes")
-def paquetes():
-    paqueteAlma = consultarPaquetes()
-    return render_template("paquetes.html", paquetesAlmace=paqueteAlma)
-
-#ruta para obtener los datos con POST y almacenarlos
-@app.route("/almacenar_paquete", methods=["POST"])
-def almacenar_paquete():
-    if request.method == "POST":
-        nombrePaquete = request.form.get("nombre")
-        velocidadPaqute = request.form.get("velocidad")
-        precioPaquete = request.form.get("precio")
-
-        ok = almacenarPaquetes(nombrePaquete, velocidadPaqute, precioPaquete)
-        if ok:
-            return redirect(url_for("paquetes"))
-        else:
-            return render_template("error.html"), 500
-
-@app.route("/editar_paquete/<int:id>", methods=["POST"])
-def editar_paquete(id):
-    nombrePaquete = request.form.get("nombre")
-    velocidadPaquete = request.form.get("velocidad")
-    precioPaquete = request.form.get("precio")
-
-    ok = editarPaquete(nombrePaquete, velocidadPaquete, precioPaquete, id)
-    if ok:
-        return redirect(url_for("paquetes"))
-    else:
-        return render_template("error.html"), 500
-
-
-@app.route("/eliminar_paquete/<int:id>", methods=["POST"])
-def eliminar_paquete(id):
-    ok = eliminarPaquete(id)
-
-    if ok:
-        return redirect(url_for("paquetes"))
-    else:
-        return render_template("error.html"), 500
-#------------------------------------------------CRUD DE LOS PAQUETES----------------------------------
-
-#------------------------------------------------CRUD DE ANTENAS----------------------------------
-@app.route("/antenas")
-def antenas():
-    anteAlma = consultarAntenas()
-    return render_template("antenas.html", antenassAlmace=anteAlma)
-
-@app.route("/almacenar_antena", methods=["POST"])
-def almacenar_antena():
-    if request.method == "POST":
-        nombreAntena = request.form.get("nombre")
-        modeloAntena = request.form.get("modelo")
-        usuarioAtena = request.form.get("usuario")
-        passwordAntena = request.form.get("password")
-        ipAntena = request.form.get("direccionIp")
-
-        ok = almacenarAntenas(nombreAntena, modeloAntena, usuarioAtena, passwordAntena, ipAntena)
-        if ok:
-            return redirect(url_for("antenas"))
-        else:
-            return render_template("error.html"), 500
-        
-
-@app.route("/editar_antena/<int:id>", methods=["POST"])
-def editar_antena(id):
-    nombre = request.form.get("nombre")
-    modelo = request.form.get("modelo")
-    usuario = request.form.get("usuario")
-    password = request.form.get("password")
-    ip = request.form.get("direccionIp")
-
-    ok = editarAntena(nombre, modelo, usuario, password, ip, id)
-
-    if ok:
-        return redirect(url_for("antenas"))
-    else:
-        return render_template("error.html"), 500
-    
-@app.route("/eliminar_antena<int:id>", methods=["POST"])
-def eliminar_antena(id):
-    ok = eliminarAntena(id)
-    if ok:
-        return redirect(url_for("antenas"))
-    else:
-        return render_template("error.html"), 500
-
-#------------------------------------------------CRUD DE ANTENAS----------------------------------
-
-#------------------------------------------------CRUD DE USUARIOS----------------------------------
-@app.route("/usuarios")
-def usuarios():
-    userAlma = consultarUsuarios()
-    return render_template("usuarios.html", usuariossAlmace=userAlma)
-
-@app.route("/almacenar_usuarios", methods=["POST"])
-def almacenar_usuarios():
+@app.route("/eidtar_cliente<int:id>", methods=["POST"])
+def eidtar_cliente(id):
     if request.method == "POST":
         nombre = request.form.get("nombre")
-        usuario = request.form.get("username")
-        password = request.form.get("password")
+        paquete = request.form.get("lsita_paquetes")
+        ip_cliente = request.form.get("direccionIp")
+        dia_corte = request.form.get("dia_corte")
+        antena_ap = request.form.get("lista_antenas")
+        servicio = request.form.get("lista_servicio")
+        microtik = request.form.get("lista_microtik")
 
-        ok = almacenarUsuario(nombre, usuario, password)
+        ok = actualizarCliete(nombre, paquete, ip_cliente, dia_corte, antena_ap, servicio, microtik, id)
         if ok:
-            return redirect(url_for("usuarios"))
+            return redirect(url_for("lista_clientes"))
         else:
             return render_template("error.html"), 500
-        
-@app.route("/editar_usuarios/<int:id>", methods=["POST"])
-def editar_usuarios(id):
+
+
+@app.route("/eliminar_cliente<int:id>", methods=["POST"])
+def eliminar_cliente(id):
+    ok = eliminar_cliente_chido(id)    
+    if ok:
+        return redirect(url_for("lista_clientes"))
+    else:
+        return render_template("error.html"), 500
+
+
+@app.route('/bloquear_cliente_pcq', methods=["POST"])
+def bloquear_cliente_pcq():
+    # Se obtienen los datos enviados desde el formulario del modal
+    # Obtener valores individuales
+    direccion_ip = request.form.get('direccion_addres_cliente')
+    microtik = request.form.get('microtik')
+
+    print(direccion_ip, microtik)
+    
+    # Se consultan las credenciales para el microtik indicado
+    credenciales = consultarCredenciales(microtik)
+    print(credenciales)
+    if credenciales:
+        # Ejecuta el comando de bloqueo
+        ok = bloquear_cliente_address_list(credenciales, direccion_ip)
+        if ok:
+            flash("Cliente bloqueado", "success")  # Tipo success para éxito
+        else:
+            flash("Tenemos problemas con el bloqueo", "danger")  # Tipo danger para error
+    else:
+        flash(f"No tenemos credenciales para ese MikroTik: {microtik}", "warning")  # Tipo warning para advertencia
+    
+    return redirect(url_for("lista_clientes"))
+    
+
+@app.route("/desbloquear_cliente_pcq", methods=["POST"])
+def desbloquear_cliente_pcq():
+     # Se obtienen los datos enviados desde el formulario del modal
+    # Obtener valores individuales
+    ip_cliente = request.form.get('direccion_addres_cliente')
+    microtik = request.form.get('microtik')
+
+    print(f"La ip del cliente es {ip_cliente} con microtik asociado {microtik} desde el model")    
+    # Se consultan las credenciales para el microtik indicado
+    credenciales = consultarCredenciales(microtik)
+    if credenciales:
+        # Ejecuta el comando de bloqueo
+        ok = desbloqueo_mantecoso(credenciales, ip_cliente)
+        if ok:
+            flash("Cliente desbloqueado", "success")  # Tipo success para éxito
+        else:
+            flash("Tenemos problemas con el desbloqueo", "danger")  # Tipo danger para error
+    else:
+        flash(f"No tenemos credenciales para ese MikroTik: {microtik}", "warning")  # Tipo warning para advertencia
+    
+    return redirect(url_for("lista_clientes"))
+#------------------------------------------------RUTA DE LOS CLIENTES CRUD----------------------------------
+
+#------------------------------------------------RUTA DE LOS MICROTIKS CRUD----------------------------------
+@app.route("/crear_mikrotik", methods=["POST"])
+def crear_mikrotik():
+    if request.method == "POST":
+        nombre = request.form.get("nombreNuevo")
+    return redirect(url_for("lista_microtiks"))
+
+@app.route("/lista_microtiks")
+def lista_microtiks():
+    return render_template("microtik.html", microtiks=consultarMicrotikTodo())
+
+@app.route("/editar_mikrotik<int:id>", methods=["POST"])
+def editar_mikrotik(id):
     if request.method == "POST":
         nombre = request.form.get("nombre")
-        usuario = request.form.get("usuario")
-        password = request.form.get("password")
 
-        ok = editarUsuario(nombre, usuario, password, id)
-        if ok:
-            return redirect(url_for("usuarios"))
-        else:
-            return render_template("error.html"), 500
-    
-#------------------------------------------------CRUD DE USUARIOS----------------------------------
+    return redirect(url_for("lista_microtiks"))
 
+@app.route("/eliminar_mikrotik<int:id>", methods=["POST"])
+def eliminar_mikrotik(id):
+    print("eliminado")
+
+    return redirect(url_for("lista_microtiks"))
 
 app.run(debug=True)
