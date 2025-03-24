@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, session, request, url_for, flash
-from d_consultas import consutlarPaquete, consutlarAntena, consultarServicio, consultarMicrotik, consultarClientes, consultarCredenciales, consultarMicrotikTodo, consultarVelocidadPaquete
-from d_insert import insertarCliente, insertMicrotik
+from d_consultas import consutlarPaquete, consutlarAntena, consultarServicio, consultarMicrotik, consultarClientes, consultarCredenciales, consultarMicrotikTodo, consultarVelocidadPaquete, consultarPaquetes
+from d_insert import insertarCliente, insertMicrotik, insertarPauqete
 from d_eliminar import eliminar_cliente_chido, eliminarMicrotik
 from d_update import actualizarCliete, actualizarMicrotik
 from ssh_pcq import bloquear_cliente_address_list, desbloqueo_mantecoso, get_interfaces, creacionAddressList, crearQueueParent, crearQueueSimple, eliminarSimpleQueue, aplicarFirewall
@@ -147,7 +147,9 @@ def crear_mikrotik():
 
 @app.route("/lista_microtiks")
 def lista_microtiks():
-    return render_template("microtik.html", microtiks=consultarMicrotikTodo())
+    micro = consultarMicrotikTodo()
+    print(micro)
+    return render_template("microtik.html", microtiks=micro)
 
 @app.route("/editar_mikrotik<int:id>", methods=["POST"])
 def editar_mikrotik(id):
@@ -252,7 +254,7 @@ def cargar_queue():
             if max_limit:
                 ok = crearQueueSimple(nombre, direccion_ip, max_limit=max_limit[0], credenciales=credenciales, parent=parent, tiempo="20s/20s")
                 if ok:
-                    flash(f"Queue Simple integrada como hija de {parent} con su rafaga", "success")
+                    flash(f"Queue Simple integrada para {nombre} con su rafaga", "success")
                     return redirect(url_for("lista_clientes"))
                 else:
                     flash("No logramos crear el Queue hija", "danger")
@@ -303,5 +305,39 @@ def aplicar_reglas():
             return redirect(url_for("lista_microtiks"))
 
 #------------------------------------------------RUTA DE LOS MICROTIKS CRUD----------------------------------
+
+
+
+#------------------------------------------------RUTA DE LOS PAQUETES CRUD----------------------------------
+@app.route('/lista_paquetes')
+def lista_paquetes():
+    paquetaxo = consultarPaquetes()
+    return render_template('paquetes_internet.html', paquetes=paquetaxo)
+
+@app.route('/crear_paquete', methods=['POST'])
+def crear_paquete():
+    nombre = request.form.get('nombre')
+    velocidad = request.form.get('velocidad')
+    precio = request.form.get('precio')
+
+    print(f"Obtenidos {nombre} {velocidad} {precio}")
+    ok = insertarPauqete(nombre, velocidad, precio)
+    if ok:
+        flash("Paquete registrado", "success")
+        return redirect(url_for("lista_paquetes"))
+    else:
+        flash("No se pudo registrar", "danger")
+        return redirect(url_for("lista_paquetes"))
+
+
+@app.route('/editar_paquete/<int:id>', methods=['POST'])
+def editar_paquete(id):
+    return redirect(url_for("lista_paquetes"))
+
+@app.route('/eliminar_paquete/<int:id>')
+def eliminar_paquete(id):
+    # Aquí eliminarías el paquete con el id dado en la base de datos
+    flash("Paquete eliminado correctamente.", "success")
+    return redirect(url_for('lista_paquetes'))
 
 app.run(debug=True)

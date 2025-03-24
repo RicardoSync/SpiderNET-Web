@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paquetes - Mikrotik</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+
+  <!-- Estilos personalizados -->
+  <style>
+    /* Colores base */
+    body {
+      background-color: #1e1e1e;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+    }
+
+    /* Barra superior */
+    .topbar {
+      background-color: #2b2b2b;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #444;
+    }
+    .topbar .brand {
+      color: #fff;
+      font-size: 1.25rem;
+      font-weight: 500;
+      text-decoration: none;
+    }
+
+    /* Panel lateral */
+    .sidebar {
+      background-color: #2b2b2b;
+      width: 240px;
+      min-height: 100vh;
+      border-right: 1px solid #444;
+      position: fixed;
+      top: 0;
+      left: 0;
+      padding-top: 1rem;
+    }
+    .sidebar .sidebar-title {
+      color: #fff;
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .sidebar .nav-link {
+      color: #fff;
+      padding: 0.75rem 1rem;
+      display: block;
+      text-decoration: none;
+    }
+    .sidebar .nav-link:hover {
+      background-color: #343434;
+      text-decoration: none;
+    }
+
+    /* Contenedor principal (donde va la tabla y el contenido) */
+    .main-content {
+      margin-left: 240px; /* para que no se monte con el sidebar */
+      padding: 1rem;
+    }
+
+    /* Tarjeta con la tabla */
+    .card {
+      background-color: #2b2b2b;
+      border: none;
+    }
+    .card-header {
+      background-color: #2b2b2b;
+      border-bottom: 1px solid #444;
+      font-weight: 500;
+      color: #fff;
+    }
+    .table thead th {
+      background-color: #3b3b3b;
+      color: #ffca28;
+    }
+    .table-responsive {
+      overflow-x: auto;
+    }
+    .table-striped > tbody > tr:nth-of-type(odd) {
+      background-color: #2a2a2a;
+    }
+    .table-striped > tbody > tr:nth-of-type(even) {
+      background-color: #232323;
+    }
+    .table-hover tbody tr:hover {
+      background-color: #343434;
+    }
+
+    /* Botones */
+    .btn-custom {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-custom:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+    }
+
+    /* Responsividad para el sidebar en pantallas pequeñas */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        width: 80%;
+        left: -80%;
+        transition: left 0.3s ease;
+        z-index: 1000;
+      }
+      .sidebar.show {
+        left: 0;
+      }
+      .main-content {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="container mt-2">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+  <!-- Barra superior -->
+  <div class="topbar">
+    <a href="#" class="brand">Mikrotik</a>
+    <!-- Botón para mostrar/ocultar sidebar en móvil -->
+    <button class="btn btn-sm btn-outline-light d-md-none" onclick="document.querySelector('.sidebar').classList.toggle('show')">
+      <i class="bi bi-list"></i>
+    </button>
+  </div>
+
+  <!-- Panel lateral -->
+  <div class="sidebar">
+    <h5 class="sidebar-title">Paquetes</h5>
+    <!-- Opciones del menú (enlace de ejemplo) -->
+    <a href="{{ url_for('lista_clientes')}}" class="nav-link">
+      <i class="bi bi-house"></i> Inicio
+    </a>
+    <!-- Agrega más enlaces según sea necesario -->
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="main-content">
+    <div class="container-fluid">
+      <!-- Título y botón para crear paquete -->
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <h1>Paquetes</h1>
+        <button class="btn btn-success btn-custom" data-bs-toggle="modal" data-bs-target="#crearModal">
+          <i class="bi bi-plus"></i> Nuevo Paquete
+        </button>
+      </div>
+
+      <!-- Tabla de paquetes -->
+      <div class="card mt-3">
+        <div class="card-header">
+          <!-- Puedes colocar aquí un título o dejarlo vacío -->
+          Lista de Paquetes
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre</th>
+                  <th>Velocidad</th>
+                  <th>Precio</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for paquete in paquetes %}
+                <tr>
+                  <td>{{ paquete[0] }}</td>
+                  <td>{{ paquete[1] }}</td>
+                  <td>{{ paquete[2] }}</td>
+                  <td>{{ paquete[3] }}</td>
+                  <td>
+                    <!-- Botón para abrir modal de edición -->
+                    <button class="btn btn-primary btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="#editarModal{{ paquete[0] }}">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <!-- Botón para eliminar -->
+                    <a href="{{ url_for('eliminar_paquete', id=paquete[0]) }}"
+                       class="btn btn-danger btn-sm btn-custom"
+                       onclick="return confirm('¿Estás seguro de eliminar este paquete?');">
+                      <i class="bi bi-trash"></i>
+                    </a>
+                  </td>
+                </tr>
+
+                <!-- Modal de edición -->
+                <div class="modal fade text-dark" id="editarModal{{ paquete[0] }}" tabindex="-1"
+                     aria-labelledby="editarModalLabel{{ paquete[0] }}" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="editarModalLabel{{ paquete[0] }}">Editar Paquete</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                      </div>
+                      <form action="{{ url_for('editar_paquete', id=paquete[0]) }}" method="POST">
+                        <div class="modal-body">
+                          <div class="mb-3">
+                            <label for="nombre{{ paquete[0] }}" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" name="nombre" id="nombre{{ paquete[0] }}"
+                                   value="{{ paquete[1] }}" required />
+                          </div>
+                          <div class="mb-3">
+                            <label for="velocidad{{ paquete[0] }}" class="form-label">Velocidad</label>
+                            <input type="text" class="form-control" name="velocidad" id="velocidad{{ paquete[0] }}"
+                                   value="{{ paquete[2] }}" required />
+                          </div>
+                          <div class="mb-3">
+                            <label for="precio{{ paquete[0] }}" class="form-label">Precio</label>
+                            <input type="text" class="form-control" name="precio" id="precio{{ paquete[0] }}"
+                                   value="{{ paquete[3] }}" required />
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="submit" class="btn btn-primary btn-custom">Guardar cambios</button>
+                          <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Cerrar</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div> <!-- /container-fluid -->
+  </div> <!-- /main-content -->
+
+  <!-- Modal para crear nuevo paquete -->
+  <div class="modal fade text-dark" id="crearModal" tabindex="-1" aria-labelledby="crearModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="crearModalLabel">Crear Nuevo Paquete</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <form action="{{ url_for('crear_paquete') }}" method="POST">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="nombreNuevo" class="form-label">Nombre</label>
+              <input type="text" class="form-control" name="nombre" id="nombreNuevo" required />
+            </div>
+            <div class="mb-3">
+              <label for="velocidadNuevo" class="form-label">Velocidad</label>
+              <input type="text" class="form-control" name="velocidad" id="velocidadNuevo" required />
+            </div>
+            <div class="mb-3">
+              <label for="precioNuevo" class="form-label">Precio</label>
+              <input type="text" class="form-control" name="precio" id="precioNuevo" required />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success btn-custom">Crear Paquete</button>
+            <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

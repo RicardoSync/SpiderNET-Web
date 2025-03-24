@@ -360,6 +360,7 @@ def eliminarSimpleQueue(credenciales, direccion_ip):
     
 def aplicarFirewall(host, port, username, password):
     comandos = [
+        "/ip/firewall/nat/add chain=srcnat out-interface=ether1 action=masquerade",
         "/ip/firewall/filter/add chain=forward action=drop src-address-list=corte comment=corteDeInternet",
         "/ip/firewall/filter/add chain=forward action=drop dst-address-list=corte comment=corteDeInternet",
         "/ip/firewall/nat/add chain=srcnat action=masquerade src-address-list=Internet",

@@ -163,3 +163,24 @@ def consultarVelocidadPaquete(nombre):
     except Exception as r:
         print(f"Error en consulta de paquete {r}")
         return False
+    
+
+def consultarPaquetes():
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+
+        cursor = cn.cursor()
+        cursor.execute("SELECT id, nombre, velocidad, precio FROM paquetes")
+        resultado = cursor.fetchall()
+
+        cursor.close()
+        cn.close()
+
+        return resultado
+    except Exception as r:
+        print(f"Error en consulta de paquete {r}")
+        return False
+    
+

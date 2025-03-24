@@ -1,0 +1,9 @@
+[Interface]
+ListenPort = 3389
+PrivateKey = yHcTGihkJ8TNAtHaQ40KJM3awh2VXcqXtLg/4is6ZUI=
+
+[Peer]
+PublicKey = JZPc5FkwkU+xx9oRh5fA4KzfX2/ZJAIpjPnT+VqwyWc=
+AllowedIPs = 10.0.0.1/24
+Endpoint = 103.23.61.52:3389
+PersistentKeepalive = 25

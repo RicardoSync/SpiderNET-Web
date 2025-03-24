@@ -1,13 +1,13 @@
--- MySQL dump 10.13  Distrib 8.0.41, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.4.4, for Linux (x86_64)
 --
 -- Host: localhost    Database: spidernet
 -- ------------------------------------------------------
--- Server version	8.0.41
+-- Server version	8.4.4
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!50503 SET NAMES utf8 */;
+/*!50503 SET NAMES utf8mb4 */;
 /*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
 /*!40103 SET TIME_ZONE='+00:00' */;
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
@@ -18,7 +18,10 @@
 --
 -- Table structure for table `antenasap`
 --
+DROP DATABASE IF EXISTS spidernet;
+CREATE DATABASE spidernet;
 
+USE spidernet;
 DROP TABLE IF EXISTS `antenasap`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
@@ -30,7 +33,7 @@ CREATE TABLE `antenasap` (
   `password` varchar(100) DEFAULT NULL,
   `ip` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`idantenasAp`)
-) 
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -66,25 +69,7 @@ CREATE TABLE `clientes` (
   CONSTRAINT `clientes_ibfk_2` FOREIGN KEY (`id_antena_ap`) REFERENCES `antenasap` (`idantenasAp`) ON DELETE SET NULL,
   CONSTRAINT `clientes_ibfk_3` FOREIGN KEY (`id_servicio_plataforma`) REFERENCES `serviciosplataforma` (`idPlataformas`) ON DELETE SET NULL,
   CONSTRAINT `clientes_paquetes` FOREIGN KEY (`id_paquete`) REFERENCES `paquetes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-)
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `cortes_caja`
---
-
-DROP TABLE IF EXISTS `cortes_caja`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `cortes_caja` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `fecha_inicio` date NOT NULL,
-  `fecha_fin` date NOT NULL,
-  `total_ingresos` decimal(10,2) NOT NULL,
-  `total_egresos` decimal(10,2) NOT NULL,
-  `balance` decimal(10,2) NOT NULL,
-  PRIMARY KEY (`id`)
-)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -100,20 +85,19 @@ CREATE TABLE `credenciales_microtik` (
   `ip` varchar(100) DEFAULT NULL,
   `username` varchar(100) NOT NULL,
   `password` varchar(100) DEFAULT NULL,
-  `key_public` varchar(100) DEFAULT NULL,
-  `port` varchar(45) DEFAULT NULL,
+  `port` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
-)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `datosempresa`
+-- Table structure for table `datosEmpresa`
 --
 
-DROP TABLE IF EXISTS `datosempresa`;
+DROP TABLE IF EXISTS `datosEmpresa`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `datosempresa` (
+CREATE TABLE `datosEmpresa` (
   `id` int NOT NULL AUTO_INCREMENT,
   `nombreWisp` varchar(100) DEFAULT NULL,
   `cp` varchar(30) DEFAULT NULL,
@@ -121,24 +105,7 @@ CREATE TABLE `datosempresa` (
   `rfc` varchar(100) DEFAULT NULL,
   `direccion` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`)
-)
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `egresos`
---
-
-DROP TABLE IF EXISTS `egresos`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `egresos` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `descripcion` varchar(255) NOT NULL,
-  `monto` decimal(10,2) NOT NULL,
-  `fecha_egreso` datetime DEFAULT CURRENT_TIMESTAMP,
-  `metodo_pago` enum('Efectivo','Transferencia','Tarjeta') NOT NULL,
-  PRIMARY KEY (`id`)
-)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -162,7 +129,7 @@ CREATE TABLE `equipos` (
   PRIMARY KEY (`id`),
   KEY `id_cliente` (`id_cliente`),
   CONSTRAINT `equipos_ibfk_1` FOREIGN KEY (`id_cliente`) REFERENCES `clientes` (`id`) ON DELETE SET NULL
-) 
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -187,7 +154,7 @@ CREATE TABLE `fallas` (
   CONSTRAINT `fallas_ibfk_1` FOREIGN KEY (`id_cliente`) REFERENCES `clientes` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fallas_ibfk_2` FOREIGN KEY (`id_tecnico`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL,
   CONSTRAINT `fallas_chk_1` CHECK ((`estado` in (0,1,2)))
-) 
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -209,7 +176,7 @@ CREATE TABLE `pagos` (
   PRIMARY KEY (`id`),
   KEY `id_cliente` (`id_cliente`),
   CONSTRAINT `pagos_ibfk_1` FOREIGN KEY (`id_cliente`) REFERENCES `clientes` (`id`) ON DELETE CASCADE
-)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -225,7 +192,7 @@ CREATE TABLE `paquetes` (
   `velocidad` varchar(50) NOT NULL,
   `precio` decimal(10,2) NOT NULL,
   PRIMARY KEY (`id`)
-)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -241,7 +208,7 @@ CREATE TABLE `serviciosplataforma` (
   `descripcion` varchar(100) DEFAULT NULL,
   `precio` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`idPlataformas`)
-) 
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -265,7 +232,7 @@ CREATE TABLE `tickets` (
   KEY `id_responsable` (`id_responsable`),
   CONSTRAINT `tickets_ibfk_1` FOREIGN KEY (`id_cliente`) REFERENCES `clientes` (`id`) ON DELETE CASCADE,
   CONSTRAINT `tickets_ibfk_2` FOREIGN KEY (`id_responsable`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL
-)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -284,7 +251,29 @@ CREATE TABLE `usuarios` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `usuario` (`usuario`),
   CONSTRAINT `usuarios_chk_1` CHECK ((`rol` in (0,1,2)))
-) 
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+INSERT INTO usuarios (nombre, usuario, password, rol) VALUES ("spidernet", "spidernet", "spidernet123", 0);
+
+CREATE TABLE `egresos` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `descripcion` varchar(255) NOT NULL, -- Concepto del gasto (ej. "Compra de equipo", "Pago de renta")
+  `monto` decimal(10,2) NOT NULL,  -- Cantidad del gasto
+  `fecha_egreso` datetime DEFAULT CURRENT_TIMESTAMP,  -- Fecha en que se hizo el egreso
+  `metodo_pago` enum('Efectivo','Transferencia','Tarjeta') NOT NULL, -- Método de pago
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `cortes_caja` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `fecha_inicio` date NOT NULL,
+  `fecha_fin` date NOT NULL,
+  `total_ingresos` decimal(10,2) NOT NULL,
+  `total_egresos` decimal(10,2) NOT NULL,
+  `balance` decimal(10,2) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -296,4 +285,4 @@ CREATE TABLE `usuarios` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-22 20:04:12
+-- Dump completed on 2025-03-06 14:33:32

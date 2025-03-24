@@ -108,3 +108,22 @@ def insertMicrotik(nombre, ip, username, password, port):
     except Exception as r:
         print(r)
         return False
+
+def insertarPauqete(nombre, velocidad, precio):
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+
+        cursor = cn.cursor()
+        sql = "INSERT INTO paquetes (nombre, velocidad, precio) VALUES (%s,%s,%s)"
+        cursor.execute(sql, (nombre, velocidad, precio))
+                       
+        cn.commit()
+        cursor.close()
+        cn.close()
+
+        return True
+    except Exception as r:
+        print(f"Error de insert {r}")
+        return False
