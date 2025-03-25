@@ -1,9 +1,10 @@
 from flask import Flask, render_template, redirect, session, request, url_for, flash
-from d_consultas import consutlarPaquete, consutlarAntena, consultarServicio, consultarMicrotik, consultarClientes, consultarCredenciales, consultarMicrotikTodo, consultarVelocidadPaquete, consultarPaquetes
-from d_insert import insertarCliente, insertMicrotik, insertarPauqete
-from d_eliminar import eliminar_cliente_chido, eliminarMicrotik
-from d_update import actualizarCliete, actualizarMicrotik
+from d_consultas import consutlarPaquete, consutlarAntena, consultarServicio, consultarMicrotik, consultarClientes, consultarCredenciales, consultarMicrotikTodo, consultarVelocidadPaquete, consultarPaquetes, consultarTodoServicios
+from d_insert import insertarCliente, insertMicrotik, insertarPauqete, insertarServicio
+from d_eliminar import eliminar_cliente_chido, eliminarMicrotik, eliminarPaquete, eliminarServicio
+from d_update import actualizarCliete, actualizarMicrotik, acualizarPaquete, actualizarServicio
 from ssh_pcq import bloquear_cliente_address_list, desbloqueo_mantecoso, get_interfaces, creacionAddressList, crearQueueParent, crearQueueSimple, eliminarSimpleQueue, aplicarFirewall
+from d_login import login
 app = Flask(__name__)
 app.secret_key = 'zerocuatro04/2025'  # Necesario para usar flash
 #------------------------------------------------RUTAS CUANDO OCURRE UN ERROR----------------------------------
@@ -19,7 +20,24 @@ def error_interno(error):
     return render_template("error.html"), 500
 #------------------------------------------------RUTAS CUANDO OCURRE UN ERROR----------------------------------
 
+#AQUI ES A DONDE NOS VAMOS CUANDO SE ENTRA AL SERVIDOR
+@app.route("/")
+def raiz():
+    return render_template("login.html")
 
+@app.route("/iniciar_sesion", methods=["POST"])
+def iniciar_sesion():
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        ok = login(username, password)
+        
+        if ok:
+            print(ok)
+            return redirect(url_for("lista_clientes"))
+        else:
+            return render_template("error.html"), 500
+        
 
 #------------------------------------------------RUTA DE LOS CLIENTES CRUD----------------------------------
 @app.route("/crear_cliente", methods=["POST"])
@@ -332,12 +350,81 @@ def crear_paquete():
 
 @app.route('/editar_paquete/<int:id>', methods=['POST'])
 def editar_paquete(id):
-    return redirect(url_for("lista_paquetes"))
+    if request.method == "POST":
+        nombre = request.form.get("nombre")
+        velocidad = request.form.get("velocidad")
+        precio = request.form.get("precio")
+
+        ok = acualizarPaquete(nombre, velocidad, precio, id)
+        if ok:
+            flash("Paquete actualizado", "success")
+            return redirect(url_for("lista_paquetes"))
+        else:
+            flash(f"No actualizar el paquete {nombre}", "danger")
+            return redirect(url_for("lista_paquetes"))
+        
 
 @app.route('/eliminar_paquete/<int:id>')
 def eliminar_paquete(id):
-    # Aquí eliminarías el paquete con el id dado en la base de datos
-    flash("Paquete eliminado correctamente.", "success")
-    return redirect(url_for('lista_paquetes'))
+    ok = eliminarPaquete(id)
+    print(id)
+    if ok:
+        flash("Paquete eliminado de manera exitosa", "success")
+        return redirect(url_for("lista_paquetes"))
+    else:
+        flash("No se elimino el paquete", "danger")
+        return redirect(url_for("lista_paquetes"))
 
+#------------------------------------------------RUTA DE LOS PAQUETES CRUD----------------------------------
+
+
+#------------------------------------------------RUTA DE LOS SERVICIOS CRUD----------------------------------
+@app.route("/creacion_servicio", methods=["POST"])
+def creacion_servicio():
+    if request.method == "POST":
+        nombre = request.form.get("nombre")
+        descripcion = request.form.get("descripcion")
+        precio = request.form.get("precio")
+        
+        ok = insertarServicio(nombre, descripcion, precio)
+        if ok:
+            flash("Servicio registrado", "success")
+            return redirect(url_for("lista_servicios"))
+        else:
+            flash("No insertarmos el servicio", "danger")
+            return redirect(url_for("lista_servicios"))
+        
+
+@app.route("/lista_servicios")
+def lista_servicios():
+    servicio = consultarTodoServicios()
+    return render_template("servicios.html", servicios=servicio)
+
+@app.route("/editar_servicio/<int:id>", methods=["POST"])
+def editar_servicio(id):
+    if request.method == "POST":
+        nombre = request.form.get("nombre")
+        descripcion = request.form.get("descripcion")
+        precio = request.form.get("precio")
+        
+        ok = actualizarServicio(nombre, descripcion, precio, id)
+        if ok:
+            flash("Servicio actualizado", "success")
+            return redirect(url_for("lista_servicios"))
+        else:
+            flash("Servicio no actualizado", "danger")
+            return redirect(url_for("lista_servicios"))
+    
+
+@app.route("/eliminar_servicio/<int:id>")
+def eliminar_servicio(id):
+    ok = eliminarServicio(id)    
+    if ok:
+        flash("Servicio eliminado", "success")
+        return redirect(url_for("lista_servicios"))
+    else:
+        flash("No eliminamos el servicio", "danger")
+        return redirect(url_for("lista_servicios"))
+    
+#------------------------------------------------RUTA DE LOS SERVICIOS CRUD----------------------------------
 app.run(debug=True)

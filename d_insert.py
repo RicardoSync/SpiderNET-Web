@@ -127,3 +127,22 @@ def insertarPauqete(nombre, velocidad, precio):
     except Exception as r:
         print(f"Error de insert {r}")
         return False
+    
+def insertarServicio(nombre, descripcion, precio):
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+            
+        cursor = cn.cursor()
+        cursor.execute("""INSERT INTO serviciosplataforma (nombre, descripcion, precio)
+                       VALUES (%s,%s,%s)""", (nombre, descripcion,precio))
+        
+        cn.commit()
+        cursor.close()
+        cn.close()
+        return True
+    
+    except Exception as r:
+        print(f"Tenemos un error al insertar el servicio {r}")
+        return False

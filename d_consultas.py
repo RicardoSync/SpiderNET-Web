@@ -184,3 +184,19 @@ def consultarPaquetes():
         return False
     
 
+def consultarTodoServicios():
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+        cursor = cn.cursor()
+        cursor.execute("SELECT idPlataformas, nombre, descripcion, precio FROM serviciosplataforma")
+        resultado = cursor.fetchall()
+        cn.close()
+        cursor.close()
+        
+        return resultado
+    except Exception as r:
+        print(f"Error en la consulta de sercios {r}")
+        return False
+        

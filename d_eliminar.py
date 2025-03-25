@@ -34,3 +34,35 @@ def eliminarMicrotik(id):
     except Exception as r:
         print(r)
         return False
+
+def eliminarPaquete(id):
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+
+        cursor = cn.cursor()
+        cursor.execute("DELETE FROM paquetes WHERE id = %s", (id,))
+        cn.commit()
+        cursor.close()
+        cn.close()
+
+        return True
+    except Exception as r:
+        print(r)
+        return False
+
+def eliminarServicio(id):
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+        cursor = cn.cursor()
+        cursor.execute("DELETE FROM serviciosplataforma WHERE idPlataformas = %s", (id,))
+        cn.commit()
+        cursor.close()
+        cn.close()
+        return True
+    except Exception as r:
+        print(f"Error al eliminar {r}")
+        return False
