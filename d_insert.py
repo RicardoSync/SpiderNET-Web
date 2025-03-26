@@ -146,3 +146,21 @@ def insertarServicio(nombre, descripcion, precio):
     except Exception as r:
         print(f"Tenemos un error al insertar el servicio {r}")
         return False
+    
+def insertarEquipo(nombre, tipo, marca, modelo, estado, id_cliente):
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+
+        cursor = cn.cursor()
+        cursor.execute("""INSERT INTO equipos (nombre, tipo, marca, modelo, estado, id_cliente)
+                        VALUES (%s,%s,%s,%s,%s,%s)""", (nombre, tipo, marca, modelo, estado, id_cliente))
+        cn.commit()
+        cursor.close()
+        cn.close()
+
+        return True
+    except Exception as r:
+        print(f"Tenemos un error al insertar el equipo {r}")
+        return False

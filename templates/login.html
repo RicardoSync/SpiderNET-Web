@@ -56,23 +56,26 @@
     </style>
 </head>
 <body>
+
     <div class="login-container">
-        <img src="img/logo.png" alt="Logo" class="mb-3" width="100">
+        <i class="bi bi-cpu fs-1"></i> <!-- Ícono muy grande -->
+        
         <h2 class="mb-4">Iniciar Sesión</h2>
         <form action="{{ url_for('iniciar_sesion')}}", method="POST">
             <div class="mb-3">
-                <input type="text" class="form-control" placeholder="Usuario" required>
+                <input type="text" id=username" name="username" class="form-control" placeholder="Usuario" required>
             </div>
             <div class="mb-3">
-                <input type="password" class="form-control" placeholder="Contraseña" required>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Contraseña" required>
             </div>
             <button type="submit" class="btn btn-primary w-100">
                 <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
             </button>
-            <button type="button" class="btn btn-dark w-100 mt-2">
-                <i class="bi bi-github"></i> Github
-            </button>
         </form>
+        <button type="submit" class="btn btn-dark w-100 mt-2">
+            <i class="bi bi-youtube"></i> YouTube
+            <a href="https://www.youtube.com/@tecnoflowz4850"></a>
+        </button>
     </div>
     <footer>&copy; 2024 Software Escobedo</footer>
 </body>

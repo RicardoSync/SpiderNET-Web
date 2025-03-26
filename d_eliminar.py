@@ -66,3 +66,18 @@ def eliminarServicio(id):
     except Exception as r:
         print(f"Error al eliminar {r}")
         return False
+    
+def eliminarEquipo(id):
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+        cursor = cn.cursor()
+        cursor.execute("DELETE FROM equipos WHERE id = %s", (id,))
+        cn.commit()
+        cursor.close()
+        cn.close()
+        return True
+    except Exception as r:
+        print(f"Error al eliminar {r}")
+        return False

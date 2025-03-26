@@ -1,10 +1,13 @@
-from flask import Flask, render_template, redirect, session, request, url_for, flash
-from d_consultas import consutlarPaquete, consutlarAntena, consultarServicio, consultarMicrotik, consultarClientes, consultarCredenciales, consultarMicrotikTodo, consultarVelocidadPaquete, consultarPaquetes, consultarTodoServicios
-from d_insert import insertarCliente, insertMicrotik, insertarPauqete, insertarServicio
-from d_eliminar import eliminar_cliente_chido, eliminarMicrotik, eliminarPaquete, eliminarServicio
-from d_update import actualizarCliete, actualizarMicrotik, acualizarPaquete, actualizarServicio
+from flask import Flask, render_template, redirect, session, request, url_for, flash, send_file
+from d_consultas import consutlarPaquete, consutlarAntena, consultarServicio, consultarMicrotik, consultarClientes, consultarCredenciales, consultarMicrotikTodo, consultarVelocidadPaquete, consultarPaquetes, consultarTodoServicios, consultarEquipos
+from d_insert import insertarCliente, insertMicrotik, insertarPauqete, insertarServicio, insertarEquipo
+from d_eliminar import eliminar_cliente_chido, eliminarMicrotik, eliminarPaquete, eliminarServicio, eliminarEquipo
+from d_update import actualizarCliete, actualizarMicrotik, acualizarPaquete, actualizarServicio, actualizarEquipo
 from ssh_pcq import bloquear_cliente_address_list, desbloqueo_mantecoso, get_interfaces, creacionAddressList, crearQueueParent, crearQueueSimple, eliminarSimpleQueue, aplicarFirewall
 from d_login import login
+from d_contador import contador_clientes, contador_equipos, contador_pagos, contador_mikrotik
+
+
 app = Flask(__name__)
 app.secret_key = 'zerocuatro04/2025'  # Necesario para usar flash
 #------------------------------------------------RUTAS CUANDO OCURRE UN ERROR----------------------------------
@@ -25,18 +28,30 @@ def error_interno(error):
 def raiz():
     return render_template("login.html")
 
+@app.route('/dashboard')
+def dashboard():
+    total_clientes = contador_clientes()  # Llamada a la función
+    total_equipos = contador_equipos()
+    total_pagos = contador_pagos()
+    total_microtiks = contador_mikrotik()
+    return render_template("dashboard.html",
+                        total_clientes=total_clientes,
+                        total_equipos=total_equipos,
+                        total_pagos=total_pagos,
+                        total_microtiks=total_microtiks)
+
 @app.route("/iniciar_sesion", methods=["POST"])
 def iniciar_sesion():
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
+
         ok = login(username, password)
-        
         if ok:
             print(ok)
-            return redirect(url_for("lista_clientes"))
+            return redirect(url_for("dashboard"))
         else:
-            return render_template("error.html"), 500
+            return render_template("login.html")
         
 
 #------------------------------------------------RUTA DE LOS CLIENTES CRUD----------------------------------
@@ -427,4 +442,57 @@ def eliminar_servicio(id):
         return redirect(url_for("lista_servicios"))
     
 #------------------------------------------------RUTA DE LOS SERVICIOS CRUD----------------------------------
+
+#=======================================ASIGNACION DE LOS EQUIPOS==============================
+# Ruta para procesar la asignación del equipo
+@app.route('/asignar_equipo/<int:id>', methods=['POST'])
+def asignar_equipo(id):
+    if request.method == "POST":
+        nombre_equipo = request.form.get("nombre_equipo")
+        tipo_equipo = request.form.get("tipo_equipo")
+        marca_equipo = request.form.get("marca_equipo")
+        modelo_equipo = request.form.get("modelo_equipo")
+        estado_equipo = request.form.get("estado_equipo")
+        
+        ok = insertarEquipo(nombre_equipo, tipo_equipo, marca_equipo, modelo_equipo, estado_equipo, id)
+        if ok:
+            flash("Equipo asignado con exito", "success")
+            return redirect(url_for("lista_clientes"))
+        else:
+            flash("No asignamos el equipo al cliente", "danger")
+            return redirect(url_for("lista_clientes"))
+
+@app.route("/consultar_equipos")
+def consultar_equipos():
+    dedos = consultarEquipos()
+    return render_template("equipos.html", equipos=dedos)
+
+@app.route("/editar_equipo/<int:id>", methods=["POST"])
+def editar_equipo(id):
+    if request.method == "POST":
+        nombre = request.form.get("nombre")
+        tipo = request.form.get("tipo_equipo")
+        marca = request.form.get("marca")
+        modelo = request.form.get("modelo")
+        estado_equipo = request.form.get("estado_equipo")
+        
+        ok = actualizarEquipo(nombre, tipo, marca, modelo, estado_equipo, id)
+        if ok:
+            flash("El equipo se actualizo", "success")
+            return redirect(url_for("consultar_equipos"))
+        else:
+            flash("No actualizamos el equipo", "danger")
+            return redirect(url_for("consultar_equipos"))
+
+@app.route("/eliminar_equipo/<int:id>")
+def eliminar_equipo(id):
+    ok = eliminarEquipo(id)
+    if ok:
+        flash("Equipo eliminado", "success")
+        return redirect(url_for("consultar_equipos"))
+    else:
+        flash("Equipo no eliminado", "danger")
+        return redirect(url_for("consultar_equipos"))
+
+
 app.run(debug=True)

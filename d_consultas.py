@@ -135,7 +135,7 @@ def consultarClientes():
             LEFT JOIN serviciosplataforma sp ON c.id_servicio_plataforma = sp.idPlataformas;
 
             """
-        cursor.execute(sql)  # Ahora ya no necesitas pasar un parámetro
+        cursor.execute(sql) 
         resultado = cursor.fetchall()
         cursor.close()
         cn.close()
@@ -143,8 +143,8 @@ def consultarClientes():
         return resultado
 
     except Exception as r:
-        print(r)
-        return []  # Devuelve una lista vacía en caso de error
+        print(f"Tenemos problemas con la consulta de los clientes {r}")
+        
 
 def consultarVelocidadPaquete(nombre):
     try:
@@ -199,4 +199,22 @@ def consultarTodoServicios():
     except Exception as r:
         print(f"Error en la consulta de sercios {r}")
         return False
+
+def consultarEquipos():
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+        cursor = cn.cursor()
+        cursor.execute("""
+                        SELECT e.id, c.nombre, e.nombre, e.tipo, e.marca, e.modelo, e.estado AS nombre_cliente
+                        FROM equipos e LEFT JOIN clientes c ON e.id_cliente = c.id;
+                        """)
+        resultado = cursor.fetchall()
+        cursor.close()
+        cn.close()
         
+        return resultado
+    except Exception as r:
+        print(f"Error en la consulta de los equipos {r}")
+        return False
