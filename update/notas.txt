@@ -1,0 +1,35 @@
+Submenú: Queue Parent
+✔ Funcionalidades que ya tienes pensadas:
+✅ Consulta a la base de datos con información de queue parent (nombre, segmento de red, velocidad TX/RX, MikroTik asociado).
+✅ Creación de un queue parent en MikroTik y registro en la base de datos.
+
+💡 Extras recomendados:
+🔹 Edición y eliminación de Queue Parent: Poder modificar o eliminar un queue parent desde la interfaz web.
+🔹 Consulta de usuarios por Queue Parent: Ver qué usuarios están bajo un queue parent específico.
+🔹 Gráfica de tráfico de Queue Parent: Ver consumo de ancho de banda en tiempo real.
+🔹 Configuración de Prioridades: Agregar opción para definir prioridades de tráfico en los queue parent.
+
+Submenú: Creación de usuarios en MikroTik
+✔ Funcionalidades que ya tienes pensadas:
+✅ Crear usuarios con username y password en MikroTik.
+
+💡 Extras recomendados:
+🔹 Asignación de IP estática o dinámica: Dependiendo del caso de uso.
+🔹 Asignación de límite de velocidad personalizado por usuario.
+🔹 Vencimiento de usuarios: Fecha de expiración o límite de uso.
+🔹 Bloqueo y desbloqueo de usuarios: Para suspender cuentas sin eliminarlas.
+🔹 Logs de conexiones por usuario: Ver detalles de autenticación y uso de red.
+
+
+Submenú: PPPoE
+✔ Funcionalidades que ya tienes pensadas:
+✅ Crear perfiles con nombre, IP remote, max-limit y registrar en la base de datos.
+✅ Crear cuentas PPPoE con username, password y profile.
+
+💡 Extras recomendados:
+🔹 Expiración automática de cuentas PPPoE.
+🔹 Asignación automática de IPs de un pool.
+🔹 Visualizar sesiones activas PPPoE.
+🔹 Desconectar usuarios PPPoE desde la web.
+🔹 Gráficas de uso por usuario PPPoE.
+

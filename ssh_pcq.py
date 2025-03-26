@@ -47,15 +47,24 @@ def bloquear_cliente_address_list(credenciales, ip_cliente):
         cliente_ssh = paramiko.SSHClient()
         cliente_ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         cliente_ssh.connect(host, port=port, username=username, password=password)
+        #poner un comando en queue que diga bloqueado
+        comentario = '"Cliente bloqueado"'
+        sub_red = "/32"
+        comandos = [
+            f"/ip/firewall/address-list/add list=corte address={ip_cliente}",
+            f"/queue/simple/set comment={comentario} [find where target={ip_cliente}{sub_red}]"
 
-        stdin, stout, stderr = cliente_ssh.exec_command(f"/ip/firewall/address-list/add list=corte address={ip_cliente}")
+        ]
+        for comando in comandos:
 
-        salida = stout.read().decode()
-        errores = stderr.read().decode()
+            stdin, stout, stderr = cliente_ssh.exec_command(comando)
 
-        if errores:
-            print(f"errores en ssh {errores}")
-            return False
+            salida = stout.read().decode()
+            errores = stderr.read().decode()
+            print(f"comandos enviados {comando}")
+            if errores:
+                print(f"errores en ssh {errores}")
+                return False
         
         cliente_ssh.close()
         return True
@@ -77,24 +86,28 @@ def desbloqueo_mantecoso(credenciales, ip_cliente):
         cliente_ssh = paramiko.SSHClient()
         cliente_ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         cliente_ssh.connect(host, port=port, username=username, password=password)
+        comentario = '""'
+        sub_red = "/32"
+        lista_comandos = [
+            f"/ip/firewall/address-list/remove [find address={ip_cliente} list=corte]",
+            f"/queue/simple/set comment={comentario} [find where target={ip_cliente}{sub_red}]"
+        ]
+        for comando in lista_comandos:
+            stdin, stout, stderr = cliente_ssh.exec_command(comando)
 
-        comando = f"/ip/firewall/address-list/remove [find address={ip_cliente} list=corte]"
+            # Leer la salida y errores
+            salida = stout.read().decode()
+            errores = stderr.read().decode()
+            print(f"Salida del comando {salida}")
 
-        stdin, stout, stderr = cliente_ssh.exec_command(comando)
+            if errores:
+                print(f"Errores en la ejecución del comando: {errores}")
+                cliente_ssh.close()
 
-        # Leer la salida y errores
-        salida = stout.read().decode()
-        errores = stderr.read().decode()
-        print(f"Salida del comando {salida}")
-
-        if errores:
-            print(f"Errores en la ejecución del comando: {errores}")
-            cliente_ssh.close()
-
-        # Si se encuentra la IP, eliminarla de la lista de corte
-        if not salida:
-            print(f"No se encontró la IP {ip_cliente} en la lista de bloqueo.")
-        
+            # Si se encuentra la IP, eliminarla de la lista de corte
+            if not salida:
+                print(f"No se encontró la IP {ip_cliente} en la lista de bloqueo.")
+            
         # Cierra la conexión SSH
         cliente_ssh.close()
         return True
@@ -335,9 +348,7 @@ def eliminarSimpleQueue(credenciales, direccion_ip):
     password = credenciales[1]
     host = credenciales[2]
     port = credenciales[3]
-
-    comando = f"/queue/simple/remove [find where target={direccion_ip}{sub_red}]"
-
+    comando = f"/queue/simple/remove [find where target={direccion_ip}{sub_red}]"    
     try:
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
