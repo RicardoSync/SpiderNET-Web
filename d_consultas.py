@@ -253,3 +253,39 @@ def consultarQeue():
     except Exception as r:
         print(f"Error en la consulta de sercios {r}")
         return []
+    
+
+def consultar_clientes_bloqueados():
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+        #cursor = cn.cursor(dictionary=True)
+        cursor = cn.cursor()
+        sql = """
+            SELECT 
+                c.id,
+                c.nombre,
+                p.nombre AS paquete,  -- Obtener el nombre del paquete
+                DATE_FORMAT(c.fecha_registro, '%d/%m/%Y') AS fecha_registro,  -- Formato de fecha
+                c.ip_cliente,
+                c.dia_corte,
+                a.nombre AS antena_ap,  -- Obtener el nombre de la antena (si existe)
+                sp.nombre AS servicio_plataforma,  -- Obtener el nombre del servicio de plataforma 
+                cm.nombre AS microtik_nombre  -- Obtener el nombre del MikroTik
+            FROM clientes c
+            LEFT JOIN paquetes p ON c.id_paquete = p.id
+            LEFT JOIN credenciales_microtik cm ON c.id_microtik = cm.id
+            LEFT JOIN antenasap a ON c.id_antena_ap = a.idantenasAp
+            LEFT JOIN serviciosplataforma sp ON c.id_servicio_plataforma = sp.idPlataformas
+            WHERE estado = "Bloqueado";
+            """
+        cursor.execute(sql) 
+        resultado = cursor.fetchall()
+        cursor.close()
+        cn.close()
+
+        return resultado
+
+    except Exception as r:
+        print(f"Tenemos problemas con la consulta de los clientes {r}")

@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, session, request, url_for, flash, send_file, jsonify
-from d_consultas import consutlarPaquete, consutlarAntena, consultarServicio, consultarMicrotik, consultarClientes, consultarCredenciales, consultarMicrotikTodo, consultarVelocidadPaquete, consultarPaquetes, consultarTodoServicios, consultarEquipos, consultar_queue,consultarQeue
+from d_consultas import *
 from d_insert import insertarCliente, insertMicrotik, insertarPauqete, insertarServicio, insertarEquipo
 from d_eliminar import eliminar_cliente_chido, eliminarMicrotik, eliminarPaquete, eliminarServicio, eliminarEquipo, eliminarQueueBD
 from d_update import actualizarCliete, actualizarMicrotik, acualizarPaquete, actualizarServicio, actualizarEquipo, actualiar_queue_bd
@@ -7,6 +7,8 @@ from ssh_pcq import bloquear_cliente_address_list, desbloqueo_mantecoso, get_int
 from d_login import login
 from d_contador import contador_clientes, contador_equipos, contador_pagos, contador_mikrotik
 from monitor import obtener_trafico_mikrotik
+from dhcp_leases import get_dhcp_leases
+from bloqueos_bd import estado_bloqueado
 
 app = Flask(__name__)
 app.secret_key = 'zerocuatro04/2025'  # Necesario para usar flash
@@ -110,13 +112,13 @@ def eliminar_cliente(id):
         return render_template("error.html"), 500
 
 
-@app.route('/bloquear_cliente_pcq', methods=["POST"])
-def bloquear_cliente_pcq():
+@app.route('/bloquear_cliente_pcq/<int:id>', methods=["POST"])
+def bloquear_cliente_pcq(id):
     # Se obtienen los datos enviados desde el formulario del modal
     # Obtener valores individuales
     direccion_ip = request.form.get('direccion_addres_cliente')
     microtik = request.form.get('microtik')
-
+    print(id)
     print(direccion_ip, microtik)
     
     # Se consultan las credenciales para el microtik indicado
@@ -126,6 +128,7 @@ def bloquear_cliente_pcq():
         # Ejecuta el comando de bloqueo
         ok = bloquear_cliente_address_list(credenciales, direccion_ip)
         if ok:
+            estado_bloqueado(estado="Bloqueado", id=id)
             flash("Cliente bloqueado", "success")  # Tipo success para éxito
         else:
             flash("Tenemos problemas con el bloqueo", "danger")  # Tipo danger para error
@@ -135,8 +138,8 @@ def bloquear_cliente_pcq():
     return redirect(url_for("lista_clientes"))
     
 
-@app.route("/desbloquear_cliente_pcq", methods=["POST"])
-def desbloquear_cliente_pcq():
+@app.route("/desbloquear_cliente_pcq/<int:id>", methods=["POST"])
+def desbloquear_cliente_pcq(id):
      # Se obtienen los datos enviados desde el formulario del modal
     # Obtener valores individuales
     ip_cliente = request.form.get('direccion_addres_cliente')
@@ -149,6 +152,7 @@ def desbloquear_cliente_pcq():
         # Ejecuta el comando de bloqueo
         ok = desbloqueo_mantecoso(credenciales, ip_cliente)
         if ok:
+            estado_bloqueado(estado="Activo", id=id)
             flash("Cliente desbloqueado", "success")  # Tipo success para éxito
         else:
             flash("Tenemos problemas con el desbloqueo", "danger")  # Tipo danger para error
@@ -156,6 +160,11 @@ def desbloquear_cliente_pcq():
         flash(f"No tenemos credenciales para ese MikroTik: {microtik}", "warning")  # Tipo warning para advertencia
     
     return redirect(url_for("lista_clientes"))
+
+@app.route("/clientes_bloqueados")
+def clientes_bloqueados():
+    clientes = consultar_clientes_bloqueados()
+    return render_template("bloqueados.html", clientes=clientes)
 #------------------------------------------------RUTA DE LOS CLIENTES CRUD----------------------------------
 
 #------------------------------------------------RUTA DE LOS MICROTIKS CRUD----------------------------------
@@ -224,6 +233,24 @@ def consultar_interfaces():
     password = request.args.get('password')
     ip = request.args.get('ip')
     port = request.args.get('port')
+    
+    # Llama a la función para obtener las interfaces
+    interfaces = get_interfaces(ip, port, username, password)
+    
+    # Devuelve un fragmento de HTML (por ejemplo, un select) con las interfaces
+    return render_template("interfaces_partial.html", interfaces=interfaces)
+
+
+@app.route("/consultar_interfaces_chido")
+def consultar_interfaces_chido():
+    # Se obtiene el nombre del Mikrotik desde el parámetro 'mikrotik'
+    mikrotik = request.args.get("mikrotik")
+    credenciales = consultarCredenciales(nombre=mikrotik)
+    if credenciales:
+        username = credenciales[0]
+        password = credenciales[1]
+        ip = credenciales[2]
+        port = credenciales[3]
     
     # Llama a la función para obtener las interfaces
     interfaces = get_interfaces(ip, port, username, password)
@@ -302,8 +329,8 @@ def cargar_queue():
             return redirect(url_for("lista_clientes"))
 
  
-@app.route("/eliminar_queue_simple", methods=["POST"])
-def eliminar_queue_simple():
+@app.route("/eliminar_queue_simple/<int:id>", methods=["POST"])
+def eliminar_queue_simple(id):
     if request.method == "POST":
         microtik = request.form.get("microtik")
         direccion_ip = request.form.get("direccionIp")
@@ -315,6 +342,7 @@ def eliminar_queue_simple():
             delete = eliminarSimpleQueue(credenciales, direccion_ip)
             if delete:
                 flash("Queue eliminado con exito", "success")
+                eliminar_cliente(id)
                 return redirect(url_for("lista_clientes"))
             else:
                 flash("No eliminar el queue", "danger")
@@ -350,21 +378,22 @@ def dios_ayudame():
 def monitor_traffic():
     if request.method == "POST":
         mikrotik = request.form.get("lista_microtik")
+        # Obtén la interfaz seleccionada del formulario
+        interface = request.form.get("interface", "ether1")
         credenciales = consultarCredenciales(nombre=mikrotik)
 
         if credenciales:
             username = credenciales[0]
             password = credenciales[1]
-            host =credenciales[2]
+            host = credenciales[2]
             port = credenciales[3]
-            interface = "ether1"
             
             try:
                 output = obtener_trafico_mikrotik(host, port, username, password, interface)
             except Exception as e:
                 return jsonify({"error": str(e)}), 500
 
-            # Procesamos la salida para convertirla en un diccionario:
+            # Procesa la salida para convertirla en un diccionario:
             data = {}
             for line in output.strip().split('\n'):
                 if ':' in line:
@@ -372,6 +401,7 @@ def monitor_traffic():
                     data[key.strip()] = value.strip()
     
     return jsonify(data)
+
 #------------------------------------------------RUTA DE LOS MICROTIKS CRUD----------------------------------
 
 
@@ -625,6 +655,11 @@ def eliminar_queue_parent(id):
 
     return redirect(url_for("lista_queue"))        
 #=======================================FUNCION DE QUEUE PARENT==============================
+
+#=======================================FUNCION DE DHCP LEASES==============================
+
+#=======================================FUNCION DE DHCP LEASES==============================
+
 
 
 app.run(debug=True)

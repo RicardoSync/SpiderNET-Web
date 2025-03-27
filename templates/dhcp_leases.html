@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>DHCP Leases</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Se incluye Font Awesome para los íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>DHCP Leases</h1>
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>ADDRESS</th>
+                    <th>MAC ADDRESS</th>
+                    <th>HOST NAME</th>
+                    <th>SERVER</th>
+                    <th>STATUS</th>
+                    <th>LAST SEEN</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lease in leases %}
+                <tr>
+                    <td>{{ lease.address }}</td>
+                    <td>{{ lease.mac }}</td>
+                    <td>{{ lease.host }}</td>
+                    <td>{{ lease.server }}</td>
+                    <td>{{ lease.status }}</td>
+                    <td>{{ lease.last_seen }}</td>
+                    <td class="text-center">
+                        <!-- Botón con solo ícono para registrar (make static) -->
+                        <button class="btn btn-sm btn-primary" title="Registrar, make static">
+                            <i class="fas fa-save"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

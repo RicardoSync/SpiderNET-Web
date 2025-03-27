@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Servicios</title>
+  <title>Monitor Trafico</title>
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <!-- Bootstrap Icons -->
@@ -123,7 +123,6 @@
           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
           <button id="btnDetener" class="btn btn-danger btn-custom">Detener Monitoreo</button>
         </div>
-          
       {% endfor %}
     </div>
   {% endif %}
@@ -148,20 +147,29 @@
   <!-- Contenido principal -->
   <div class="main-content">
     <div class="container-fluid">
-      <!-- Título y select para elegir Mikrotik -->
       <div class="d-flex justify-content-between align-items-center mt-3">
         <h1>Monitor Trafico</h1>
       </div>
+      <!-- Selección de Mikrotik -->
       <div class="mb-3">
-        <label for="lista_microtik" class="form-label">Microtik Administrador (Nueva / Actual)</label>
+        <label for="lista_microtik" class="form-label">Seleccione Mikrotik:</label>
         <select name="lista_microtik" id="lista_microtik" class="form-control">
           {% for microtik in microtiks %}
           <option value="{{ microtik }}">{{ microtik }}</option>
           {% endfor %}
         </select>
       </div>
+      <!-- Botón para consultar interfaces -->
       <div class="mb-3">
-        <button id="btnTrafico" class="btn btn-primary btn-custom">Trafico</button>
+        <button id="btnConsultarInterfaz" class="btn btn-primary btn-custom">Consultar Interfaces</button>
+      </div>
+      <!-- Contenedor donde se carga el select de interfaces vía AJAX -->
+      <div id="interfacesContainer" class="mb-3">
+        <!-- Aquí se inyecta el HTML parcial (ej: interfaces_partial.html) -->
+      </div>
+      <!-- Botón para iniciar monitoreo (habilitado al seleccionar interfaz) -->
+      <div class="mb-3">
+        <button id="btnTrafico" class="btn btn-primary btn-custom" disabled>Trafico</button>
       </div>
 
       <!-- Card con gráfica y tabla -->
@@ -191,155 +199,181 @@
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- Script para actualizar tráfico y gráfica -->
+  
+  <!-- Script para funcionalidad de monitoreo, interfaces y gráfica -->
   <script>
     let intervalId = null;
     let chart = null;
-
+    let selectedInterface = null;
+    
     // Inicializa la gráfica con Chart.js
     function initChart() {
-  const ctx = document.getElementById('traficoChart').getContext('2d');
-  chart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: [], // marcas de tiempo
-      datasets: [
-        {
-          label: 'rx-bits-per-second',
-          data: [],
-          borderColor: 'rgba(255,202,40,1)',
-          backgroundColor: 'rgba(255,202,40,0.2)',
-          fill: true
+      const ctx = document.getElementById('traficoChart').getContext('2d');
+      chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: [], // marcas de tiempo
+          datasets: [
+            {
+              label: 'rx-bits-per-second',
+              data: [],
+              borderColor: 'rgba(255,202,40,1)',
+              backgroundColor: 'rgba(255,202,40,0.2)',
+              fill: true
+            },
+            {
+              label: 'tx-bits-per-second',
+              data: [],
+              borderColor: 'rgba(0,123,255,1)',
+              backgroundColor: 'rgba(0,123,255,0.2)',
+              fill: true
+            }
+          ]
         },
-        {
-          label: 'tx-bits-per-second',
-          data: [],
-          borderColor: 'rgba(0,123,255,1)', // color azul
-          backgroundColor: 'rgba(0,123,255,0.2)',
-          fill: true
-        }
-      ]
-    },
-    options: {
-      scales: {
-        x: {
-          display: true,
-          title: {
-            display: true,
-            text: 'Tiempo'
-          }
-        },
-        y: {
-          display: true,
-          title: {
-            display: true,
-            text: 'Mbps'
+        options: {
+          scales: {
+            x: {
+              display: true,
+              title: {
+                display: true,
+                text: 'Tiempo'
+              }
+            },
+            y: {
+              display: true,
+              title: {
+                display: true,
+                text: 'Mbps'
+              }
+            }
           }
         }
+      });
+    }
+    
+    // Función para actualizar la tabla y la gráfica
+    function actualizarTrafico() {
+      const listaMicrotik = document.getElementById('lista_microtik');
+      const selectedOption = listaMicrotik.options[listaMicrotik.selectedIndex];
+      const username = selectedOption.getAttribute('data-username');
+      const password = selectedOption.getAttribute('data-password');
+      const ip = selectedOption.getAttribute('data-ip');
+      const port = selectedOption.getAttribute('data-port');
+      
+      if (!selectedInterface) {
+        console.error("No se ha seleccionado ninguna interfaz");
+        return;
       }
-    }
-  });
-}
-
-
-// Función para actualizar la tabla y la gráfica
-function actualizarTrafico() {
-  const mikrotik = document.getElementById('lista_microtik').value;
-  const formData = new FormData();
-  formData.append("lista_microtik", mikrotik);
-
-  fetch("{{ url_for('monitor_traffic') }}", {
-    method: 'POST',
-    body: formData
-  })
-  .then(response => response.json())
-  .then(data => {
-    // Actualiza la tabla
-    const tbody = document.querySelector('#tablaTrafico tbody');
-    tbody.innerHTML = "";
-    for (const key in data) {
-      const row = document.createElement('tr');
-      const cellKey = document.createElement('td');
-      cellKey.textContent = key;
-      const cellValue = document.createElement('td');
-      cellValue.textContent = data[key];
-      row.appendChild(cellKey);
-      row.appendChild(cellValue);
-      tbody.appendChild(row);
-    }
+      
+      const formData = new FormData();
+      formData.append("lista_microtik", selectedOption.value);
+      formData.append("username", username);
+      formData.append("password", password);
+      formData.append("ip", ip);
+      formData.append("port", port);
+      formData.append("interface", selectedInterface);
+      
+      fetch("{{ url_for('monitor_traffic') }}", {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Actualiza la tabla
+        const tbody = document.querySelector('#tablaTrafico tbody');
+        tbody.innerHTML = "";
+        for (const key in data) {
+          const row = document.createElement('tr');
+          const cellKey = document.createElement('td');
+          cellKey.textContent = key;
+          const cellValue = document.createElement('td');
+          cellValue.textContent = data[key];
+          row.appendChild(cellKey);
+          row.appendChild(cellValue);
+          tbody.appendChild(row);
+        }
         
-    // Actualiza la gráfica
-    const now = new Date().toLocaleTimeString();
-    if (chart) {
-    chart.data.labels.push(now);
-    
-    // Procesa el valor de descarga
-    let rxValue = data["rx-bits-per-second"];
-    if (typeof rxValue === "string") {
-        rxValue = parseFloat(rxValue.replace("Mbps", ""));
-    }
-    chart.data.datasets[0].data.push(rxValue);
-    
-    // Procesa el valor de subida
-    let txValue = data["tx-bits-per-second"];
-    if (typeof txValue === "string") {
-        // Si el valor viene en "Mbps" o "kbps", ajusta la conversión
-        if (txValue.includes("Mbps")) {
-        txValue = parseFloat(txValue.replace("Mbps", ""));
-        } else if (txValue.includes("kbps")) {
-        // Convertir kbps a Mbps
-        txValue = parseFloat(txValue.replace("kbps", "")) / 1000;
-        } else {
-        txValue = parseFloat(txValue);
+        // Actualiza la gráfica
+        const now = new Date().toLocaleTimeString();
+        if (chart) {
+          chart.data.labels.push(now);
+          
+          // Procesa valor rx
+          let rxValue = data["rx-bits-per-second"];
+          if (typeof rxValue === "string") {
+            rxValue = parseFloat(rxValue.replace("Mbps", ""));
+          }
+          chart.data.datasets[0].data.push(rxValue);
+          
+          // Procesa valor tx
+          let txValue = data["tx-bits-per-second"];
+          if (typeof txValue === "string") {
+            if (txValue.includes("Mbps")) {
+              txValue = parseFloat(txValue.replace("Mbps", ""));
+            } else if (txValue.includes("kbps")) {
+              txValue = parseFloat(txValue.replace("kbps", "")) / 1000;
+            } else {
+              txValue = parseFloat(txValue);
+            }
+          }
+          chart.data.datasets[1].data.push(txValue);
+          
+          // Mantener sólo los últimos 20 puntos
+          if (chart.data.labels.length > 20) {
+            chart.data.labels.shift();
+            chart.data.datasets.forEach(dataset => dataset.data.shift());
+          }
+          chart.update();
         }
-    }
-    chart.data.datasets[1].data.push(txValue);
-
-    // Mantener solo los últimos 20 puntos en ambas series
-    if (chart.data.labels.length > 20) {
-        chart.data.labels.shift();
-        chart.data.datasets.forEach(dataset => dataset.data.shift());
+      })
+      .catch(error => console.error('Error al actualizar tráfico:', error));
     }
     
-    chart.update();
-    }
-
-    })
-    .catch(error => console.error('Error al actualizar tráfico:', error));
-    }
-
+    // Inicia el monitoreo al presionar el botón "Trafico"
     document.getElementById('btnTrafico').addEventListener('click', () => {
-    if (intervalId) {
-        clearInterval(intervalId);
-    }
-    if (!chart) {
-        initChart();
-    }
-    intervalId = setInterval(actualizarTrafico, 500);
-    });
-
-
-
-    document.getElementById('btnTrafico').addEventListener('click', () => {
-      // Si ya existe un intervalo, lo limpiamos para reiniciar la actualización
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
-      // Inicializamos la gráfica
-      if (!chart) {
-        initChart();
-      }
-      // Inicia el intervalo para actualizar cada 0.5 segundos (500 ms)
+      if (intervalId) clearInterval(intervalId);
+      if (!chart) initChart();
       intervalId = setInterval(actualizarTrafico, 1000);
     });
-
-        document.getElementById('btnDetener').addEventListener('click', () => {
-    if (intervalId) {
+    
+    // Botón para detener el monitoreo
+    document.getElementById('btnDetener') && document.getElementById('btnDetener').addEventListener('click', () => {
+      if (intervalId) {
         clearInterval(intervalId);
         intervalId = null;
         console.log("Monitoreo detenido");
-    }
+      }
     });
+    
+  // AJAX para consultar interfaces del Mikrotik seleccionado
+  document.getElementById('btnConsultarInterfaz').addEventListener('click', () => {
+    const listaMicrotik = document.getElementById('lista_microtik');
+    const selectedOption = listaMicrotik.options[listaMicrotik.selectedIndex];
+    // Se asume que el nombre del mikrotik está en el texto de la opción
+    const mikrotikName = selectedOption.text;
+    
+    // Construye los parámetros con solo el nombre
+    const queryParams = new URLSearchParams({ mikrotik: mikrotikName });
+    
+    fetch(`{{ url_for('consultar_interfaces_chido') }}?${queryParams.toString()}`)
+    .then(response => response.text())
+    .then(html => {
+      document.getElementById('interfacesContainer').innerHTML = html;
+      // Habilita el botón de Trafico al cargar interfaces
+      document.getElementById('btnTrafico').disabled = false;
+      
+      // Agrega listener para capturar la selección de la interfaz
+      const selectInterface = document.getElementById('selectInterface');
+      if (selectInterface) {
+        selectInterface.addEventListener('change', () => {
+          selectedInterface = selectInterface.value;
+        });
+        // Selecciona la primera interfaz por defecto
+        selectedInterface = selectInterface.value;
+      }
+    })
+    .catch(error => console.error('Error al consultar interfaces:', error));
+  });
 
   </script>
 </body>
