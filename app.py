@@ -1,12 +1,12 @@
-from flask import Flask, render_template, redirect, session, request, url_for, flash, send_file
-from d_consultas import consutlarPaquete, consutlarAntena, consultarServicio, consultarMicrotik, consultarClientes, consultarCredenciales, consultarMicrotikTodo, consultarVelocidadPaquete, consultarPaquetes, consultarTodoServicios, consultarEquipos
+from flask import Flask, render_template, redirect, session, request, url_for, flash, send_file, jsonify
+from d_consultas import consutlarPaquete, consutlarAntena, consultarServicio, consultarMicrotik, consultarClientes, consultarCredenciales, consultarMicrotikTodo, consultarVelocidadPaquete, consultarPaquetes, consultarTodoServicios, consultarEquipos, consultar_queue,consultarQeue
 from d_insert import insertarCliente, insertMicrotik, insertarPauqete, insertarServicio, insertarEquipo
-from d_eliminar import eliminar_cliente_chido, eliminarMicrotik, eliminarPaquete, eliminarServicio, eliminarEquipo
-from d_update import actualizarCliete, actualizarMicrotik, acualizarPaquete, actualizarServicio, actualizarEquipo
-from ssh_pcq import bloquear_cliente_address_list, desbloqueo_mantecoso, get_interfaces, creacionAddressList, crearQueueParent, crearQueueSimple, eliminarSimpleQueue, aplicarFirewall
+from d_eliminar import eliminar_cliente_chido, eliminarMicrotik, eliminarPaquete, eliminarServicio, eliminarEquipo, eliminarQueueBD
+from d_update import actualizarCliete, actualizarMicrotik, acualizarPaquete, actualizarServicio, actualizarEquipo, actualiar_queue_bd
+from ssh_pcq import bloquear_cliente_address_list, desbloqueo_mantecoso, get_interfaces, creacionAddressList, crearQueueParent, crearQueueSimple, eliminarSimpleQueue, aplicarFirewall, eliminarQueueParent, actualizarQueue
 from d_login import login
 from d_contador import contador_clientes, contador_equipos, contador_pagos, contador_mikrotik
-
+from monitor import obtener_trafico_mikrotik
 
 app = Flask(__name__)
 app.secret_key = 'zerocuatro04/2025'  # Necesario para usar flash
@@ -80,7 +80,8 @@ def lista_clientes():
     cliente = consultarClientes()
     antenas = consutlarAntena()
     paquetes = consutlarPaquete()
-    return render_template("lista_clientes.html", clientes=cliente, antens=antenas, paquetes=paquetes, servicios=consultarServicio(), microtiks=consultarMicrotik())
+    return render_template("lista_clientes.html", clientes=cliente, antens=antenas, paquetes=paquetes, servicios=consultarServicio(),
+                           microtiks=consultarMicrotik(), queues_colas=consultarQeue())
 
 @app.route("/eidtar_cliente<int:id>", methods=["POST"])
 def eidtar_cliente(id):
@@ -280,6 +281,8 @@ def cargar_queue():
         microtik = request.form.get("microtik")
         parent = request.form.get("queueParent")
 
+        print(nombre, direccion_ip, paquete, microtik, parent)
+
         credenciales = consultarCredenciales(nombre=microtik)
 
         if credenciales:
@@ -337,6 +340,38 @@ def aplicar_reglas():
             flash("No logramos aplicar las reglas", "danger")
             return redirect(url_for("lista_microtiks"))
 
+
+@app.route("/dios_ayudame")
+def dios_ayudame():
+    microtiks = consultarMicrotik()
+    return render_template("monitor.html", microtiks=microtiks)
+
+@app.route('/monitor_traffic', methods=["POST"])
+def monitor_traffic():
+    if request.method == "POST":
+        mikrotik = request.form.get("lista_microtik")
+        credenciales = consultarCredenciales(nombre=mikrotik)
+
+        if credenciales:
+            username = credenciales[0]
+            password = credenciales[1]
+            host =credenciales[2]
+            port = credenciales[3]
+            interface = "ether1"
+            
+            try:
+                output = obtener_trafico_mikrotik(host, port, username, password, interface)
+            except Exception as e:
+                return jsonify({"error": str(e)}), 500
+
+            # Procesamos la salida para convertirla en un diccionario:
+            data = {}
+            for line in output.strip().split('\n'):
+                if ':' in line:
+                    key, value = line.split(':', 1)
+                    data[key.strip()] = value.strip()
+    
+    return jsonify(data)
 #------------------------------------------------RUTA DE LOS MICROTIKS CRUD----------------------------------
 
 
@@ -493,6 +528,103 @@ def eliminar_equipo(id):
     else:
         flash("Equipo no eliminado", "danger")
         return redirect(url_for("consultar_equipos"))
+#=======================================ASIGNACION DE LOS EQUIPOS==============================
+
+#=======================================FUNCION DE QUEUE PARENT==============================
+@app.route("/creacion_queue_parent", methods=["POST"])
+def creacion_queue_parent():
+    if request.method == "POST":
+        nombre = request.form.get("nombre")
+        segmento = request.form.get("segmento")
+        max_limit = request.form.get("max_limit")
+        mikrotik = request.form.get("lista_microtik")
+
+        credenciales = consultarCredenciales(nombre=mikrotik)
+
+
+        if credenciales:
+            username = credenciales[0]
+            password = credenciales[1]
+            host = credenciales[2]
+            port = credenciales[3]
+            ok = crearQueueParent(nombre, segmento, max_limit, host, port, username, password, mikrotik)
+            if ok:
+                flash(f"Queue creado con exito en el mikroitk {mikrotik}", "success")
+                return redirect(url_for("lista_queue"))
+            else:
+                flash("No logramos crear el Queue Parent", "danger")
+                return redirect(url_for("lista_queue"))
+        else:
+            flash("No encontramos credenciales para ese mirotik", "danger")
+
+
+@app.route("/lista_queue")
+def lista_queue():
+    queues_lista = consultar_queue()
+    return render_template("queue_parent.html", queue_parents=queues_lista, microtiks=consultarMicrotik(), queues_colas=consultarQeue())
+
+@app.route("/editar_queue_parent/<int:id>", methods=["POST"])
+def editar_queue_parent(id):
+    nombre = request.form.get("nombre")
+    max_limint = request.form.get("max_limint")
+    mikrotik = request.form.get("mirotik")
+    segmento_red = request.form.get("segmento_red")
+    credenciales = consultarCredenciales(mikrotik)
+
+    if credenciales:
+        username = credenciales[0]
+        password = credenciales[1]
+        host = credenciales[2]
+        port = credenciales[3]
+        print(username, password, host, port, segmento_red, nombre, max_limint)
+        ok = actualizarQueue(username, password, host, port, segmento_red, nombre, max_limint)
+        if ok:
+            yes = actualiar_queue_bd(nombre, max_limint, mikrotik, id)
+            if yes:
+                flash("Queue actualizado en sistema y MikroTik", "success")
+                return redirect(url_for("lista_queue"))
+            else:
+                flash("No actualimas la queue en sistema", "danger")
+                return redirect(url_for("lista_queue"))
+        else:
+            flash("No actualizamos la Queue en MikroTik", "danger")
+            return redirect(url_for("lista_queue"))
+    else:
+        flash("No encontramos credenciales para el MikroTik", "danger")
+
+
+@app.route("/eliminar_queue_parent/<int:id>", methods=["POST"])
+def eliminar_queue_parent(id):
+    if request.method == "POST":
+        microtik = request.form.get("mirotik")
+        segmento_red = request.form.get("segmento")
+
+        credenciales = consultarCredenciales(microtik)
+
+        if credenciales:
+            username = credenciales[0]
+            password = credenciales[1]
+            host = credenciales[2]
+            port = credenciales[3]
+
+            ok = eliminarQueueParent(username, password, host, port, segmento_red)
+            if ok:
+                dedotes = eliminarQueueBD(id)
+                if dedotes:
+                    flash("Queue eliminado del sistema", "success")
+                    return redirect(url_for("lista_queue"))
+                else:
+                    flash("Queue no se elimino de la base de datos", "danger")
+                    return redirect(url_for("lista_queue"))
+            else:
+                flash("No eliminamos el QeueuParent de Mikrotik", "danger")
+                return redirect(url_for("lista_queue"))
+        else:
+            flash("Sin credenciales, en ese mikrotik", "danger")
+            return redirect(url_for("lista_queue"))
+
+    return redirect(url_for("lista_queue"))        
+#=======================================FUNCION DE QUEUE PARENT==============================
 
 
 app.run(debug=True)

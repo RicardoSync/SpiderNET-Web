@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Panel de Control Premium</title>
+    <title>Panel de Control</title>
     <!-- Bootstrap CSS -->
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
@@ -277,46 +277,45 @@
                   </ul>
                 </div>
               </li>
-              <!-- Sección Información y Empresa -->
+              <!-- PCQ -->
               <li class="nav-item">
-                <a
-                  class="nav-link"
-                  data-bs-toggle="collapse"
-                  href="#info-empresa"
-                  role="button"
-                  aria-expanded="false"
-                  aria-controls="info-empresa"
-                >
-                  <i class="bi bi-building"></i> Información y Empresa
+                <a class="nav-link" data-bs-toggle="collapse" href="#pcq" role="button" aria-expanded="false" aria-controls="pcq">
+                  <i class="bi bi-speedometer2"></i> PCQ
                 </a>
-                <div class="collapse" id="info-empresa">
+                <div class="collapse" id="pcq">
                   <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    <li>
-                      <a href="#" class="nav-link">Spidernet</a>
-                    </li>
+                    <li><a href="{{ url_for('lista_queue')}}" class="nav-link">Queue Parent</a></li>
+                    <li><a href="{{ url_for('dios_ayudame')}}" class="nav-link">Monitor tráfico</a></li>
+                    <li><a href="#" class="nav-link">Queue Simple</a></li>
                   </ul>
                 </div>
               </li>
-              <!-- seccion de PPPoE y PCQ-->
+
+              <!-- PPPoE -->
               <li class="nav-item">
-                <a
-                  class="nav-link"
-                  data-bs-toggle="collapse"
-                  href="#configuraciones_sistema"
-                  role="button"
-                  aria-expanded="false"
-                  aria-controls="configuraciones_sistema"
-                >
-                <i class="bi bi-toggles"></i>PPPoE / PCQ
+                <a class="nav-link" data-bs-toggle="collapse" href="#pppoe" role="button" aria-expanded="false" aria-controls="pppoe">
+                  <i class="bi bi-plug"></i> PPPoE
                 </a>
-                <div class="collapse" id="configuraciones_sistema">
+                <div class="collapse" id="pppoe">
                   <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    <li>
-                      <a href="#" class="nav-link">PPPoE</a>
-                    </li>
-                    <li>
-                      <a href="#" class="nav-link">PCQ</a>
-                    </li>
+                    <li><a href="#" class="nav-link">Creación de usuario</a></li>
+                    <li><a href="#" class="nav-link">Creación de profile</a></li>
+                    <li><a href="#" class="nav-link">Active PPP</a></li>
+                    <li><a href="#" class="nav-link">Monitor tráfico</a></li>
+                  </ul>
+                </div>
+              </li>
+
+              <!-- SpiderNET -->
+              <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="collapse" href="#spidernet" role="button" aria-expanded="false" aria-controls="spidernet">
+                  <i class="bi bi-globe"></i> SpiderNET
+                </a>
+                <div class="collapse" id="spidernet">
+                  <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                    <li><a href="#" class="nav-link">Acerca de</a></li>
+                    <li><a href="#" class="nav-link">WISP</a></li>
+                    <li><a href="#" class="nav-link">Sistema</a></li>
                   </ul>
                 </div>
               </li>

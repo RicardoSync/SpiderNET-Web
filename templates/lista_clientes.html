@@ -285,28 +285,21 @@ body {
                                     <input type="text" class="form-control" name="nombre" id="nombre{{ cliente[0] }}" value="{{ cliente[1] }}" required/>
                                   </div>
                                   <div class="mb-3">
-                                    <label for="direccionIp{{ cliente[0] }}" class="form-label">Dirección IP</label>
-                                    <input type="text" class="form-control" name="direccionIp" id="direccionIp{{ cliente[0] }}" value="{{ cliente[4] }}" required/>
+                                    <input type="hidden" class="form-control" name="direccionIp" id="direccionIp{{ cliente[0] }}" value="{{ cliente[4] }}" required/>
                                   </div>
                                   <div class="mb-3">
-                                    <label for="paquete{{ cliente[0] }}" class="form-label">Paquete</label>
-                                    <select name="paquete" id="paquete{{ cliente[0] }}" class="form-control">
-                                      {% for paquete in paquetes %}
-                                        <option value="{{ paquete }}">{{ paquete }}</option>
-                                      {% endfor %}
-                                    </select>
+                                    <input type="hidden" class="form-control" name="paquete" id="paquete{{ cliente[0] }}" value="{{ cliente[2] }}" required/>
                                   </div>
                                   <div class="mb-3">
-                                    <label for="microtik{{ cliente[0] }}" class="form-label">Microtik</label>
-                                    <select name="microtik" id="microtik{{ cliente[0] }}" class="form-control">
-                                      {% for microtik in microtiks %}
-                                        <option value="{{ microtik }}">{{ microtik }}</option>
-                                      {% endfor %}
-                                    </select>
+                                    <input type="hidden" class="form-control" name="microtik" id="microtik{{ cliente[0] }}" value="{{ cliente[8] }}" required/>
                                   </div>
                                   <div class="mb-3">
                                     <label for="queueParent{{ cliente[0] }}" class="form-label">Nombre de QueueParent</label>
-                                    <input type="text" class="form-control" name="queueParent" id="queueParent{{ cliente[0] }}"required/>
+                                    <select name="queueParent" id="queueParent{{ cliente[0] }}" class="form-control">
+                                      {% for queue in queues_colas %}
+                                        <option value="{{ queue }}">{{ queue }}</option>
+                                      {% endfor %}
+                                    </select>
                                   </div>
                                 </div>
                                 <div class="modal-footer">
@@ -333,12 +326,10 @@ body {
                                     <input type="text" class="form-control" name="nombre" id="nombre{{ cliente[0] }}" value="{{ cliente[1] }}" required/>
                                   </div>
                                   <div class="mb-3">
-                                    <label for="direccionIp{{ cliente[0] }}" class="form-label">Dirección IP</label>
-                                    <input type="text" class="form-control" name="direccionIp" id="direccionIp{{ cliente[0] }}" value="{{ cliente[4] }}" required/>
+                                    <input type="hidden" class="form-control" name="direccionIp" id="direccionIp{{ cliente[0] }}" value="{{ cliente[4] }}" required/>
                                   </div>
                                   <div class="mb-3">
-                                    <label for="microtik{{ cliente[0] }}" class="form-label">Microtik</label>
-                                    <input type="text" class="form-control" name="microtik" id="microtik{{ cliente[0] }}" value="{{ cliente[8] }}" required/>
+                                    <input type="hidden" class="form-control" name="microtik" id="microtik{{ cliente[0] }}" value="{{ cliente[8] }}" required/>
                                   </div>
                                 </div>
                                 <div class="modal-footer">

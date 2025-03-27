@@ -95,3 +95,24 @@ def actualizarEquipo(nombre, tipo, marca, modelo, estado, id):
     except Exception as r:
         print(f"Error al actualizar el equipo {r}")
         return False
+    
+def actualiar_queue_bd(nombre, max_limit, mikrotik, id):
+    mikrotik = obtenerIdMicrotik(mikrotik)
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+
+        cursor = cn.cursor()
+        cursor.execute("""UPDATE queue_parent SET nombre = %s, max_limit = %s, id_mikrotik = %s 
+                       WHERE id = %s""",
+                       (nombre, max_limit, mikrotik, id))
+        cn.commit()
+        cursor.close()
+        cn.close()
+
+        return True
+    
+    except Exception as r:
+        print(f"Error en actualizar el queue en bd {r}")
+        return False

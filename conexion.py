@@ -6,8 +6,8 @@ def conexion():
             host="localhost",
             port="3306",
             username="root",
-            password="MinuzaFea265/",
-            database="spidernet"
+            password="zerocuatro04",
+            database="spidernet_web"
         )
         return con
     

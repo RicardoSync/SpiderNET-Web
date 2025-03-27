@@ -1,6 +1,8 @@
 import paramiko
 import re
 from ip_pool import generar_rango_ips, obtener_subred
+from d_insert import insertar_queue_parent
+from d_consultas import consultarCredenciales
 
 def consultarClientesDHCP(credenciales):
     username = credenciales[0]
@@ -217,7 +219,7 @@ def creacionAddressList(username, password, host, port, direccion_ip, ether):
         print(f"Error en la conexión SSH: {error}")
         return False
 
-def crearQueueParent(name, direccion_ip, max_limit, host, port, username, password):
+def crearQueueParent(name, direccion_ip, max_limit, host, port, username, password, mikrotik):
     try:
         # Eliminar espacios al inicio y final, y quitar todos los espacios intermedios
         name = name.strip()            # elimina espacios al inicio y final
@@ -243,7 +245,7 @@ def crearQueueParent(name, direccion_ip, max_limit, host, port, username, passwo
             print(f"Errores con el comando SSH {errores}")
             cliente_ssh.close()
             return False
-        
+        insertar_queue_parent(nombre=name, subred=address, max_limit=max_limit, mikrotik=mikrotik)
         cliente_ssh.close()
         return True
     
@@ -371,7 +373,6 @@ def eliminarSimpleQueue(credenciales, direccion_ip):
     
 def aplicarFirewall(host, port, username, password):
     comandos = [
-        "/ip/firewall/nat/add chain=srcnat out-interface=ether1 action=masquerade",
         "/ip/firewall/filter/add chain=forward action=drop src-address-list=corte comment=corteDeInternet",
         "/ip/firewall/filter/add chain=forward action=drop dst-address-list=corte comment=corteDeInternet",
         "/ip/firewall/nat/add chain=srcnat action=masquerade src-address-list=Internet",
@@ -400,6 +401,8 @@ def aplicarFirewall(host, port, username, password):
 
             if error:
                 print(f"❌ Error: {error}")
+        
+        client.close()
 
     except Exception as e:
         print(f"⚠️ Error al conectar o ejecutar comandos: {e}")
@@ -409,3 +412,53 @@ def aplicarFirewall(host, port, username, password):
         client.close()
         print("Conexión cerrada.")
         return True
+
+def eliminarQueueParent(username, password, host, port, segmento_red):
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy()) #aceptamos las llaves
+
+    try:
+        ssh.connect(host, port, username, password, timeout=10)
+        comando = f"/queue/simple/remove [find where target={segmento_red}]"
+        stdin, stdout, stderr = ssh.exec_command(comando)
+
+        salida = stdout.read().decode()
+        errores = stderr.read().decode()
+
+        if errores:
+            print(f"Error en ejecutar el comando {errores}")
+        else:
+            print(f"Comando ejecuato {salida}")
+    
+        ssh.close()
+        return True
+    
+    except Exception as r:
+        print(f"Error en conexion SSH {r}")
+        return False
+    
+def actualizarQueue(username, password, host, port, segmento_red, nombre, max_limit):
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    try:
+        # Conectar con MikroTik
+        ssh.connect(hostname=host, port=port, username=username, password=password, timeout=10)
+
+        # Comando para actualizar la queue
+        comando = f'/queue/simple/set [find where target={segmento_red}] name="{nombre}" max-limit={max_limit}'
+        stdin, stdout, stderr = ssh.exec_command(comando)
+
+        # Leer salida y errores
+        salida = stdout.read().decode()
+        errores = stderr.read().decode()  # Aquí estaba el error, estabas leyendo stdout en lugar de stderr
+
+        if errores:
+            print(f"Error al ejecutar el comando: {errores}")
+        else:
+            print(f"Comando ejecutado correctamente: {salida}")
+
+        ssh.close()
+        return True
+    except Exception as e:
+        print(f"Error en comando SSH: {e}")
+        return False

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Servicios</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+  <!-- Chart.js para la gráfica -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Tus estilos previos */
+    body {
+      background-color: #1e1e1e;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+    }
+    .topbar {
+      background-color: #2b2b2b;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #444;
+    }
+    .topbar .brand {
+      color: #fff;
+      font-size: 1.25rem;
+      font-weight: 500;
+      text-decoration: none;
+    }
+    .sidebar {
+      background-color: #2b2b2b;
+      width: 240px;
+      min-height: 100vh;
+      border-right: 1px solid #444;
+      position: fixed;
+      top: 0;
+      left: 0;
+      padding-top: 1rem;
+    }
+    .sidebar .sidebar-title {
+      color: #fff;
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .sidebar .nav-link {
+      color: #fff;
+      padding: 0.75rem 1rem;
+      display: block;
+      text-decoration: none;
+    }
+    .sidebar .nav-link:hover {
+      background-color: #343434;
+      text-decoration: none;
+    }
+    .main-content {
+      margin-left: 240px;
+      padding: 1rem;
+    }
+    .card {
+      background-color: #2b2b2b;
+      border: none;
+    }
+    .card-header {
+      background-color: #2b2b2b;
+      border-bottom: 1px solid #444;
+      font-weight: 500;
+      color: #fff;
+    }
+    .table thead th {
+      background-color: #3b3b3b;
+      color: #ffca28;
+    }
+    .table-responsive {
+      overflow-x: auto;
+    }
+    .table-striped > tbody > tr:nth-of-type(odd) {
+      background-color: #2a2a2a;
+    }
+    .table-striped > tbody > tr:nth-of-type(even) {
+      background-color: #232323;
+    }
+    .table-hover tbody tr:hover {
+      background-color: #343434;
+    }
+    .btn-custom {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-custom:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        width: 80%;
+        left: -80%;
+        transition: left 0.3s ease;
+        z-index: 1000;
+      }
+      .sidebar.show {
+        left: 0;
+      }
+      .main-content {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="container mt-2">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+          <button id="btnDetener" class="btn btn-danger btn-custom">Detener Monitoreo</button>
+        </div>
+          
+      {% endfor %}
+    </div>
+  {% endif %}
+  {% endwith %}
+
+  <!-- Barra superior -->
+  <div class="topbar">
+    <a href="#" class="brand">Servicios</a>
+    <button class="btn btn-sm btn-outline-light d-md-none" onclick="document.querySelector('.sidebar').classList.toggle('show')">
+      <i class="bi bi-list"></i>
+    </button>
+  </div>
+
+  <!-- Panel lateral -->
+  <div class="sidebar">
+    <h5 class="sidebar-title">Monitor de Trafico</h5>
+    <a href="{{ url_for('dashboard')}}" class="nav-link">
+      <i class="bi bi-house"></i> Inicio
+    </a>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="main-content">
+    <div class="container-fluid">
+      <!-- Título y select para elegir Mikrotik -->
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <h1>Monitor Trafico</h1>
+      </div>
+      <div class="mb-3">
+        <label for="lista_microtik" class="form-label">Microtik Administrador (Nueva / Actual)</label>
+        <select name="lista_microtik" id="lista_microtik" class="form-control">
+          {% for microtik in microtiks %}
+          <option value="{{ microtik }}">{{ microtik }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="mb-3">
+        <button id="btnTrafico" class="btn btn-primary btn-custom">Trafico</button>
+      </div>
+
+      <!-- Card con gráfica y tabla -->
+      <div class="card mt-3">
+        <div class="card-header">Monitor de Trafico</div>
+        <div class="card-body">
+          <!-- Contenedor de la gráfica -->
+          <canvas id="traficoChart" height="100"></canvas>
+          <!-- Contenedor de la tabla -->
+          <div class="table-responsive mt-3">
+            <table class="table table-striped table-hover" id="tablaTrafico">
+              <thead>
+                <tr>
+                  <th>Medida</th>
+                  <th>Valor</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Se rellenará con JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div> <!-- /container-fluid -->
+  </div> <!-- /main-content -->
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Script para actualizar tráfico y gráfica -->
+  <script>
+    let intervalId = null;
+    let chart = null;
+
+    // Inicializa la gráfica con Chart.js
+    function initChart() {
+  const ctx = document.getElementById('traficoChart').getContext('2d');
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: [], // marcas de tiempo
+      datasets: [
+        {
+          label: 'rx-bits-per-second',
+          data: [],
+          borderColor: 'rgba(255,202,40,1)',
+          backgroundColor: 'rgba(255,202,40,0.2)',
+          fill: true
+        },
+        {
+          label: 'tx-bits-per-second',
+          data: [],
+          borderColor: 'rgba(0,123,255,1)', // color azul
+          backgroundColor: 'rgba(0,123,255,0.2)',
+          fill: true
+        }
+      ]
+    },
+    options: {
+      scales: {
+        x: {
+          display: true,
+          title: {
+            display: true,
+            text: 'Tiempo'
+          }
+        },
+        y: {
+          display: true,
+          title: {
+            display: true,
+            text: 'Mbps'
+          }
+        }
+      }
+    }
+  });
+}
+
+
+// Función para actualizar la tabla y la gráfica
+function actualizarTrafico() {
+  const mikrotik = document.getElementById('lista_microtik').value;
+  const formData = new FormData();
+  formData.append("lista_microtik", mikrotik);
+
+  fetch("{{ url_for('monitor_traffic') }}", {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    // Actualiza la tabla
+    const tbody = document.querySelector('#tablaTrafico tbody');
+    tbody.innerHTML = "";
+    for (const key in data) {
+      const row = document.createElement('tr');
+      const cellKey = document.createElement('td');
+      cellKey.textContent = key;
+      const cellValue = document.createElement('td');
+      cellValue.textContent = data[key];
+      row.appendChild(cellKey);
+      row.appendChild(cellValue);
+      tbody.appendChild(row);
+    }
+        
+    // Actualiza la gráfica
+    const now = new Date().toLocaleTimeString();
+    if (chart) {
+    chart.data.labels.push(now);
+    
+    // Procesa el valor de descarga
+    let rxValue = data["rx-bits-per-second"];
+    if (typeof rxValue === "string") {
+        rxValue = parseFloat(rxValue.replace("Mbps", ""));
+    }
+    chart.data.datasets[0].data.push(rxValue);
+    
+    // Procesa el valor de subida
+    let txValue = data["tx-bits-per-second"];
+    if (typeof txValue === "string") {
+        // Si el valor viene en "Mbps" o "kbps", ajusta la conversión
+        if (txValue.includes("Mbps")) {
+        txValue = parseFloat(txValue.replace("Mbps", ""));
+        } else if (txValue.includes("kbps")) {
+        // Convertir kbps a Mbps
+        txValue = parseFloat(txValue.replace("kbps", "")) / 1000;
+        } else {
+        txValue = parseFloat(txValue);
+        }
+    }
+    chart.data.datasets[1].data.push(txValue);
+
+    // Mantener solo los últimos 20 puntos en ambas series
+    if (chart.data.labels.length > 20) {
+        chart.data.labels.shift();
+        chart.data.datasets.forEach(dataset => dataset.data.shift());
+    }
+    
+    chart.update();
+    }
+
+    })
+    .catch(error => console.error('Error al actualizar tráfico:', error));
+    }
+
+    document.getElementById('btnTrafico').addEventListener('click', () => {
+    if (intervalId) {
+        clearInterval(intervalId);
+    }
+    if (!chart) {
+        initChart();
+    }
+    intervalId = setInterval(actualizarTrafico, 500);
+    });
+
+
+
+    document.getElementById('btnTrafico').addEventListener('click', () => {
+      // Si ya existe un intervalo, lo limpiamos para reiniciar la actualización
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+      // Inicializamos la gráfica
+      if (!chart) {
+        initChart();
+      }
+      // Inicia el intervalo para actualizar cada 0.5 segundos (500 ms)
+      intervalId = setInterval(actualizarTrafico, 1000);
+    });
+
+        document.getElementById('btnDetener').addEventListener('click', () => {
+    if (intervalId) {
+        clearInterval(intervalId);
+        intervalId = null;
+        console.log("Monitoreo detenido");
+    }
+    });
+
+  </script>
+</body>
+</html>

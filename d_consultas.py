@@ -146,6 +146,25 @@ def consultarClientes():
         print(f"Tenemos problemas con la consulta de los clientes {r}")
         
 
+def consultar_queue():
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+        cursor = cn.cursor()
+        sql = """SELECT q.id, q.nombre, q.subred, q.max_limit, c.nombre AS nombre_mikrotik
+                    FROM queue_parent q
+                LEFT JOIN credenciales_microtik c ON q.id_mikrotik = c.id"""
+        cursor.execute(sql)
+        resultado = cursor.fetchall()
+        cursor.close()
+        cn.close()
+        return resultado
+    
+    except Exception as r:
+        print(f"Error en consulta {r}")
+        return False
+
 def consultarVelocidadPaquete(nombre):
     try:
         cn = conexion()
@@ -218,3 +237,19 @@ def consultarEquipos():
     except Exception as r:
         print(f"Error en la consulta de los equipos {r}")
         return False
+    
+def consultarQeue():
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+        cursor = cn.cursor()
+        cursor.execute("SELECT nombre FROM queue_parent")
+        resultado = cursor.fetchall()
+        cn.close()
+        cursor.close()
+        
+        return [fila[0] for fila in resultado]
+    except Exception as r:
+        print(f"Error en la consulta de sercios {r}")
+        return []
