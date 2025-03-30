@@ -1,5 +1,6 @@
-from d_insert import obtenerIdPaquete, obtenerIdAntena, obtenerIdServicio, obtenerIdMicrotik
+from d_insert import *
 from conexion import conexion
+from get_ids import *
 
 def actualizarCliete(nombre, paquete, direccion_ip, dia_corte, ap, servicio, microtik, id):
     try:
@@ -115,4 +116,40 @@ def actualiar_queue_bd(nombre, max_limit, mikrotik, id):
     
     except Exception as r:
         print(f"Error en actualizar el queue en bd {r}")
+        return False
+    
+def actualizar_ticket(categoria, descripcion, responsable, id):
+    id_usuario = getIdUsuario(nombreUsuario=responsable)
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+        cursor = cn.cursor()
+        cursor.execute("""UPDATE tickets SET categoria = %s, descripcion = %s, id_responsable = %s
+                       WHERE id = %s""",
+                       (categoria, descripcion, id_usuario, id))
+        cn.commit()
+        cursor.close()
+        cn.close()
+
+        return True
+    except Exception as r:
+        print(f"Error en actualizar el ticket {r}")
+        return 
+    
+def actualizar_ticket_finalizado(id):
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+        cursor = cn.cursor()
+        cursor.execute("""UPDATE tickets SET estado = %s
+                       WHERE id = %s""", ("Resuelto", id))
+        cn.commit()
+        cursor.close()
+        cn.close()
+
+        return True
+    except Exception as r:
+        print(f"Error en actualizar el ticket {r}")
         return False

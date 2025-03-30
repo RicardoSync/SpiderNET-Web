@@ -68,6 +68,7 @@
 
   </style>
 </head>
+
 <body>
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -141,6 +142,7 @@
                       <td>{{ mikrotik[4] }}</td>
                       <td>{{ mikrotik[5] }}</td>
                       <td>
+
                         <!-- Botón para editar -->
                         <button class="btn btn-warning btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="#editarModal{{ mikrotik[0] }}">
                           <i class="bi bi-pencil-square"></i>
@@ -150,11 +152,20 @@
                           <i class="bi bi-gear-fill"></i>
                         </button>
 
+                        <button class="btn btn-info btn-sm btn-custom configurar-btn" data-id="{{ mikrotik[0] }}" data-bs-toggle="modal" data-bs-target="#profile_ppp_create{{ mikrotik[0] }}">
+                          <i class="bi bi-menu-button-fill"></i>
+                        </button>                        
 
                         <!-- Botón para aplicar las reglas -->
                         <button class="btn btn-primary btn-sm btn-custom configurar-btn" data-id="{{ mikrotik[0] }}" data-bs-toggle="modal" data-bs-target="#aplicarReglas{{ mikrotik[0] }}">
                           <i class="bi bi-fire"></i>
                         </button>
+
+                        <!-- Botón para reiniciar -->
+                        <button class="btn btn-primary btn-sm btn-custom configurar-btn" data-id="{{ mikrotik[0] }}" data-bs-toggle="modal" data-bs-target="#modal_reiniciar{{ mikrotik[0] }}">
+                          <i class="bi bi-bootstrap-reboot"></i>
+                        </button>
+
 
                         <!-- Modal de edición -->
                         <div class="modal fade text-dark" id="editarModal{{ mikrotik[0] }}" tabindex="-1" aria-labelledby="editarModalLabel{{ mikrotik[0] }}" aria-hidden="true">
@@ -318,7 +329,6 @@
                           </div>
                         </div>
 
-
                         <!-- Modal para crear Queue Parent -->
                         <div class="modal fade text-dark" id="creacionParentQueue{{ mikrotik[0] }}" tabindex="-1" aria-labelledby="creacionParentQueueLabel{{ mikrotik[0] }}" aria-hidden="true">
                           <div class="modal-dialog">
@@ -369,13 +379,18 @@
                             </div>
                           </div>
                         </div>
-
                         <!-- Botón para eliminar -->
                         <form action="{{ url_for('eliminar_mikrotik', id=mikrotik[0]) }}" method="POST" class="d-inline">
                           <button type="submit" class="btn btn-danger btn-sm btn-custom" onclick="return confirm('¿Seguro que deseas eliminar este MikroTik?');">
                             <i class="bi bi-trash"></i>
                           </button>
                         </form>
+                        <!-- 🔹 Incluir el archivo modal.html -->
+                        {% include 'modal_profile.html' %}
+                        {% include 'modal_reinicio.html' %}
+
+
+
                       </td>
                     </tr>
                     {% endfor %}

@@ -1,66 +1,5 @@
 from conexion import conexion
-
-def obtenerIdPaquete(nombre):
-    try:
-        cn = conexion()
-        if cn is None:
-            conexion().reconnect()
-
-        cursor = cn.cursor()
-        cursor.execute("SELECT id FROM paquetes WHERE nombre = %s", (nombre,))
-        resultado = cursor.fetchone()
-        return resultado[0] if resultado else None  # ✅ Devuelve solo el ID
-
-    except Exception as r:
-        print(r)        
-        return None
-    
-def obtenerIdAntena(nombreAntena):
-    try:
-        cn = conexion()
-        if cn is None:
-            conexion().reconnect()
-
-        cursor = cn.cursor()
-        cursor.execute("SELECT idantenasAp FROM antenasap WHERE nombre = %s", (nombreAntena,))
-        resultado = cursor.fetchone()
-        return resultado[0] if resultado else None  # ✅ Devuelve solo el ID
-
-    except Exception as r:
-        print(r)        
-        return None
-    
-def obtenerIdServicio(nombreServicio):
-    try:
-        cn = conexion()
-        if cn is None:
-            conexion().reconnect()
-
-        cursor = cn.cursor()
-        cursor.execute("SELECT idPlataformas FROM serviciosplataforma WHERE nombre = %s", (nombreServicio,))
-        resultado = cursor.fetchone()
-        return resultado[0] if resultado else None  # ✅ Devuelve solo el ID
-
-    except Exception as r:
-        print(r)        
-        return None
-
-def obtenerIdMicrotik(nombreMicrotik):
-    try:
-        cn = conexion()
-        if cn is None:
-            conexion().reconnect()
-
-        cursor = cn.cursor()
-        cursor.execute("SELECT id FROM credenciales_microtik WHERE nombre = %s", (nombreMicrotik,))
-        resultado = cursor.fetchone()
-        return resultado[0] if resultado else None  # ✅ Devuelve solo el ID
-
-    except Exception as r:
-        print(r)        
-        return None
-    
-
+from get_ids import *
 def insertarCliente(nombre, paquete, ip_cliente, dia_corte, antena_ap, servicio, microtik):
     try:
         id_paquete = int(obtenerIdPaquete(paquete)) if obtenerIdPaquete(paquete) is not None else None
@@ -182,4 +121,40 @@ def insertar_queue_parent(nombre, subred, max_limit, mikrotik):
         return True
     except Exception as r:
         print(f"Error en crear un queue {r}")
+        return False
+    
+def insertar_ticket(cliente, categoria, descripcion, usuario):
+    id_usuario = getIdUsuario(nombreUsuario=usuario)
+    id_cliente = getIdCliente(nombre=cliente)
+
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+        cursor = cn.cursor()
+        cursor.execute("INSERT INTO tickets (id_cliente, categoria, descripcion, estado, id_responsable) VALUES (%s,%s,%s,%s,%s)",
+                       (id_cliente, categoria, descripcion, "Pendiente", id_usuario))
+        cn.commit()
+        cursor.close()
+        cn.close()
+        return True
+    except Exception as r:
+        print(f"Error en la creacion del ticket {r}")
+        return False
+    
+
+def insertar_profile_pppoe(nombre, local_address, address_list, limit, id_mikrotik):
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+        cursor = cn.cursor()
+        cursor.execute("INSERT INTO profile (nombre, local_address, addresslist, limit, id_mikrotik) VALUES (%s,%s,%s,%s,%s)",
+                       (nombre, local_address, address_list,limit, id_mikrotik))
+        cn.commit()
+        cursor.close()
+        cn.close()
+        return True
+    except Exception as r:
+        print(f"Error en la creacion de profile en bd {r}")
         return False

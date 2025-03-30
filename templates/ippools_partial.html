@@ -1,0 +1,9 @@
+<div class="mb-3">
+    <label for="selectIPPools" class="form-label">Selecciona una IP Pool:</label>
+    <select id="selectIPPools" name="ippool" class="form-select">
+      {% for pool in pools %}
+        <option value="{{ pool }}">{{ pool }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  

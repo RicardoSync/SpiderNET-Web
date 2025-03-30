@@ -172,15 +172,9 @@
       {% endif %}
     {% endwith %}
 
-    <!-- Navbar superior -->
-    <nav class="navbar navbar-expand-lg">
-      <div class="container-fluid">
-        <a class="navbar-brand text-white" href="#">
-          <i class="bi bi-robot fs-1"></i>DobleNET
-        <!-- Botón + para abrir modal de Registrar Cliente -->
-      </div>
-    </nav>
 
+
+    
     <!-- Layout con panel lateral y contenido -->
     <div class="container-fluid">
       <div class="row">
@@ -206,6 +200,9 @@
                     </li>
                     <li>
                       <a href="{{ url_for('clientes_bloqueados') }}" class="nav-link">Bloqueados</a>
+                    </li>
+                    <li>
+                      <a href="{{ url_for('fallas') }}" class="nav-link">Tickets</a>
                     </li>
                   </ul>
                 </div>
@@ -300,8 +297,8 @@
                 </a>
                 <div class="collapse" id="pppoe">
                   <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    <li><a href="#" class="nav-link">Creación de usuario</a></li>
-                    <li><a href="#" class="nav-link">Creación de profile</a></li>
+                    <li><a href="#" class="nav-link">PPP Profile</a></li>
+                    <li><a href="#" class="nav-link">Active PPP</a></li>
                     <li><a href="#" class="nav-link">Active PPP</a></li>
                     <li><a href="#" class="nav-link">Monitor tráfico</a></li>
                   </ul>
@@ -315,9 +312,12 @@
                 </a>
                 <div class="collapse" id="spidernet">
                   <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    <li><a href="#" class="nav-link">Acerca de</a></li>
-                    <li><a href="#" class="nav-link">WISP</a></li>
-                    <li><a href="#" class="nav-link">Sistema</a></li>
+                    <li>
+                      <a href="{{ url_for('lista_clientes') }}" class="nav-link">Usuarios</a>
+                    </li>
+                    <li>
+                      <a href="{{ url_for('clientes_bloqueados') }}" class="nav-link">Datos WISP</a>
+                    </li>
                   </ul>
                 </div>
               </li>
@@ -379,6 +379,32 @@
                     <i class="bi bi-wifi display-4 me-3"></i>
                     <div>
                       <h5 class="card-title">Microtiks</h5>
+                      <p class="card-text fs-4">{{ total_microtiks or 0 }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-4 fade-in" style="animation-delay: 0.8s">
+              <div class="card text-white bg-danger mb-3">
+                <div class="card-body">
+                  <div class="d-flex align-items-center">
+                    <i class="bi bi-person-square display-4 me-3"></i>
+                    <div>
+                      <h5 class="card-title">Instalaciones</h5>
+                      <p class="card-text fs-4">{{ total_microtiks or 0 }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3 mb-4 fade-in" style="animation-delay: 0.8s">
+              <div class="card text-white bg-dark shadow">
+                <div class="card-body">
+                  <div class="d-flex align-items-center">
+                    <i class="bi bi-ticket-fill display-4 me-3 "></i>
+                    <div>
+                      <h5 class="card-title">Tickets</h5>
                       <p class="card-text fs-4">{{ total_microtiks or 0 }}</p>
                     </div>
                   </div>

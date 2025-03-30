@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reporte de profile_ppps</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+
+  <style>
+    /* Colores base */
+    body {
+      background-color: #1e1e1e;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+    }
+
+    /* Barra superior */
+    .topbar {
+      background-color: #2b2b2b;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #444;
+    }
+    .topbar .brand {
+      color: #fff;
+      font-size: 1.25rem;
+      font-weight: 500;
+      text-decoration: none;
+    }
+
+    /* Panel lateral */
+    .sidebar {
+      background-color: #2b2b2b;
+      width: 240px;
+      min-height: 100vh;
+      border-right: 1px solid #444;
+      position: fixed;
+      top: 0;
+      left: 0;
+      padding-top: 1rem;
+    }
+    .sidebar .sidebar-title {
+      color: #fff;
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .sidebar .nav-link {
+      color: #fff;
+      padding: 0.75rem 1rem;
+      display: block;
+      text-decoration: none;
+    }
+    .sidebar .nav-link:hover {
+      background-color: #343434;
+      text-decoration: none;
+    }
+
+    /* Contenedor principal (donde va la tabla y el contenido) */
+    .main-content {
+      margin-left: 240px; /* para que no se monte con el sidebar */
+      padding: 1rem;
+    }
+
+    /* Tarjeta con la tabla */
+    .card {
+      background-color: #2b2b2b;
+      border: none;
+    }
+    .card-header {
+      background-color: #2b2b2b;
+      border-bottom: 1px solid #444;
+      font-weight: 500;
+      color: #fff;
+    }
+    .table thead th {
+      background-color: #3b3b3b;
+      color: #ffca28;
+    }
+    .table-responsive {
+      overflow-x: auto;
+    }
+    .table-striped > tbody > tr:nth-of-type(odd) {
+      background-color: #2a2a2a;
+    }
+    .table-striped > tbody > tr:nth-of-type(even) {
+      background-color: #232323;
+    }
+    .table-hover tbody tr:hover {
+      background-color: #343434;
+    }
+
+    /* Botones */
+    .btn-custom {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-custom:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+    }
+
+    /* Responsividad para el sidebar en pantallas pequeñas */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        width: 80%;
+        left: -80%;
+        transition: left 0.3s ease;
+        z-index: 1000;
+      }
+      .sidebar.show {
+        left: 0;
+      }
+      .main-content {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Barra superior -->
+  <div class="topbar">
+    <a href="#" class="brand">Reporte de profile_ppps</a>
+    <!-- Botón para mostrar/ocultar sidebar en móvil -->
+    <button class="btn btn-sm btn-outline-light d-md-none" onclick="document.querySelector('.sidebar').classList.toggle('show')">
+      <i class="bi bi-list"></i>
+    </button>
+  </div>
+
+  <!-- Panel lateral -->
+  <div class="sidebar">
+    <h5 class="sidebar-title">Reporte de profile_ppps</h5>
+    <!-- Opciones del menú (enlace de ejemplo) -->
+    <a href="{{ url_for('dashboard')}}" class="nav-link">
+      <i class="bi bi-house"></i> Inicio
+    </a>
+    <!-- Agrega más enlaces según sea necesario -->
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="main-content">
+    <div class="container-fluid">
+      <!-- Título y botón para crear profile_ppp -->
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <h1>profile_ppps</h1>
+        <button class="btn btn-success btn-custom" data-bs-toggle="modal" data-bs-target="#creacionFalla">
+          <i class="bi bi-plus"></i> Registro profile_ppps
+        </button>
+      </div>
+
+      <!-- Tabla de profile_ppps -->
+      <div class="card mt-3">
+        <div class="card-header">
+          <!-- Puedes colocar aquí un título o dejarlo vacío -->
+          Lista de profile_ppps
+          <select id="filtroCategoria" class="form-select bg-dark text-light">
+            <option value="">Todas</option>
+            {% for reporte in reportes %}
+            <option value="{{ reporte }}">{{ reporte }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table id="miTabla" class="table table-dark table-striped table-hover align-middle">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Cliente</th>
+                  <th>Categoria</th>
+                  <th>Descripcion</th>
+                  <th>Estado</th>
+                  <th>Fecha Reporte</th>
+                  <th>Cierre</th>
+                  <th>Tecnico</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for profile_ppp in profile_ppps %}
+                <tr>
+                  <td>{{ profile_ppp[0] }}</td>
+                  <td>{{ profile_ppp[1] }}</td>
+                  <td>{{ profile_ppp[2] }}</td>
+                  <td>{{ profile_ppp[3] }}</td>
+                  <td>{{ profile_ppp[4] }}</td>
+                  <td>{{ profile_ppp[5] }}</td>
+                  <td>{{ profile_ppp[6] }}</td>
+                  <td>{{ profile_ppp[7] }}</td>
+                  <td>
+                    <button class="btn btn-warning btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="#modal_edicion{{ profile_ppp[0] }}">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div> <!-- /container-fluid -->
+  </div> <!-- /main-content -->
+
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    window.addEventListener('load', function() {
+      var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+      toastElList.forEach(function(toastEl) {
+        new bootstrap.Toast(toastEl).show();
+      });
+    });
+  </script>
+  
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <!-- Contenedor para los Toasts, posición fija en la esquina superior derecha -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+      {% for category, message in messages %}
+      <div class="toast align-items-center text-white bg-{{ category }} border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+        <div class="d-flex">
+          <div class="toast-body">
+            {{ message }}
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+</body>
+</html>

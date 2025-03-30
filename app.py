@@ -1,14 +1,16 @@
 from flask import Flask, render_template, redirect, session, request, url_for, flash, send_file, jsonify
 from d_consultas import *
-from d_insert import insertarCliente, insertMicrotik, insertarPauqete, insertarServicio, insertarEquipo
-from d_eliminar import eliminar_cliente_chido, eliminarMicrotik, eliminarPaquete, eliminarServicio, eliminarEquipo, eliminarQueueBD
-from d_update import actualizarCliete, actualizarMicrotik, acualizarPaquete, actualizarServicio, actualizarEquipo, actualiar_queue_bd
-from ssh_pcq import bloquear_cliente_address_list, desbloqueo_mantecoso, get_interfaces, creacionAddressList, crearQueueParent, crearQueueSimple, eliminarSimpleQueue, aplicarFirewall, eliminarQueueParent, actualizarQueue
+from d_insert import *
+from d_eliminar import *
+from d_update import *
+from ssh_pcq import *
 from d_login import login
-from d_contador import contador_clientes, contador_equipos, contador_pagos, contador_mikrotik
+from d_contador import *
 from monitor import obtener_trafico_mikrotik
 from dhcp_leases import get_dhcp_leases
 from bloqueos_bd import estado_bloqueado
+from ssh_pppoe import *
+from get_pools import *
 
 app = Flask(__name__)
 app.secret_key = 'zerocuatro04/2025'  # Necesario para usar flash
@@ -70,13 +72,13 @@ def crear_cliente():
 
         print(nombre, paquete, ip_cliente, dia_corte, antena_ap, servicio, microtik)
 
-        ok = insertarCliente(nombre, paquete, ip_cliente, dia_corte, antena_ap, servicio, microtik)
-        if ok:
+        if insertarCliente(nombre, paquete, ip_cliente, dia_corte, antena_ap, servicio, microtik):
+            flash("Cliente registrado con exito", "success")
             return redirect(url_for("lista_clientes"))
         else:
-            return render_template("error.html"), 500
-
-
+            flash("El cliente no se registro", "danger")            
+            return redirect(url_for("lista_clientes"))
+            
 @app.route("/lista_clientes")
 def lista_clientes():
     cliente = consultarClientes()
@@ -105,11 +107,13 @@ def eidtar_cliente(id):
 
 @app.route("/eliminar_cliente<int:id>", methods=["POST"])
 def eliminar_cliente(id):
-    ok = eliminar_cliente_chido(id)    
-    if ok:
+    if eliminar_cliente_chido(id):
+        flash("Cliente eliminado con exito", "succes")
         return redirect(url_for("lista_clientes"))
     else:
-        return render_template("error.html"), 500
+        flash("El cliente no se elimino", "danger")
+        return redirect(url_for("lista_clientes"))
+
 
 
 @app.route('/bloquear_cliente_pcq/<int:id>', methods=["POST"])
@@ -149,7 +153,6 @@ def desbloquear_cliente_pcq(id):
     # Se consultan las credenciales para el microtik indicado
     credenciales = consultarCredenciales(microtik)
     if credenciales:
-        # Ejecuta el comando de bloqueo
         ok = desbloqueo_mantecoso(credenciales, ip_cliente)
         if ok:
             estado_bloqueado(estado="Activo", id=id)
@@ -159,7 +162,7 @@ def desbloquear_cliente_pcq(id):
     else:
         flash(f"No tenemos credenciales para ese MikroTik: {microtik}", "warning")  # Tipo warning para advertencia
     
-    return redirect(url_for("lista_clientes"))
+    return redirect(url_for("clientes_bloqueados"))
 
 @app.route("/clientes_bloqueados")
 def clientes_bloqueados():
@@ -339,13 +342,12 @@ def eliminar_queue_simple(id):
         credenciales = consultarCredenciales(nombre=microtik)
 
         if credenciales:
-            delete = eliminarSimpleQueue(credenciales, direccion_ip)
-            if delete:
+            if  eliminarSimpleQueue(credenciales, direccion_ip):
                 flash("Queue eliminado con exito", "success")
                 eliminar_cliente(id)
                 return redirect(url_for("lista_clientes"))
             else:
-                flash("No eliminar el queue", "danger")
+                flash("No eliminamos el queue", "danger")
                 return redirect(url_for("lista_clientes"))
             
         else:
@@ -368,6 +370,19 @@ def aplicar_reglas():
             flash("No logramos aplicar las reglas", "danger")
             return redirect(url_for("lista_microtiks"))
 
+
+@app.route('/reiniciar_mikrotik/<int:id>', methods=["POST"])
+def reiniciar_mikrotik(id):
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        host = request.form.get("ip")
+        port = request.form.get("port")
+        reicniar_mikrotik(username, password, host, port)
+        
+    return redirect(url_for("lista_microtiks"))
+
+        
 
 @app.route("/dios_ayudame")
 def dios_ayudame():
@@ -401,6 +416,40 @@ def monitor_traffic():
                     data[key.strip()] = value.strip()
     
     return jsonify(data)
+
+@app.route("/consultar_ip_pools")
+def consultar_ip_pools():
+    # Obtiene los parámetros de la consulta
+    mikrotik_id = request.args.get('id')
+    username = request.args.get('username')
+    password = request.args.get('password')
+    host = request.args.get('host')
+    port = request.args.get('port')
+    print(f"Uusaiors obtenidos {username, password, host, port}")
+    # Llama a la función para obtener las IP pools
+    pools = get_pool_list_nuevo(host, port, username, password)
+    print(f"Pool obtenidas en backend {pools}")
+    
+    # Devuelve un fragmento de HTML con el select de pools
+    return render_template("ippools_partial.html", pools=pools)
+
+@app.route("/crear_ppp_profile", methods=["POST"])
+def crear_ppp_profile():
+    # Se obtienen los datos enviados desde el modal
+    username = request.form.get('username')
+    password = request.form.get('password')
+    host = request.form.get('host')
+    port = request.form.get('port')
+    ippool = request.form.get('ippool')
+    ppp_profile = request.form.get('ppp_profile')
+    max_limit = request.form.get('max_limit')
+
+    print(f"Datos obtenidos desde la funcion creacion ppp profile {username, password, host, port, ippool, ppp_profile, max_limit}")
+
+    if creacion_profile(ppp_profile, ippool, max_limit, username, password, host, port):
+        return redirect(url_for("lista_microtiks"))
+    else:
+        return redirect(url_for("lista_microtiks"))
 
 #------------------------------------------------RUTA DE LOS MICROTIKS CRUD----------------------------------
 
@@ -656,10 +705,87 @@ def eliminar_queue_parent(id):
     return redirect(url_for("lista_queue"))        
 #=======================================FUNCION DE QUEUE PARENT==============================
 
+
+
 #=======================================FUNCION DE DHCP LEASES==============================
 
+# Ruta para renderizar la página de perfiles PPPoE
+@app.route("/pppoe_profiles")
+def pppoe_profiles():
+    # En este ejemplo, se asume que 'microtiks' y 'pools' se obtienen previamente.
+    # Podrías obtener la lista de mikrotiks desde una BD.
+    microtiks = consultarMicrotik()
+    # Por defecto, para mostrar pools, se utiliza el primer mikrotik seleccionado.
+
+    pools = get_ip_pools(microtiks[0])
+    profiles = []
+    return render_template("monitor_profiles.html", microtiks=microtiks, pools=pools, profiles=profiles)
+
+# Ruta para crear un nuevo perfil PPPoE
+@app.route("/crear_profile", methods=["POST"])
+def crear_profile():
+    lista_microtik = request.form.get("lista_microtik")
+    nombre = request.form.get("nombre")
+    pool = request.form.get("pool")
+    pool_ranges = request.form.get("pool_ranges")
+    max_limit = request.form.get("max_limit")
+    
+    creacion_profile(pool_ranges, pool, lista_microtik, nombre, max_limit)
+    
+    return redirect(url_for("pppoe_profiles"))
+
 #=======================================FUNCION DE DHCP LEASES==============================
 
 
+#=======================================FUNCION DE DHCP LEASES==============================
+@app.route("/crear_ticket", methods=["POST"])
+def crear_ticket():
+    if request.method == "POST":
+        cliente = request.form.get("lista_clientes")
+        tipo = request.form.get("lista_categorias")
+        descripcion = request.form.get("ticket")
+        usuario = request.form.get("lista_usuarios")
+        
+        if insertar_ticket(cliente, tipo, descripcion, usuario):
+            flash("Ticket generado de manera exitosa", "success")
+            return redirect(url_for("fallas"))
+        else:
+            flash("Ocurrio un error, no generado", "danger")
+            return redirect(url_for("fallas"))      
+        
+@app.route("/fallas")
+def fallas():
+    categoria = ["Soporte técnico",
+                 "Facturación",
+                 "Instalación",
+                 "Otro"]
+    
+    return render_template("fallas.html", clientes=consularNombreClientes(), reportes=categoria,
+                           usuarios=consultarUsuarios(), tickets=consultar_tickets())
+
+@app.route("/editar_ticket/<int:id>", methods=["POST"])
+def editar_ticket(id):
+    if request.method == "POST":
+        tipo = request.form.get("lista_categorias")
+        descripcion = request.form.get("ticket")        
+        usuario = request.form.get("lista_usuarios")
+        if actualizar_ticket(tipo, descripcion, usuario, id):
+            flash("Ticket actualizado con éxito", "success")
+            return redirect(url_for("fallas"))
+        else:
+            flash("No actualizamos el ticket", "danger")
+            return redirect(url_for("fallas"))
+        
+    return redirect(url_for("fallas"))
+
+@app.route("/actualizar_finalizado/<int:id>", methods=["POST"])
+def actualizar_finalizado(id):
+    if actualizar_ticket_finalizado(id):
+        flash("Ticket finalizado", "success")
+        return redirect(url_for("fallas"))
+    else:
+        flash("Ocurrio un error en la finalizacion", "danger")
+        return redirect(url_for("fallas"))
+#================================""=======FUNCION DE DHCP LEASES==============================
 
 app.run(debug=True)

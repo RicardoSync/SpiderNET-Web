@@ -107,20 +107,6 @@ body {
 
 </head>
 <body>
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <div class="container mt-2">
-        {% for category, message in messages %}
-          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-          </div>
-        {% endfor %}
-      </div>
-    {% endif %}
-  {% endwith %}
-
   <!-- Navbar superior -->
   <nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
@@ -128,9 +114,6 @@ body {
         <i class="bi bi-people-fill"></i>
       </a>
       <input type="text"  class="form-control"  id="busqueda" placeholder="Buscar por nombre o IP...">
-
-
-
     </div>
   </nav>
 
@@ -505,6 +488,8 @@ body {
           </div>
         </div>
       </main>
+
+    
     </div>
   </div>
 
@@ -606,5 +591,31 @@ body {
       }
     });
   </script>
+<script>
+  window.addEventListener('load', function() {
+    var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+    toastElList.forEach(function(toastEl) {
+      new bootstrap.Toast(toastEl).show();
+    });
+  });
+</script>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <!-- Contenedor para los Toasts, posición fija en la esquina superior derecha -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+      {% for category, message in messages %}
+      <div class="toast align-items-center text-white bg-{{ category }} border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+        <div class="d-flex">
+          <div class="toast-body">
+            {{ message }}
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
 </body>
 </html>

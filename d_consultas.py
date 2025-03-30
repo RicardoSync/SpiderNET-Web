@@ -289,3 +289,84 @@ def consultar_clientes_bloqueados():
 
     except Exception as r:
         print(f"Tenemos problemas con la consulta de los clientes {r}")
+
+
+def consularNombreClientes():
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+        
+        cursor = cn.cursor()
+        cursor.execute("SELECT nombre FROM clientes")
+        resultado = cursor.fetchall()
+
+        cursor.close()
+        cn.close()
+
+        return [fila[0] for fila in resultado]
+    
+    except Exception as r:
+        print(f"Error en consulta de los nombres {r}")
+        return []
+    
+
+def consultarUsuarios():
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+        cursor = cn.cursor()
+        cursor.execute("SELECT nombre FROM usuarios")
+        resultado = cursor.fetchall()
+        cursor.close()
+        cn.close()
+
+        return [filas[0] for filas in resultado]
+    except Exception as r:
+        print(f"Error en consulta de los usuarios {r}")
+        return []
+    
+def consultar_tickets():
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+        cursor = cn.cursor()
+        cursor.execute("""
+                        SELECT 
+                            f.id, 
+                            c.nombre AS cliente, 
+                            f.categoria, 
+                            f.descripcion, 
+                            f.estado, 
+                            f.fecha_creacion, 
+                            f.fecha_cierre, 
+                            u.nombre AS responsable
+                        FROM tickets f
+                        LEFT JOIN clientes c ON f.id_cliente = c.id  -- Relacionando los tickets con los clientes
+                        LEFT JOIN usuarios u ON f.id_responsable = u.id; -- Relacionando los tickets con los usuarios responsables
+                    """)
+        resultado = cursor.fetchall()
+        cn.close()
+        cursor.close()
+        return resultado
+    except Exception as r:
+        print(f"Error en consulta de tickets {r}")
+        return []
+    
+
+def obtener_credenciales(id):
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+        cursor = cn.cursor()
+        cursor.execute("SELECT ip, username, password, port FROM credenciales_microtik WHERE id = %s", (id,))
+        resultado = cursor.fetchall()
+        cursor.close()
+        cn.close()
+        return resultado
+    except Exception as r:
+        print(f"Error en credenciales de MikroTik por id {r}")
+        return False

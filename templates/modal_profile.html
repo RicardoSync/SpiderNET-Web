@@ -1,0 +1,103 @@
+<!-- Modal -->
+<div class="modal fade text-dark" id="profile_ppp_create{{ mikrotik[0] }}" tabindex="-1" aria-labelledby="profile_ppp_createLabel{{ mikrotik[0] }}" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form action="{{ url_for('crear_ppp_profile') }}" method="POST">
+          <div class="modal-header">
+            <h5 class="modal-title" id="profile_ppp_createLabel">PPP Profile Creacion</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <!-- Datos de conexión -->
+            <h5>Información de conexión</h5>
+            <div class="mb-3">
+              <label for="idMikrotik{{ mikrotik[0] }}" class="form-label">ID MikroTik</label>
+              <input type="text" class="form-control" id="idMikrotik{{ mikrotik[0] }}" value="{{ mikrotik[0] }}" readonly>
+            </div>
+            <div class="mb-3">
+              <label for="username{{ mikrotik[0] }}" class="form-label">Username</label>
+              <input type="text" class="form-control" name="username" id="username{{ mikrotik[0] }}" value="{{ mikrotik[2] }}">
+            </div>
+            <div class="mb-3">
+              <label for="password{{ mikrotik[0] }}" class="form-label">Password</label>
+              <input type="password" class="form-control" name="password" id="password{{ mikrotik[0] }}" value="{{ mikrotik[3] }}">
+            </div>
+            <div class="mb-3">
+              <label for="host{{ mikrotik[0] }}" class="form-label">Host</label>
+              <input type="text" class="form-control" name="host" id="host{{ mikrotik[0] }}" value="{{ mikrotik[4] }}">
+            </div>
+            <div class="mb-3">
+              <label for="port{{ mikrotik[0] }}" class="form-label">Port</label>
+              <input type="text" class="form-control" name="port" id="port{{ mikrotik[0] }}" value="{{ mikrotik[5] }}">
+            </div>
+  
+            <!-- Consulta de IP Pools -->
+            <h5>IP Pools</h5>
+            <button type="button" class="btn btn-primary btn-custom" id="consultarIPPools{{ mikrotik[0] }}">
+              Consultar IP Pools
+            </button>
+            <div id="resultadoIPPools{{ mikrotik[0] }}" class="mt-3">
+              <!-- Aquí se insertará el select con las IP Pools -->
+            </div>
+            <!-- Campo oculto para almacenar el select (opcional) -->
+            <input type="hidden" name="ippools_resultado" id="ippoolsResultadoInput{{ mikrotik[0] }}">
+  
+            <!-- Datos para el nuevo PPP Profile -->
+            <h5>Nuevo PPP Profile</h5>
+            <div class="mb-3">
+              <label for="ppp_profile{{ mikrotik[0] }}" class="form-label">Nombre del PPP Profile</label>
+              <input type="text" class="form-control" name="ppp_profile" id="ppp_profile{{ mikrotik[0] }}" placeholder="Ingrese el nombre del perfil">
+            </div>
+            <div class="mb-3">
+              <label for="max_limit{{ mikrotik[0] }}" class="form-label">Max Limit</label>
+              <input type="text" class="form-control" name="max_limit" id="max_limit{{ mikrotik[0] }}" placeholder="Ejemplo: 10M/10M">
+            </div>
+            <!-- Nota: El select con las pools lo esperamos en el HTML devuelto en el contenedor "resultadoIPPools" -->
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success">Crear PPP Profile</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function(){
+      // Asociamos el evento click al botón de consultar IP Pools
+      $('[id^=consultarIPPools]').on('click', function(){
+        // Obtenemos el identificador del MikroTik a partir del id del botón
+        var mikrotikId = $(this).attr('id').replace('consultarIPPools','');
+  
+        // Recopilamos los valores de los inputs asociados
+        var username = $("#username" + mikrotikId).val();
+        var password = $("#password" + mikrotikId).val();
+        var host = $("#host" + mikrotikId).val();
+        var port = $("#port" + mikrotikId).val();
+  
+        // Realizamos la petición AJAX al endpoint /consultar_ip_pools
+        $.ajax({
+          url: '/consultar_ip_pools',
+          type: 'GET',
+          data: {
+            id: mikrotikId,
+            username: username,
+            password: password,
+            host: host,
+            port: port
+          },
+          success: function(data) {
+            // Insertamos el resultado (select con IP Pools) en el contenedor correspondiente
+            $("#resultadoIPPools" + mikrotikId).html(data);
+          },
+          error: function(err) {
+            $("#resultadoIPPools" + mikrotikId).html('<p>Error al cargar IP Pools.</p>');
+          }
+        });
+      });
+    });
+  </script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    
