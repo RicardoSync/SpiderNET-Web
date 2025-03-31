@@ -143,14 +143,15 @@ def insertar_ticket(cliente, categoria, descripcion, usuario):
         return False
     
 
-def insertar_profile_pppoe(nombre, local_address, address_list, limit, id_mikrotik):
+def insertar_profile_pppoe(nombre, local_address, remote_address ,address_list, limit, id_mikrotik):
     try:
         cn = conexion()
         if cn is None:
             conexion().reconnect()
+            
         cursor = cn.cursor()
-        cursor.execute("INSERT INTO profile (nombre, local_address, addresslist, limit, id_mikrotik) VALUES (%s,%s,%s,%s,%s)",
-                       (nombre, local_address, address_list,limit, id_mikrotik))
+        cursor.execute("INSERT INTO profile (nombre, local_address, remote_address, address_list, max_limit, id_mikrotik) VALUES (%s,%s,%s,%s,%s,%s)",
+                       (nombre, local_address, remote_address, address_list, limit, id_mikrotik))
         cn.commit()
         cursor.close()
         cn.close()

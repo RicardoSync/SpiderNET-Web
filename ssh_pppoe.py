@@ -74,28 +74,29 @@ def get_ip_pools(microtik):
     return pools
 
 
-def get_pool_list_nuevo(host, port, username, password):
+def get_pool_ranges(host, port, username, password):
     try:
         client = paramiko.SSHClient()
         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         client.connect(host, port=int(port), username=username, password=password)
         
-        # Ejecuta el comando para obtener las IP Pools
+        # Ejecutar el comando para obtener las IP Pools
         stdin, stdout, stderr = client.exec_command("/ip/pool/print")
         output = stdout.read().decode('utf-8')
         client.close()
 
-        # Procesamos la salida para extraer el nombre y el rango de cada pool.
-        pools = []
+        # Procesar salida para extraer solo los rangos
+        ranges = []
         for line in output.splitlines():
-            # Evitamos cabecera y líneas vacías
             if line.strip() == "" or "NAME" in line or "Columns:" in line:
                 continue
-            # Se asume que el formato es: <número> pool_name ranges...
-            match = re.match(r"\s*\d+\s+(\S+)\s+(\S+)", line)
+            
+            # Buscar solo el rango de IPs en la línea
+            match = re.search(r"(\d+\.\d+\.\d+\.\d+[-/]\d+\.\d+\.\d+\.\d+)", line)
             if match:
-                pools.append({'name': match.group(1), 'range': match.group(2)})
-        return pools
+                ranges.append(match.group(1))
+
+        return ranges
 
     except Exception as e:
         print("Error al obtener IP Pools:", e)
@@ -134,7 +135,7 @@ def buscar_pool_por_local_address(host, port, username, password, local_address)
         return None
 
 
-def creacion_profile(nombre, ippool_value, max_limit, username, password, host, port):
+def creacion_profile(nombre, ippool_value, max_limit, username, password, host, port, queue_parent):
     # Calcular la dirección local: se toma la primera IP del rango y se le resta 1
     try:
         first_ip = ippool_value.split('-')[0]
@@ -152,18 +153,21 @@ def creacion_profile(nombre, ippool_value, max_limit, username, password, host, 
 
     remote_address = pool_name  # Se asigna el nombre de la pool obtenida
 
-    # Construir el comando para crear el PPP Profile
-    command = f'/ppp/profile/add name="{nombre}" local-address="{local_address}" remote-address="{remote_address}" address-list=Internet rate-limit={max_limit}'
-    print(f"Comando enviado: {command}")
+    # Calcular la ráfaga basada en el max_limit
     try:
+        # Construir el comando para crear el PPP Profile con ráfaga
+        command = f'/ppp/profile/add name="{nombre}" local-address="{local_address}" remote-address="{remote_address}" address-list=Internet rate-limit={max_limit} parent-queue={queue_parent}'
+        print(f"Comando enviado: {command}")
+        
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         ssh.connect(host, port=int(port), username=username, password=password)
         ssh.exec_command(command)
         ssh.close()
-        flash("Perfil creado exitosamente", "success")
+        return True
     except Exception as e:
-        flash(f"Error al crear perfil: {e}", "danger")
+        flash(f"Error al procesar límites o crear perfil: {e}", "danger")
+        return False
 
 def reicniar_mikrotik(username, password, host, port):
     try:

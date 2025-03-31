@@ -129,7 +129,16 @@ body {
                 <i class="bi bi-house-fill"></i> Panel de Control
               </a>
             </li>
-
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('clientes_bloqueados') }}">
+                <i class="bi bi-lock-fill"></i> Bloqueados
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('consultar_equipos') }}">
+                <i class="bi bi-router-fill"></i> Equipos
+              </a>
+            </li>
           </ul>
         </div>
       </nav>
@@ -551,6 +560,7 @@ body {
                 {% endfor %}
               </select>
             </div>
+
           </div>
           <div class="modal-footer">
             <button type="submit" class="btn btn-success btn-custom">Guardar</button>

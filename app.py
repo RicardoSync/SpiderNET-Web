@@ -11,7 +11,7 @@ from dhcp_leases import get_dhcp_leases
 from bloqueos_bd import estado_bloqueado
 from ssh_pppoe import *
 from get_pools import *
-
+from pppoe import *
 app = Flask(__name__)
 app.secret_key = 'zerocuatro04/2025'  # Necesario para usar flash
 #------------------------------------------------RUTAS CUANDO OCURRE UN ERROR----------------------------------
@@ -195,7 +195,7 @@ def crear_mikrotik():
 def lista_microtiks():
     micro = consultarMicrotikTodo()
     print(micro)
-    return render_template("microtik.html", microtiks=micro)
+    return render_template("microtik.html", microtiks=micro, queues_colas=consultarQeue())
 
 @app.route("/editar_mikrotik<int:id>", methods=["POST"])
 def editar_mikrotik(id):
@@ -433,8 +433,8 @@ def consultar_ip_pools():
     # Devuelve un fragmento de HTML con el select de pools
     return render_template("ippools_partial.html", pools=pools)
 
-@app.route("/crear_ppp_profile", methods=["POST"])
-def crear_ppp_profile():
+@app.route("/crear_ppp_profile/<int:id>", methods=["POST"])
+def crear_ppp_profile(id):
     # Se obtienen los datos enviados desde el modal
     username = request.form.get('username')
     password = request.form.get('password')
@@ -443,14 +443,19 @@ def crear_ppp_profile():
     ippool = request.form.get('ippool')
     ppp_profile = request.form.get('ppp_profile')
     max_limit = request.form.get('max_limit')
+    queue_parent = request.form.get('queueParent')
 
-    print(f"Datos obtenidos desde la funcion creacion ppp profile {username, password, host, port, ippool, ppp_profile, max_limit}")
 
-    if creacion_profile(ppp_profile, ippool, max_limit, username, password, host, port):
-        return redirect(url_for("lista_microtiks"))
+    if creacion_profile(ppp_profile, ippool, max_limit, username, password, host, port, queue_parent):
+        if insertar_profile_pppoe(nombre=ppp_profile, local_address=ippool,remote_address=ippool, address_list="Internet", limit=max_limit, id_mikrotik=id):
+            flash("PPP Profile creado en MikroTik y almacenado en el sistema", "success")
+            return redirect(url_for("lista_microtiks"))
+        else:
+            flash("PPP Profile no se creo en el sistema")
+            return redirect(url_for("lista_microtiks"))
     else:
+        flash("PPP Profile no se creo en el MikroTik", "success")
         return redirect(url_for("lista_microtiks"))
-
 #------------------------------------------------RUTA DE LOS MICROTIKS CRUD----------------------------------
 
 
@@ -680,27 +685,22 @@ def eliminar_queue_parent(id):
 
         credenciales = consultarCredenciales(microtik)
 
-        if credenciales:
-            username = credenciales[0]
-            password = credenciales[1]
-            host = credenciales[2]
-            port = credenciales[3]
-
-            ok = eliminarQueueParent(username, password, host, port, segmento_red)
-            if ok:
-                dedotes = eliminarQueueBD(id)
-                if dedotes:
-                    flash("Queue eliminado del sistema", "success")
-                    return redirect(url_for("lista_queue"))
-                else:
-                    flash("Queue no se elimino de la base de datos", "danger")
-                    return redirect(url_for("lista_queue"))
-            else:
-                flash("No eliminamos el QeueuParent de Mikrotik", "danger")
-                return redirect(url_for("lista_queue"))
-        else:
+        if not credenciales:
             flash("Sin credenciales, en ese mikrotik", "danger")
             return redirect(url_for("lista_queue"))
+
+        username, password, host, port = credenciales
+
+        if not eliminarQueueParent(username, password, host, port, segmento_red):
+            flash("No eliminamos el QueueParent de Mikrotik", "danger")
+            return redirect(url_for("lista_queue"))
+
+        if not eliminarQueueBD(id):
+            flash("Queue no se eliminó de la base de datos", "danger")
+            return redirect(url_for("lista_queue"))
+
+        flash("Queue eliminado del sistema", "success")
+        return redirect(url_for("lista_queue"))
 
     return redirect(url_for("lista_queue"))        
 #=======================================FUNCION DE QUEUE PARENT==============================

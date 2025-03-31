@@ -2,7 +2,7 @@
 <div class="modal fade text-dark" id="profile_ppp_create{{ mikrotik[0] }}" tabindex="-1" aria-labelledby="profile_ppp_createLabel{{ mikrotik[0] }}" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <form action="{{ url_for('crear_ppp_profile') }}" method="POST">
+        <form action="{{ url_for('crear_ppp_profile', id=mikrotik[0]) }}" method="POST">
           <div class="modal-header">
             <h5 class="modal-title" id="profile_ppp_createLabel">PPP Profile Creacion</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
@@ -51,6 +51,14 @@
             <div class="mb-3">
               <label for="max_limit{{ mikrotik[0] }}" class="form-label">Max Limit</label>
               <input type="text" class="form-control" name="max_limit" id="max_limit{{ mikrotik[0] }}" placeholder="Ejemplo: 10M/10M">
+            </div>
+            <div class="mb-3">
+              <label for="queueParent{{ mikrotik[0] }}" class="form-label">Nombre de QueueParent</label>
+              <select name="queueParent" id="queueParent{{ mikrotik[0] }}" class="form-control">
+                {% for queue in queues_colas %}
+                  <option value="{{ queue }}">{{ queue }}</option>
+                {% endfor %}
+              </select>
             </div>
             <!-- Nota: El select con las pools lo esperamos en el HTML devuelto en el contenedor "resultadoIPPools" -->
           </div>
