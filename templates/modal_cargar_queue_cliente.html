@@ -1,0 +1,40 @@
+                        <!-- Modal para cargar Queue -->
+                        <div class="modal fade text-dark" id="cargar_queue{{ cliente[0] }}" tabindex="-1" aria-labelledby="cargar_queueLabel{{ cliente[0] }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="cargar_queueLabel{{ cliente[0] }}">Cargar Queue</h5>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                </div>
+                                <form action="{{ url_for('cargar_queue', id=cliente[0]) }}" method="POST">
+                                  <div class="modal-body">
+                                    <div class="mb-3">
+                                      <label for="nombre{{ cliente[0] }}" class="form-label">Nombre</label>
+                                      <input type="text" class="form-control" name="nombre" id="nombre{{ cliente[0] }}" value="{{ cliente[1] }}" required readonly/>
+                                    </div>
+                                    <div class="mb-3">
+                                      <input type="hidden" class="form-control" name="direccionIp" id="direccionIp{{ cliente[0] }}" value="{{ cliente[4] }}" required/>
+                                    </div>
+                                    <div class="mb-3">
+                                      <input type="hidden" class="form-control" name="paquete" id="paquete{{ cliente[0] }}" value="{{ cliente[2] }}" required/>
+                                    </div>
+                                    <div class="mb-3">
+                                      <input type="hidden" class="form-control" name="microtik" id="microtik{{ cliente[0] }}" value="{{ cliente[8] }}" required/>
+                                    </div>
+                                    <div class="mb-3">
+                                      <label for="queueParent{{ cliente[0] }}" class="form-label">Nombre de QueueParent</label>
+                                      <select name="queueParent" id="queueParent{{ cliente[0] }}" class="form-control">
+                                        {% for queue in queues_colas %}
+                                          <option value="{{ queue }}">{{ queue }}</option>
+                                        {% endfor %}
+                                      </select>
+                                    </div>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary btn-custom">Guardar cambios</button>
+                                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Cerrar</button>
+                                  </div>
+                                </form>
+                              </div>
+                            </div>
+                          </div>

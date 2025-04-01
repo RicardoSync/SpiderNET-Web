@@ -1,0 +1,68 @@
+  <!-- Modal para Registrar nuevo cliente -->
+  <div class="modal fade text-dark" id="modalRegistrar" tabindex="-1" aria-labelledby="modalRegistrarLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalRegistrarLabel">Registrar Cliente</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <form action="{{ url_for('crear_cliente') }}" method="POST">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="nombreNuevo" class="form-label">Nombre</label>
+              <input type="text" class="form-control" name="nombreNuevo" id="nombreNuevo" required/>
+            </div>
+            <!-- Select para Paquete -->
+            <div class="mb-3">
+              <label for="lsita_paquetes" class="form-label">Paquete</label>
+              <select name="lsita_paquetes" id="lsita_paquetes" class="form-control">
+                {% for paquete in paquetes %}
+                  <option value="{{ paquete }}">{{ paquete }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="direccionip" class="form-label">Dirección IP</label>
+              <input type="text" class="form-control" name="direccionip" id="direccionip" required/>
+            </div>
+            <div class="mb-3">
+              <label for="dia_corte" class="form-label">Día de Corte</label>
+              <input type="text" class="form-control" name="dia_corte" id="dia_corte" required/>
+            </div>
+            <!-- Select para Antena AP -->
+            <div class="mb-3">
+              <label for="lista_antenas" class="form-label">Antena AP</label>
+              <select name="lista_antenas" id="lista_antenas" class="form-control">
+                {% for antena in antens %}
+                  <option value="{{ antena }}">{{ antena }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <!-- Select para Servicios -->
+            <div class="mb-3">
+              <label for="servicios" class="form-label">Servicios</label>
+              <select name="servicios" id="servicios" class="form-control">
+                {% for servicio in servicios %}
+                  <option value="{{ servicio }}">{{ servicio }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <!-- Select para MikroTik -->
+            <div class="mb-3">
+              <label for="lista_microtik" class="form-label">MikroTik</label>
+              <select name="lista_microtik" id="lista_microtik" class="form-control">
+                {% for microtik in microtiks %}
+                  <option value="{{ microtik }}">{{ microtik }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success btn-custom">Guardar</button>
+            <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>

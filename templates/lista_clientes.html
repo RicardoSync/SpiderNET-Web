@@ -274,224 +274,25 @@
                   <tbody>
                     {% for cliente in clientes %}
                     <tr>
-                      <td>{{ cliente[0] }}</td>
-                      <td>{{ cliente[1] }}</td>
-                      <td>{{ cliente[2] }}</td>
-                      <td>{{ cliente[3] }}</td>
-                      <td>{{ cliente[4] }}</td>
-                      <td>{{ cliente[5] }}</td>
-                      <td>{{ cliente[6] }}</td>
-                      <td>{{ cliente[7] }}</td>
-                      <td>{{ cliente[8] }}</td>
-                      <td>
+                      <td data-label="ID">{{ cliente[0] }}</td>
+                      <td data-label="Nombre">{{ cliente[1] }}</td>
+                      <td data-label="Paquete">{{ cliente[2] }}</td>
+                      <td data-label="Fecha de Instalación">{{ cliente[3] }}</td>
+                      <td data-label="Dirección IP">{{ cliente[4] }}</td>
+                      <td data-label="Día Corte">{{ cliente[5] }}</td>
+                      <td data-label="Antena AP">{{ cliente[6] }}</td>
+                      <td data-label="Servicio">{{ cliente[7] }}</td>
+                      <td data-label="Microtik">{{ cliente[8] }}</td>
+                      <td data-label="Acciones">
                         <!-- Botón para editar -->
                         <button class="btn btn-warning btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="#editarModal{{ cliente[0] }}">
                           <i class="bi bi-pencil-square"></i>
                         </button>
 
-                        <!-- Modal de edición -->
-                        <div class="modal fade text-dark" id="editarModal{{ cliente[0] }}" tabindex="-1" aria-labelledby="editarModalLabel{{ cliente[0] }}" aria-hidden="true">
-                          <div class="modal-dialog">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <h5 class="modal-title" id="editarModalLabel{{ cliente[0] }}">Editar Cliente</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                              </div>
-                              <form action="{{ url_for('eidtar_cliente', id=cliente[0]) }}" method="POST">
-                                <div class="modal-body">
-                                  <div class="mb-3">
-                                    <label for="nombre{{ cliente[0] }}" class="form-label">Nombre</label>
-                                    <input type="text" class="form-control" name="nombre" id="nombre{{ cliente[1] }}" value="{{ cliente[1] }}" required/>
-                                  </div>
-
-                                  <div class="mb-3">
-                                  <label for="lsita_paquetes" class="form-label">Paquete</label>
-                                    <select name="lsita_paquetes" id="lsita_paquetes" class="form-control">
-                                        {% for paquete in paquetes %}
-                                          <option value="{{ paquete }}">{{ paquete }}</option>
-                                        {% endfor %}
-                                      </select>
-                                  </div>
-                                  <div class="mb-3">
-                                    <label for="direccionIp" class="form-label">Direccion IP</label>
-                                    <input type="text" class="form-control" name="direccionIp" id="direccionIp" value="{{ cliente[4]}}">
-                                  </div>
-                                  <div class="mb-3">
-                                    <label for="dia_corte" class="form-label">Dia Corte</label>
-                                    <input type="text" class="form-control" name="dia_corte" id="dia_corte" value="{{ cliente[5]}}">
-                                  </div>
-
-                                  <div class="mb-3">
-                                  <label for="lista_antenas" class="form-label">Antena AP (Nueva / Actual)</label>
-                                    <select name="lista_antenas" id="lista_antenas" class="form-control">
-                                        {% for antena in antens%}
-                                        <option value="{{ antena }}">{{ antena }}</option>
-                                        {%endfor%}
-                                    </select>
-                                  </div>
-
-                                  <div class="mb-3">
-                                  <label for="lista_servicio" class="form-label">Servicio (Nueva / Actual)</label>
-                                    <select name="lista_servicio" id="lista_servicio" class="form-control">
-                                        {% for servicio in servicios%}
-                                        <option value="{{ servicio }}">{{ servicio }}</option>
-                                        {%endfor%}
-                                    </select>
-                                  </div>
-
-                                  <div class="mb-3">
-                                  <label for="lista_microtik" class="form-label">Microtik Administrador (Nueva / Actual)</label>
-                                    <select name="lista_microtik" id="lista_microtik" class="form-control">
-                                        {% for microtik in microtiks%}
-                                        <option value="{{ microtik }}">{{ microtik }}</option>
-                                        {%endfor%}
-                                    </select>
-                                  </div>
-                                  <!-- Otros campos según tu necesidad... -->
-                                </div>
-                                <div class="modal-footer">
-                                  <button type="submit" class="btn btn-primary btn-custom">Guardar cambios</button>
-                                  <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Cerrar</button>
-                                </div>
-                              </form>
-                            </div>
-                          </div>
-                        </div>
-
-                        <!-- Modal para cargar Queue -->
-                        <div class="modal fade text-dark" id="cargar_queue{{ cliente[0] }}" tabindex="-1" aria-labelledby="cargar_queueLabel{{ cliente[0] }}" aria-hidden="true">
-                          <div class="modal-dialog">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <h5 class="modal-title" id="cargar_queueLabel{{ cliente[0] }}">Cargar Queue</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                              </div>
-                              <form action="{{ url_for('cargar_queue', id=cliente[0]) }}" method="POST">
-                                <div class="modal-body">
-                                  <div class="mb-3">
-                                    <label for="nombre{{ cliente[0] }}" class="form-label">Nombre</label>
-                                    <input type="text" class="form-control" name="nombre" id="nombre{{ cliente[0] }}" value="{{ cliente[1] }}" required readonly/>
-                                  </div>
-                                  <div class="mb-3">
-                                    <input type="hidden" class="form-control" name="direccionIp" id="direccionIp{{ cliente[0] }}" value="{{ cliente[4] }}" required/>
-                                  </div>
-                                  <div class="mb-3">
-                                    <input type="hidden" class="form-control" name="paquete" id="paquete{{ cliente[0] }}" value="{{ cliente[2] }}" required/>
-                                  </div>
-                                  <div class="mb-3">
-                                    <input type="hidden" class="form-control" name="microtik" id="microtik{{ cliente[0] }}" value="{{ cliente[8] }}" required/>
-                                  </div>
-                                  <div class="mb-3">
-                                    <label for="queueParent{{ cliente[0] }}" class="form-label">Nombre de QueueParent</label>
-                                    <select name="queueParent" id="queueParent{{ cliente[0] }}" class="form-control">
-                                      {% for queue in queues_colas %}
-                                        <option value="{{ queue }}">{{ queue }}</option>
-                                      {% endfor %}
-                                    </select>
-                                  </div>
-                                </div>
-                                <div class="modal-footer">
-                                  <button type="submit" class="btn btn-primary btn-custom">Guardar cambios</button>
-                                  <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Cerrar</button>
-                                </div>
-                              </form>
-                            </div>
-                          </div>
-                        </div>
-
-                        <!-- Modal para cargar Queue -->
-                        <div class="modal fade text-dark" id="elimanr_queue{{ cliente[0] }}" tabindex="-1" aria-labelledby="elimanr_queue{{ cliente[0] }}" aria-hidden="true">
-                          <div class="modal-dialog">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <h5 class="modal-title" id="elimanr_queue{{ cliente[0] }}">Remover</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                              </div>
-                              <form action="{{ url_for('eliminar_queue_simple', id=cliente[0]) }}" method="POST">
-                                <div class="modal-body">
-                                  <div class="mb-3">
-                                    <label for="nombre{{ cliente[0] }}" class="form-label">Nombre</label>
-                                    <input type="text" class="form-control" name="nombre" id="nombre{{ cliente[0] }}" value="{{ cliente[1] }}" required readonly/>
-                                  </div>
-                                  <div class="mb-3">
-                                    <input type="hidden" class="form-control" name="direccionIp" id="direccionIp{{ cliente[0] }}" value="{{ cliente[4] }}" required/>
-                                  </div>
-                                  <div class="mb-3">
-                                    <input type="hidden" class="form-control" name="microtik" id="microtik{{ cliente[0] }}" value="{{ cliente[8] }}" required/>
-                                  </div>
-                                </div>
-                                <div class="modal-footer">
-                                  <button type="submit" class="btn btn-primary btn-custom">Remover</button>
-                                  <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Cerrar</button>
-                                </div>
-                              </form>
-                            </div>
-                          </div>
-                        </div>
-
-                        <!-- Modal para asignar equipo al cliente -->
-                        <div class="modal fade text-dark" id="asignarEquipoModal{{ cliente[0] }}" tabindex="-1" aria-labelledby="asignarEquipoModalLabel{{ cliente[0] }}" aria-hidden="true">
-                          <div class="modal-dialog">
-                            <div class="modal-content">
-                              <div class="modal-header">
-                                <h5 class="modal-title" id="asignarEquipoModalLabel{{ cliente[0] }}">Asignar Equipo al Cliente</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                              </div>
-                              <form action="{{ url_for('asignar_equipo', id=cliente[0]) }}" method="POST">
-                                <div class="modal-body">
-
-                                  <!-- Campo para ingresar el nombre del equipo -->
-                                  <div class="mb-3">
-                                    <label for="nombre_equipo{{ cliente[0] }}" class="form-label">Nombre del Equipo</label>
-                                    <input type="text" class="form-control" name="nombre_equipo" id="nombre_equipo{{ cliente[0] }}" placeholder="Ej: Equipo1" required>
-                                  </div>
-
-                                  <!-- Select para el tipo de equipo -->
-                                  <div class="mb-3">
-                                    <label for="tipo_equipo{{ cliente[0] }}" class="form-label">Tipo de Equipo</label>
-                                    <select name="tipo_equipo" id="tipo_equipo{{ cliente[0] }}" class="form-select" required>
-                                      <option value="" disabled selected>Seleccione un tipo</option>
-                                      <option value="Router">Router</option>
-                                      <option value="Antena">Antena</option>
-                                      <option value="ONU">ONU</option>
-                                      <option value="ONU">Otro</option>
-
-                                      <!-- Agrega más opciones según tus necesidades -->
-                                    </select>
-                                  </div>
-
-                                  <!-- Campo para la marca del equipo -->
-                                  <div class="mb-3">
-                                    <label for="marca_equipo{{ cliente[0] }}" class="form-label">Marca</label>
-                                    <input type="text" class="form-control" name="marca_equipo" id="marca_equipo{{ cliente[0] }}" placeholder="Ej: Cisco, TP-Link" required>
-                                  </div>
-
-                                  <!-- Campo para el modelo del equipo -->
-                                  <div class="mb-3">
-                                    <label for="modelo_equipo{{ cliente[0] }}" class="form-label">Modelo</label>
-                                    <input type="text" class="form-control" name="modelo_equipo" id="modelo_equipo{{ cliente[0] }}" placeholder="Ej: XYZ123" required>
-                                  </div>
-
-                                  <!-- Select para el estado del equipo -->
-                                  <div class="mb-3">
-                                    <label for="estado_equipo{{ cliente[0] }}" class="form-label">Estado del Equipo</label>
-                                    <select name="estado_equipo" id="estado_equipo{{ cliente[0] }}" class="form-select" required>
-                                      <option value="" disabled selected>Seleccione el estado</option>
-                                      <option value="Rentado">Rentado</option>
-                                      <option value="Vendido">Vendido</option>
-                                      <option value="Propio">Propio</option>
-                                    </select>
-                                  </div>
-                                </div>
-                                <div class="modal-footer">
-                                  <button type="submit" class="btn btn-primary btn-custom">Asignar Equipo</button>
-                                  <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Cerrar</button>
-                                </div>
-                              </form>
-                            </div>
-                          </div>
-                        </div>
-
+                        {% include 'modal_edicion_cliente.html'%}
+                        {% include 'modal_cargar_queue_cliente.html'%}
+                        {% include 'modal_eliminar_queue_cliente.html'%}
+                        {% include 'modal_asignar_equipo_cliente.html'%}
 
                         <!-- Botón para eliminar -->
                         <!-- Botón para bloquear -->
@@ -521,68 +322,8 @@
                         <button type="submit" class="btn btn-success btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="">
                           <i class="bi bi-cash"></i>
                         </button>
-                      
-
-                      <!-- Modal para bloquear un cliente -->
-                        <div class="modal fade text-dark" id="bloqueoClienteModal{{ cliente[0] }}" tabindex="-1" aria-labelledby="modalRegistrarLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="bloqueoClienteModal{{ cliente[0] }}">Bloquear Cliente</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                                    </div>
-                                    <form action="{{ url_for('bloquear_cliente_pcq', id=cliente[0]) }}" method="POST">
-                                        <div class="modal-body">
-                                            <div class="mb-3">
-                                                <label for="nombre{{ cliente[0] }}" class="form-label">Nombre</label>
-                                                <input type="text" class="form-control" name="nombre" id="nombre{{ cliente[0] }}" value="{{ cliente[1] }}" required readonly/>
-                                            </div>
-                                            <div class="mb-3">
-                                                <input type="hidden" class="form-control" name="direccion_addres_cliente" id="direccion_addres_cliente{{ cliente[0] }}" value="{{ cliente[4] }}" required/>
-                                            </div>
-                                            <div class="mb-3">
-                                                <input type="hidden" class="form-control" name="microtik" id="microtik{{ cliente[0] }}" value="{{ cliente[8] }}" required/>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="submit" class="btn btn-primary">Bloquear Cliente</button>
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <!-- Modal para desbloquear un cliente -->
-                        <div class="modal fade text-dark" id="desbloqueoClienteModal{{ cliente[0] }}" tabindex="-1" aria-labelledby="modalRegistrarLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="desbloqueoClienteModal{{ cliente[0] }}">Desbloquear Cliente</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                                    </div>
-                                    <form action="{{ url_for('desbloquear_cliente_pcq', id=cliente[0]) }}" method="POST">
-                                        <div class="modal-body">
-                                            <div class="mb-3">
-                                                <label for="nombre{{ cliente[0] }}" class="form-label">Nombre</label>
-                                                <input type="text" class="form-control" name="nombre" id="nombre{{ cliente[0] }}" value="{{ cliente[1] }}" required readonly/>
-                                            </div>
-                                            <div class="mb-3">
-                                                <input type="hidden" class="form-control" name="direccion_addres_cliente" id="direccion_addres_cliente{{ cliente[0] }}" value="{{ cliente[4] }}" required/>
-                                            </div>
-                                            <div class="mb-3">
-                                                <input type="hidden" class="form-control" name="microtik" id="microtik{{ cliente[0] }}" value="{{ cliente[8] }}" required/>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="submit" class="btn btn-primary">Desloquear Cliente</button>
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+                        {% include 'modal_bloquear_cliente.html' %}
+                        {% include 'modal_desbloqueo_cliente.html' %}
                       </td>
                     </tr>
                     {% endfor %}
@@ -598,7 +339,7 @@
     </div>
   </div>
 
-  <!-- Modal para Registrar nuevo cliente -->
+
   <div class="modal fade text-dark" id="modalRegistrar" tabindex="-1" aria-labelledby="modalRegistrarLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -666,6 +407,7 @@
       </div>
     </div>
   </div>
+  
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
