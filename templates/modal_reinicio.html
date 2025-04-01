@@ -10,23 +10,19 @@
           <div class="modal-body">
             <!-- Información de conexión (similar al modal de edición) -->
             <div class="mb-3">
-              <label for="username{{ mikrotik[0] }}" class="form-label">Username</label>
-              <input type="text" class="form-control" name="username" id="username{{ mikrotik[0] }}" value="{{ mikrotik[2] }}" required/>
+              <input type="hidden" class="form-control" name="username" id="username{{ mikrotik[0] }}" value="{{ mikrotik[2] }}" required/>
             </div>
             <div class="mb-3">
-              <label for="password{{ mikrotik[0] }}" class="form-label">Password</label>
-              <input type="password" class="form-control" name="password" id="password{{ mikrotik[0] }}" value="{{ mikrotik[3] }}" required/>
+              <input type="hidden" class="form-control" name="password" id="password{{ mikrotik[0] }}" value="{{ mikrotik[3] }}" required/>
             </div>
             <div class="mb-3">
-              <label for="ip{{ mikrotik[0] }}" class="form-label">Dirección IP</label>
-              <input type="text" class="form-control" name="ip" id="ip{{ mikrotik[0] }}" value="{{ mikrotik[4] }}" required/>
+              <input type="hidden" class="form-control" name="ip" id="ip{{ mikrotik[0] }}" value="{{ mikrotik[4] }}" required/>
             </div>
             <div class="mb-3">
-              <label for="port{{ mikrotik[0] }}" class="form-label">Puerto</label>
-              <input type="number" class="form-control" name="port" id="port{{ mikrotik[0] }}" value="{{ mikrotik[5] }}" required/>
+              <input type="hidden" class="form-control" name="port" id="port{{ mikrotik[0] }}" value="{{ mikrotik[5] }}" required/>
             </div>
           <div class="modal-footer">
-            <button type="submit" class="btn btn-success">Crear Queue Parent</button>
+            <button type="submit" class="btn btn-success">Reinciar MikroTik</button>
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
           </div>
         </form>
