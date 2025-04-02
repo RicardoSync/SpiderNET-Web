@@ -1,0 +1,33 @@
+                        <!-- Botón para desbloquear -->
+                        <button class="btn btn-warning btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="#desbloqueoClienteModal{{ cliente[0] }}">
+                            <i class="bi bi-unlock-fill"></i>
+                        </button>
+                        <!-- Modal para desbloquear un cliente -->
+                        <div class="modal fade text-dark" id="desbloqueoClienteModal{{ cliente[0] }}" tabindex="-1" aria-labelledby="modalRegistrarLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="desbloqueoClienteModal{{ cliente[0] }}">Desbloquear Cliente</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                    </div>
+                                    <form action="{{ url_for('desbloquear_cliente_pcq', id=cliente[0]) }}" method="POST">
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="nombre{{ cliente[0] }}" class="form-label">Nombre</label>
+                                                <input type="text" class="form-control" name="nombre" id="nombre{{ cliente[0] }}" value="{{ cliente[1] }}" required readonly/>
+                                            </div>
+                                            <div class="mb-3">
+                                                <input type="hidden" class="form-control" name="direccion_addres_cliente" id="direccion_addres_cliente{{ cliente[0] }}" value="{{ cliente[4] }}" required/>
+                                            </div>
+                                            <div class="mb-3">
+                                                <input type="hidden" class="form-control" name="microtik" id="microtik{{ cliente[0] }}" value="{{ cliente[8] }}" required/>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="submit" class="btn btn-primary">Desloquear Cliente</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>

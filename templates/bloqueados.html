@@ -4,130 +4,184 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Panel de Control</title>
- <!-- Bootstrap CSS -->
-<link
-href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-rel="stylesheet"
-/>
-<!-- Bootstrap Icons (opcional para íconos) -->
-<link
-rel="stylesheet"
-href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
-/>
-
-<!-- Estilos personalizados -->
-<style>
-/* Fondo y tipografía general */
-body {
-  background-color: #121212;
-  color: #e0e0e0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-/* Navbar superior */
-.navbar {
-  background: linear-gradient(90deg, #2b2b2b 0%, #1f1f1f 100%);
-  border-bottom: 1px solid #444;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-}
-.navbar-brand {
-  font-weight: 600;
-  font-size: 1.5rem;
-  letter-spacing: 0.05rem;
-}
-
-/* Panel lateral */
-.sidebar {
-  background: linear-gradient(180deg, #2b2b2b 0%, #1f1f1f 100%);
-  min-height: 100vh;
-  border-right: 1px solid #444;
-  padding-top: 1rem;
-  transition: all 0.3s ease;
-}
-.sidebar .nav-link {
-  color: #e0e0e0;
-  padding: 0.75rem 1rem;
-  transition: background 0.3s, padding 0.3s;
-}
-.sidebar .nav-link:hover {
-  background-color: #343434;
-  padding-left: 1.25rem;
-}
-
-/* Card y tabla */
-.card {
-  background-color: #1e1e1e;
-  border: none;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-.card-header {
-  background-color: #2b2b2b;
-  border-bottom: 1px solid #444;
-  font-weight: 600;
-  color: #ffca28;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-}
-.table thead th {
-  background-color: #3b3b3b;
-  color: #ffca28;
-  border: none;
-}
-.table-striped > tbody > tr:nth-of-type(odd) {
-  background-color: #232323;
-}
-.table-striped > tbody > tr:nth-of-type(even) {
-  background-color: #1e1e1e;
-}
-.table-hover tbody tr:hover {
-  background-color: #3a3a3a;
-}
-
-/* Botones */
-.btn-custom {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border-radius: 4px;
-}
-.btn-custom:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-}
-
-/* Animación de aparición para elementos */
-[data-aos] {
-  opacity: 0;
-  transition-property: opacity, transform;
-  transition-duration: 0.6s;
-}
-[data-aos].aos-animate {
-  opacity: 1;
-}
-</style>
-
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons (opcional para íconos) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+  
+  <!-- Estilos personalizados -->
+  <style>
+    /* Fondo y tipografía general */
+    body {
+      background-color: #121212;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    /* Navbar superior */
+    .navbar {
+      background: linear-gradient(90deg, #2b2b2b 0%, #1f1f1f 100%);
+      border-bottom: 1px solid #444;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+    .navbar-brand {
+      font-weight: 600;
+      font-size: 1.5rem;
+      letter-spacing: 0.05rem;
+    }
+    /* Botón toggle para mostrar/ocultar sidebar en móviles */
+    .navbar-toggler {
+      border: none;
+      color: #e0e0e0;
+    }
+    
+    /* Panel lateral */
+    .sidebar {
+      background: linear-gradient(180deg, #2b2b2b 0%, #1f1f1f 100%);
+      min-height: 100vh;
+      border-right: 1px solid #444;
+      padding-top: 1rem;
+      transition: all 0.3s ease;
+    }
+    .sidebar .nav-link {
+      color: #e0e0e0;
+      padding: 0.75rem 1rem;
+      transition: background 0.3s, padding 0.3s;
+    }
+    .sidebar .nav-link:hover {
+      background-color: #343434;
+      padding-left: 1.25rem;
+    }
+    
+    /* Card y tabla */
+    .card {
+      background-color: #1e1e1e;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    .card-header {
+      background-color: #2b2b2b;
+      border-bottom: 1px solid #444;
+      font-weight: 600;
+      color: #ffca28;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+    }
+    .table thead th {
+      background-color: #3b3b3b;
+      color: #ffca28;
+      border: none;
+    }
+    .table-striped > tbody > tr:nth-of-type(odd) {
+      background-color: #232323;
+    }
+    .table-striped > tbody > tr:nth-of-type(even) {
+      background-color: #1e1e1e;
+    }
+    .table-hover tbody tr:hover {
+      background-color: #3a3a3a;
+    }
+    
+    /* Botones */
+    .btn-custom {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border-radius: 4px;
+    }
+    .btn-custom:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Animación de aparición para elementos */
+    [data-aos] {
+      opacity: 0;
+      transition-property: opacity, transform;
+      transition-duration: 0.6s;
+    }
+    [data-aos].aos-animate {
+      opacity: 1;
+    }
+    
+    /* Estilos para la tabla en dispositivos móviles */
+    @media (max-width: 767.98px) {
+      .table-responsive thead {
+        display: none;
+      }
+      .table-responsive table,
+      .table-responsive tbody,
+      .table-responsive tr,
+      .table-responsive td {
+        display: block;
+        width: 100%;
+      }
+      .table-responsive tr {
+        margin-bottom: 1rem;
+        border: 1px solid #444;
+        border-radius: 5px;
+        padding: 0.5rem;
+      }
+      .table-responsive td {
+        text-align: right;
+        position: relative;
+        padding-left: 50%;
+        border: none;
+        border-bottom: 1px solid #444;
+      }
+      .table-responsive td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 45%;
+        padding-left: 0.5rem;
+        font-weight: 600;
+        text-align: left;
+      }
+      .table-responsive td:last-child {
+        border-bottom: 0;
+      }
+      /* Hacemos que la sidebar se oculte inicialmente en móviles */
+      .sidebar {
+        display: none;
+      }
+      .sidebar.show {
+        display: block;
+      }
+    }
+  </style>
+  
 </head>
 <body>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <div class="container mt-2">
-        {% for category, message in messages %}
-          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <!-- Contenedor para los Toasts, posición fija en la esquina superior derecha -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+      {% for category, message in messages %}
+      <div class="toast align-items-center text-white bg-{{ category }} border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+        <div class="d-flex">
+          <div class="toast-body">
             {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
           </div>
-        {% endfor %}
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
       </div>
-    {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
   {% endwith %}
 
   <!-- Navbar superior -->
   <nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
-      <a class="navbar-brand text-white" href="#">
+      <!-- Botón toggle para la sidebar en móviles -->
+      <button class="navbar-toggler" type="button" aria-label="Toggle navigation" id="sidebarToggle">
+        <i class="bi bi-list" style="font-size: 1.5rem;"></i>
+      </button>
+      <a class="navbar-brand text-white ms-2" href="#">
         <i class="bi bi-people-fill"></i>
       </a>
-      <input type="text"  class="form-control"  id="busqueda" placeholder="Buscar por nombre o IP...">
+      <input type="text" class="form-control ms-3" id="busqueda" placeholder="Buscar por nombre o IP...">
     </div>
   </nav>
 
@@ -135,7 +189,7 @@ body {
   <div class="container-fluid">
     <div class="row">
       <!-- Panel Lateral -->
-      <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+      <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
         <div class="position-sticky pt-3">
           <ul class="nav flex-column">
             <li class="nav-item">
@@ -184,84 +238,52 @@ body {
                   <tbody>
                     {% for cliente in clientes %}
                     <tr>
-                      <td>{{ cliente[0] }}</td>
-                      <td>{{ cliente[1] }}</td>
-                      <td>{{ cliente[2] }}</td>
-                      <td>{{ cliente[3] }}</td>
-                      <td>{{ cliente[4] }}</td>
-                      <td>{{ cliente[5] }}</td>
-                      <td>{{ cliente[6] }}</td>
-                      <td>{{ cliente[7] }}</td>
-                      <td>{{ cliente[8] }}</td>
-                      <td>
- 
-                        <!-- Botón para desbloquear -->
-                        <button class="btn btn-warning btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="#desbloqueoClienteModal{{ cliente[0] }}">
-                            <i class="bi bi-unlock-fill"></i>
-                        </button>
-                        <!-- Modal para desbloquear un cliente -->
-                        <div class="modal fade text-dark" id="desbloqueoClienteModal{{ cliente[0] }}" tabindex="-1" aria-labelledby="modalRegistrarLabel" aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="desbloqueoClienteModal{{ cliente[0] }}">Desbloquear Cliente</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                                    </div>
-                                    <form action="{{ url_for('desbloquear_cliente_pcq', id=cliente[0]) }}" method="POST">
-                                        <div class="modal-body">
-                                            <div class="mb-3">
-                                                <label for="nombre{{ cliente[0] }}" class="form-label">Nombre</label>
-                                                <input type="text" class="form-control" name="nombre" id="nombre{{ cliente[0] }}" value="{{ cliente[1] }}" required readonly/>
-                                            </div>
-                                            <div class="mb-3">
-                                                <input type="hidden" class="form-control" name="direccion_addres_cliente" id="direccion_addres_cliente{{ cliente[0] }}" value="{{ cliente[4] }}" required/>
-                                            </div>
-                                            <div class="mb-3">
-                                                <input type="hidden" class="form-control" name="microtik" id="microtik{{ cliente[0] }}" value="{{ cliente[8] }}" required/>
-                                            </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="submit" class="btn btn-primary">Desloquear Cliente</button>
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+                      <td data-label="ID">{{ cliente[0] }}</td>
+                      <td data-label="Nombre">{{ cliente[1] }}</td>
+                      <td data-label="Paquete">{{ cliente[2] }}</td>
+                      <td data-label="Fecha de Instalación">{{ cliente[3] }}</td>
+                      <td data-label="Dirección IP">{{ cliente[4] }}</td>
+                      <td data-label="Día Corte">{{ cliente[5] }}</td>
+                      <td data-label="Antena AP">{{ cliente[6] }}</td>
+                      <td data-label="Servicio">{{ cliente[7] }}</td>
+                      <td data-label="Microtik">{{ cliente[8] }}</td>
+                      <td data-label="Acciones">
+                        {% include 'modal_bloqueo_bloqueo.html' %}
                       </td>
                     </tr>
                     {% endfor %}
                   </tbody>
                 </table>
               </div>
+              
             </div>
           </div>
         </div>
       </main>
     </div>
   </div>
+  
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Obtenemos la referencia al campo de búsqueda y a la tabla
+    // Función para el toggle de la sidebar en móviles
+    document.getElementById('sidebarToggle').addEventListener('click', function() {
+      const sidebar = document.getElementById('sidebarMenu');
+      sidebar.classList.toggle('show');
+    });
+    
+    // Búsqueda en la tabla
     const inputBusqueda = document.getElementById("busqueda");
     const tabla = document.getElementById("miTabla");
     const filas = tabla.getElementsByTagName("tr");
 
-    // Añadimos el evento keyup para ejecutar la búsqueda cada vez que se escriba algo
     inputBusqueda.addEventListener("keyup", function() {
       const filtro = inputBusqueda.value.toUpperCase();
-
-      // Iteramos sobre las filas de la tabla (omitimos la primera fila que es el encabezado)
       for (let i = 1; i < filas.length; i++) {
         const celdas = filas[i].getElementsByTagName("td");
         if (celdas.length > 0) {
-          // Se asume que la columna de "Nombre" es la segunda (índice 1)
-          // y la de "Dirección IP" es la quinta (índice 4)
           const nombre = celdas[1].textContent || celdas[1].innerText;
           const ip = celdas[4].textContent || celdas[4].innerText;
-
-          // Si alguna de las celdas contiene el texto del filtro, se muestra la fila
           if (nombre.toUpperCase().indexOf(filtro) > -1 || ip.toUpperCase().indexOf(filtro) > -1) {
             filas[i].style.display = "";
           } else {

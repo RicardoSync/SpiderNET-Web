@@ -11,7 +11,7 @@
   <!-- Chart.js para la gráfica -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    /* Tus estilos previos */
+    /* Estilos base */
     body {
       background-color: #1e1e1e;
       color: #fff;
@@ -42,6 +42,7 @@
       top: 0;
       left: 0;
       padding-top: 1rem;
+      transition: left 0.3s ease;
     }
     .sidebar .sidebar-title {
       color: #fff;
@@ -110,6 +111,42 @@
       .main-content {
         margin-left: 0;
       }
+      /* Adaptación de la tabla en formato "target" */
+      .table-responsive thead {
+        display: none;
+      }
+      .table-responsive table,
+      .table-responsive tbody,
+      .table-responsive tr,
+      .table-responsive td {
+        display: block;
+        width: 100%;
+      }
+      .table-responsive tr {
+        margin-bottom: 1rem;
+        border: 1px solid #444;
+        border-radius: 5px;
+        padding: 0.5rem;
+      }
+      .table-responsive td {
+        text-align: right;
+        position: relative;
+        padding-left: 50%;
+        border: none;
+        border-bottom: 1px solid #444;
+      }
+      .table-responsive td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 45%;
+        padding-left: 0.5rem;
+        font-weight: 600;
+        text-align: left;
+      }
+      .table-responsive td:last-child {
+        border-bottom: 0;
+      }
     }
   </style>
 </head>
@@ -130,10 +167,11 @@
 
   <!-- Barra superior -->
   <div class="topbar">
-    <a href="#" class="brand">Servicios</a>
-    <button class="btn btn-sm btn-outline-light d-md-none" onclick="document.querySelector('.sidebar').classList.toggle('show')">
+    <!-- Botón para desplegar el menú lateral en móviles -->
+    <button class="btn btn-sm btn-outline-light d-md-none me-2" onclick="toggleSidebar()">
       <i class="bi bi-list"></i>
     </button>
+    <a href="#" class="brand">Monitor Trafico</a>
   </div>
 
   <!-- Panel lateral -->
@@ -155,7 +193,13 @@
         <label for="lista_microtik" class="form-label">Seleccione Mikrotik:</label>
         <select name="lista_microtik" id="lista_microtik" class="form-control">
           {% for microtik in microtiks %}
-          <option value="{{ microtik }}">{{ microtik }}</option>
+          <option value="{{ microtik }}"
+                  data-username="{{ microtik.username }}"
+                  data-password="{{ microtik.password }}"
+                  data-ip="{{ microtik.ip }}"
+                  data-port="{{ microtik.port }}">
+            {{ microtik }}
+          </option>
           {% endfor %}
         </select>
       </div>
@@ -165,9 +209,9 @@
       </div>
       <!-- Contenedor donde se carga el select de interfaces vía AJAX -->
       <div id="interfacesContainer" class="mb-3">
-        <!-- Aquí se inyecta el HTML parcial (ej: interfaces_partial.html) -->
+        <!-- Aquí se inyecta el HTML parcial -->
       </div>
-      <!-- Botón para iniciar monitoreo (habilitado al seleccionar interfaz) -->
+      <!-- Botón para iniciar monitoreo -->
       <div class="mb-3">
         <button id="btnTrafico" class="btn btn-primary btn-custom" disabled>Trafico</button>
       </div>
@@ -177,7 +221,9 @@
         <div class="card-header">Monitor de Trafico</div>
         <div class="card-body">
           <!-- Contenedor de la gráfica -->
-          <canvas id="traficoChart" height="100"></canvas>
+          <div style="position: relative; height: 300px;">
+            <canvas id="traficoChart"></canvas>
+          </div>
           <!-- Contenedor de la tabla -->
           <div class="table-responsive mt-3">
             <table class="table table-striped table-hover" id="tablaTrafico">
@@ -206,51 +252,78 @@
     let chart = null;
     let selectedInterface = null;
     
-    // Inicializa la gráfica con Chart.js
+    // Inicializa la gráfica con Chart.js con mejoras visuales
     function initChart() {
-      const ctx = document.getElementById('traficoChart').getContext('2d');
-      chart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: [], // marcas de tiempo
-          datasets: [
-            {
-              label: 'rx-bits-per-second',
-              data: [],
-              borderColor: 'rgba(255,202,40,1)',
-              backgroundColor: 'rgba(255,202,40,0.2)',
-              fill: true
-            },
-            {
-              label: 'tx-bits-per-second',
-              data: [],
-              borderColor: 'rgba(0,123,255,1)',
-              backgroundColor: 'rgba(0,123,255,0.2)',
-              fill: true
-            }
-          ]
+  const ctx = document.getElementById('traficoChart').getContext('2d');
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [
+        {
+          label: 'rx-bits-per-second',
+          data: [],
+          borderColor: 'rgba(255,202,40,1)',
+          backgroundColor: 'rgba(255,202,40,0.2)',
+          fill: true,
+          tension: 0.4
         },
-        options: {
-          scales: {
-            x: {
-              display: true,
-              title: {
-                display: true,
-                text: 'Tiempo'
-              }
-            },
-            y: {
-              display: true,
-              title: {
-                display: true,
-                text: 'Mbps'
-              }
-            }
+        {
+          label: 'tx-bits-per-second',
+          data: [],
+          borderColor: 'rgba(0,123,255,1)',
+          backgroundColor: 'rgba(0,123,255,0.2)',
+          fill: true,
+          tension: 0.4
+        }
+      ]
+    },
+    options: {
+      animation: {
+        duration: 500,      // Duración de 500ms para una transición rápida y suave
+        easing: 'linear'    // Easing lineal para evitar efectos de "rebote"
+      },
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        tooltip: {
+          mode: 'index',
+          intersect: false
+        },
+        legend: {
+          labels: {
+            color: '#fff'
           }
         }
-      });
+      },
+      scales: {
+        x: {
+          display: true,
+          title: {
+            display: true,
+            text: 'Tiempo',
+            color: '#fff'
+          },
+          ticks: {
+            color: '#fff'
+          }
+        },
+        y: {
+          display: true,
+          title: {
+            display: true,
+            text: 'Mbps',
+            color: '#fff'
+          },
+          ticks: {
+            color: '#fff'
+          }
+        }
+      }
     }
-    
+  });
+}
+
     // Función para actualizar la tabla y la gráfica
     function actualizarTrafico() {
       const listaMicrotik = document.getElementById('lista_microtik');
@@ -297,15 +370,14 @@
         const now = new Date().toLocaleTimeString();
         if (chart) {
           chart.data.labels.push(now);
-          
-          // Procesa valor rx
+          // rx
           let rxValue = data["rx-bits-per-second"];
           if (typeof rxValue === "string") {
             rxValue = parseFloat(rxValue.replace("Mbps", ""));
           }
           chart.data.datasets[0].data.push(rxValue);
           
-          // Procesa valor tx
+          // tx
           let txValue = data["tx-bits-per-second"];
           if (typeof txValue === "string") {
             if (txValue.includes("Mbps")) {
@@ -329,11 +401,11 @@
       .catch(error => console.error('Error al actualizar tráfico:', error));
     }
     
-    // Inicia el monitoreo al presionar el botón "Trafico"
+    // Inicia el monitoreo
     document.getElementById('btnTrafico').addEventListener('click', () => {
       if (intervalId) clearInterval(intervalId);
       if (!chart) initChart();
-      intervalId = setInterval(actualizarTrafico, 1000);
+      intervalId = setInterval(actualizarTrafico, 1500);
     });
     
     // Botón para detener el monitoreo
@@ -345,36 +417,33 @@
       }
     });
     
-  // AJAX para consultar interfaces del Mikrotik seleccionado
-  document.getElementById('btnConsultarInterfaz').addEventListener('click', () => {
-    const listaMicrotik = document.getElementById('lista_microtik');
-    const selectedOption = listaMicrotik.options[listaMicrotik.selectedIndex];
-    // Se asume que el nombre del mikrotik está en el texto de la opción
-    const mikrotikName = selectedOption.text;
-    
-    // Construye los parámetros con solo el nombre
-    const queryParams = new URLSearchParams({ mikrotik: mikrotikName });
-    
-    fetch(`{{ url_for('consultar_interfaces_chido') }}?${queryParams.toString()}`)
-    .then(response => response.text())
-    .then(html => {
-      document.getElementById('interfacesContainer').innerHTML = html;
-      // Habilita el botón de Trafico al cargar interfaces
-      document.getElementById('btnTrafico').disabled = false;
+    // AJAX para consultar interfaces del Mikrotik seleccionado
+    document.getElementById('btnConsultarInterfaz').addEventListener('click', () => {
+      const listaMicrotik = document.getElementById('lista_microtik');
+      const selectedOption = listaMicrotik.options[listaMicrotik.selectedIndex];
+      const mikrotikName = selectedOption.text;
+      const queryParams = new URLSearchParams({ mikrotik: mikrotikName });
       
-      // Agrega listener para capturar la selección de la interfaz
-      const selectInterface = document.getElementById('selectInterface');
-      if (selectInterface) {
-        selectInterface.addEventListener('change', () => {
+      fetch(`{{ url_for('consultar_interfaces_chido') }}?${queryParams.toString()}`)
+      .then(response => response.text())
+      .then(html => {
+        document.getElementById('interfacesContainer').innerHTML = html;
+        document.getElementById('btnTrafico').disabled = false;
+        const selectInterface = document.getElementById('selectInterface');
+        if (selectInterface) {
+          selectInterface.addEventListener('change', () => {
+            selectedInterface = selectInterface.value;
+          });
           selectedInterface = selectInterface.value;
-        });
-        // Selecciona la primera interfaz por defecto
-        selectedInterface = selectInterface.value;
-      }
-    })
-    .catch(error => console.error('Error al consultar interfaces:', error));
-  });
-
+        }
+      })
+      .catch(error => console.error('Error al consultar interfaces:', error));
+    });
+    
+    // Función para alternar la visibilidad del sidebar en móviles
+    function toggleSidebar() {
+      document.querySelector(".sidebar").classList.toggle("show");
+    }
   </script>
 </body>
 </html>

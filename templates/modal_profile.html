@@ -1,3 +1,221 @@
+                        <!-- Modal de edición -->
+                        <div class="modal fade text-dark" id="editarModal{{ mikrotik[0] }}" tabindex="-1" aria-labelledby="editarModalLabel{{ mikrotik[0] }}" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="editarModalLabel{{ mikrotik[0] }}">Editar MikroTik</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                              </div>
+                              <form action="{{ url_for('editar_mikrotik', id=mikrotik[0]) }}" method="POST">
+                                <div class="modal-body">
+                                  <div class="mb-3">
+                                    <label for="nombre{{ mikrotik[0] }}" class="form-label">Nombre</label>
+                                    <input type="text" class="form-control" name="nombre" id="nombre{{ mikrotik[0] }}" value="{{ mikrotik[1] }}" required/>
+                                  </div>
+                                  <div class="mb-3">
+                                    <label for="username{{ mikrotik[0] }}" class="form-label">Username</label>
+                                    <input type="text" class="form-control" name="username" id="username{{ mikrotik[0] }}" value="{{ mikrotik[2] }}" required/>
+                                  </div>
+                                  <div class="mb-3">
+                                    <label for="password{{ mikrotik[0] }}" class="form-label">Password</label>
+                                    <input type="password" class="form-control" name="password" id="password{{ mikrotik[0] }}" value="{{ mikrotik[3] }}" required/>
+                                  </div>
+                                  <div class="mb-3">
+                                    <label for="ip{{ mikrotik[0] }}" class="form-label">Dirección IP</label>
+                                    <input type="text" class="form-control" name="ip" id="ip{{ mikrotik[0] }}" value="{{ mikrotik[4] }}" required/>
+                                  </div>
+                                  <div class="mb-3">
+                                    <label for="port{{ mikrotik[0] }}" class="form-label">Puerto</label>
+                                    <input type="number" class="form-control" name="port" id="port{{ mikrotik[0] }}" value="{{ mikrotik[5] }}" required/>
+                                  </div>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="submit" class="btn btn-primary btn-custom">Guardar cambios</button>
+                                  <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Cerrar</button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- Modal para la configuración -->
+                        <div class="modal fade text-dark" id="configuracionPCQModel{{ mikrotik[0] }}" tabindex="-1" aria-labelledby="configuracionPCQModelLabel{{ mikrotik[0] }}" aria-hidden="true">
+                          <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="configuracionPCQModelLabel{{ mikrotik[0] }}">Configurar MikroTik</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                              </div>
+                              <div class="modal-body">
+                                <!-- Nav tabs -->
+                                <ul class="nav nav-tabs" id="configTabs" role="tablist">
+                                  <li class="nav-item">
+                                    <button class="nav-link active" id="pcq-tab" data-bs-toggle="tab" data-bs-target="#pcq" type="button" role="tab">PCQ</button>
+                                  </li>
+                                </ul>
+
+                                <!-- Tab panes -->
+                                <div class="tab-content mt-3">
+                                  <form action="{{ url_for('configuracion_pcq') }}" method="POST">
+                                    <!-- Pestaña PCQ -->
+                                    <div class="tab-pane fade show active" id="pcq" role="tabpanel">
+                                      <h5>Información de conexión</h5>
+                                      <div class="mb-3">
+                                        <label for="idMikrotik{{ mikrotik[0] }}" class="form-label">ID MikroTik</label>
+                                        <input type="text" class="form-control" id="idMikrotik{{ mikrotik[0] }}" value="{{ mikrotik[0] }}" readonly>
+                                      </div>
+                                      <div class="mb-3">
+                                        <label for="username" class="form-label">Username</label>
+                                        <input type="text" class="form-control" name="username" id="username" value="{{ mikrotik[2] }}">
+                                      </div>
+                                      <div class="mb-3">
+                                        <label for="password" class="form-label">Password</label>
+                                        <input type="password" class="form-control" name="password" id="password" value="{{ mikrotik[3] }}">
+                                      </div>
+
+                                      <h5>Configuración de red</h5>
+                                      <div class="mb-3">
+                                        <label for="ip" class="form-label">Dirección IP</label>
+                                        <input type="text" class="form-control" name="ip" id="ip" value="{{ mikrotik[4] }}">
+                                      </div>
+                                      <div class="mb-3">
+                                        <label for="port" class="form-label">Puerto</label>
+                                        <input type="text" class="form-control" name="port" id="port" value="{{ mikrotik[5] }}">
+                                      </div>
+                                      <div class="mb-3">
+                                        <label for="address" class="form-label">Address</label>
+                                        <input type="text" class="form-control" name="address" id="address" placeholder="Ejemplo: 192.168.1.1">
+                                      </div>
+
+                                      <h5>Interfaces</h5>
+                                      <button type="button" class="btn btn-primary btn-custom" id="consultarInterfaces">
+                                        Consultar Interfaces
+                                      </button>
+                                      <div id="resultadoInterfaces" class="mt-3"></div>
+
+                                      <input type="hidden" name="resultadoInterfaces" id="resultadoInterfacesInput">
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="submit" class="btn btn-success">Configurar</button>
+                                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                    </div>
+                                  </form>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Modal para aplicar las reglas -->
+                        <div class="modal fade text-dark" id="aplicarReglas{{ mikrotik[0] }}" tabindex="-1" aria-labelledby="aplicarReglas{{ mikrotik[0] }}" aria-hidden="true">
+                          <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="aplicarReglas{{ mikrotik[0] }}">Aplicar Firewall MikroTik</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                              </div>
+                              <div class="modal-body">
+                                <!-- Nav tabs -->
+                                <ul class="nav nav-tabs" id="configTabs" role="tablist">
+                                  <li class="nav-item">
+                                    <button class="nav-link active" id="pcq-tab" data-bs-toggle="tab" data-bs-target="#pcq" type="button" role="tab">PCQ</button>
+                                  </li>
+                                </ul>
+
+                                <!-- Tab panes -->
+                                <div class="tab-content mt-3">
+                                  <form action="{{ url_for('aplicar_reglas') }}" method="POST">
+                                    <!-- Pestaña PCQ -->
+                                    <div class="tab-pane fade show active" id="pcq" role="tabpanel">
+                                      <h5>Información de conexión</h5>
+                                      <div class="mb-3">
+                                        <label for="idMikrotik{{ mikrotik[0] }}" class="form-label">ID MikroTik</label>
+                                        <input type="text" class="form-control" id="idMikrotik{{ mikrotik[0] }}" value="{{ mikrotik[0] }}" readonly>
+                                      </div>
+                                      <div class="mb-3">
+                                        <label for="username" class="form-label">Username</label>
+                                        <input type="text" class="form-control" name="username" id="username" value="{{ mikrotik[2] }}">
+                                      </div>
+                                      <div class="mb-3">
+                                        <label for="password" class="form-label">Password</label>
+                                        <input type="password" class="form-control" name="password" id="password" value="{{ mikrotik[3] }}">
+                                      </div>
+                                      <h5>Configuración de red</h5>
+                                      <div class="mb-3">
+                                        <label for="direccion_ip" class="form-label">Dirección IP</label>
+                                        <input type="text" class="form-control" name="direccion_ip" id="direccion_ip" value="{{ mikrotik[4] }}">
+                                      </div>
+                                      <div class="mb-3">
+                                        <label for="port" class="form-label">Puerto</label>
+                                        <input type="text" class="form-control" name="port" id="port" value="{{ mikrotik[5] }}">
+                                      </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="submit" class="btn btn-success">Aplicar reglas Firewall</button>
+                                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                    </div>
+                                  </form>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Modal para crear Queue Parent -->
+                        <div class="modal fade text-dark" id="creacionParentQueue{{ mikrotik[0] }}" tabindex="-1" aria-labelledby="creacionParentQueueLabel{{ mikrotik[0] }}" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="creacionParentQueueLabel{{ mikrotik[0] }}">Crear Queue Parent</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                              </div>
+                              <form action="{{ url_for('crear_queue_parent') }}" method="POST">
+                                <div class="modal-body">
+                                  <!-- Información de conexión (similar al modal de edición) -->
+                                  <div class="mb-3">
+                                    <label for="username{{ mikrotik[0] }}" class="form-label">Username</label>
+                                    <input type="text" class="form-control" name="username" id="username{{ mikrotik[0] }}" value="{{ mikrotik[2] }}" required/>
+                                  </div>
+                                  <div class="mb-3">
+                                    <label for="password{{ mikrotik[0] }}" class="form-label">Password</label>
+                                    <input type="password" class="form-control" name="password" id="password{{ mikrotik[0] }}" value="{{ mikrotik[3] }}" required/>
+                                  </div>
+                                  <div class="mb-3">
+                                    <label for="ip{{ mikrotik[0] }}" class="form-label">Dirección IP</label>
+                                    <input type="text" class="form-control" name="ip" id="ip{{ mikrotik[0] }}" value="{{ mikrotik[4] }}" required/>
+                                  </div>
+                                  <div class="mb-3">
+                                    <label for="port{{ mikrotik[0] }}" class="form-label">Puerto</label>
+                                    <input type="number" class="form-control" name="port" id="port{{ mikrotik[0] }}" value="{{ mikrotik[5] }}" required/>
+                                  </div>
+                                  <!-- Configuración de Queue Parent -->
+                                  <div class="mb-3">
+                                    <label for="nameParent{{ mikrotik[0] }}" class="form-label">Nombre Queue Parent</label>
+                                    <input type="text" class="form-control" name="nameParent" id="nameParent{{ mikrotik[0] }}" placeholder="Nombre del Queue Parent" required/>
+                                  </div>
+                                  <div class="mb-3">
+                                    <label for="address{{ mikrotik[0] }}" class="form-label">IP para Queue Parent</label>
+                                    <input type="text" class="form-control" name="address" id="address{{ mikrotik[0] }}" placeholder="IP para Queue Parent" required/>
+                                  </div>
+                                  <div class="mb-3">
+                                    <label for="max_limit{{ mikrotik[0] }}" class="form-label">Max Limit</label>
+                                    <label for="nota{{ mikrotik[0] }}">Debe seguir estrictamente el formato (10M/10M) para que funcione</label>
+                                    <input type="text" class="form-control" name="max_limit" id="max_limit{{ mikrotik[0] }}" placeholder="10M/10M" required/>
+                                  </div>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="submit" class="btn btn-success">Crear Queue Parent</button>
+                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- Botón para eliminar -->
+                        <form action="{{ url_for('eliminar_mikrotik', id=mikrotik[0]) }}" method="POST" class="d-inline">
+                          <button type="submit" class="btn btn-danger btn-sm btn-custom" onclick="return confirm('¿Seguro que deseas eliminar este MikroTik?');">
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </form>
 <!-- Modal -->
 <div class="modal fade text-dark" id="profile_ppp_create{{ mikrotik[0] }}" tabindex="-1" aria-labelledby="profile_ppp_createLabel{{ mikrotik[0] }}" aria-hidden="true">
     <div class="modal-dialog">

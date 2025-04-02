@@ -1,0 +1,75 @@
+<button class="btn btn-warning btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="#modal_edicion{{ ticket[0] }}">
+    <i class="bi bi-pencil-square"></i>
+</button>
+<button type="button" class="btn btn-info btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="#revision{{ ticket[0]}}">
+    <i class="bi bi-hammer"></i>
+</button>
+<button class="btn btn-success btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="#modal_finalizado{{ ticket[0]}}">
+    <i class="bi bi-bookmark-check-fill"></i>
+</button>
+
+<!-- Modal edicion -->
+ <form action="{{ url_for('editar_ticket', id=ticket[0]) }}" method="POST">
+    <div class="modal fade text-dark" id="modal_edicion{{ ticket[0] }}" tabindex="-1"  aria-labelledby="modal_edicionLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="modal_edicionLabel{{ ticket[0] }}">Editar Ticket</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <!----------------------------------SELECT TIPO------------------------------------------------------------>
+                    <label for="lista_categorias" class="form-label">Tipo de Reporte</label>
+                    <select name="lista_categorias" id="lista_categorias_{{ ticket[0] }}" class="form-control">
+                        {% for reporte in reportes %}
+                        <option value="{{ reporte }}" {% if reporte == ticket[2] %}selected{% endif %}>
+                            <!--Si el valor de reporte coincide con ticket[2], la opción se marca como selected-->
+                            {{ reporte }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <!----------------------------------SELECT TIPO------------------------------------------------------------>
+                    <!-- campo de texto para descripcion-->
+                    <label for="ticket" class="form-label">Descripcion Ticket</label>
+                    <input type="text" class="form-control" name="ticket" id="ticket" placeholder="Instalacion o falla?" value="{{ticket[3]}}" required>
+                    <!-- campo de texto para descripcion-->
+
+                    <!-- Select de los usuarios-->
+                    <label for="lista_usuarios" class="form-label">Asignar a Tecnico</label>
+                    <select name="lista_usuarios" id="lista_usuarios{{ ticket[0] }}" class="form-control">
+                        {% for usuario in usuarios %}
+                        <option value="{{ usuario }}" {% if usuario == ticket[7] %}selected{% endif %} >{{ usuario }}</option>
+                        {%endfor%}
+                    </select>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary btn-custom">Guardar cambios</button>
+                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Cerrar</button>
+                  </div>
+            </div>
+        </div>
+    </div>
+ </form>
+
+ <form action="{{ url_for('actualizar_finalizado', id=ticket[0]) }}" method="POST">
+    <div class="modal fade text-dark" id="modal_finalizado{{ ticket[0] }}" tabindex="-1"  aria-labelledby="modal_finalizadoLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="modal_finalizadoLabel{{ ticket[0] }}">Finalizar Ticket</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <label for="cliente" class="form-label">Finalizar Ticket</label>
+                    <input type="text" class="form-control" name="cliente" id="cliente" value="{{ticket[1]}}" readonly required>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary btn-custom">Guardar cambios</button>
+                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Cerrar</button>
+                  </div>
+            </div>
+        </div>
+    </div>
+ </form>

@@ -195,6 +195,51 @@
     [data-aos].aos-animate {
       opacity: 1;
     }
+    @media (max-width: 767.98px) {
+  /* Ocultar el encabezado de la tabla */
+  .table-responsive thead {
+    display: none;
+  }
+  /* Convertir la tabla, filas y celdas en bloques */
+  .table-responsive table,
+  .table-responsive tbody,
+  .table-responsive tr,
+  .table-responsive td {
+    display: block;
+    width: 100%;
+  }
+  /* Dar un margen entre filas para separar cada "tarjeta" */
+  .table-responsive tr {
+    margin-bottom: 1rem;
+    border: 1px solid #444;
+    border-radius: 5px;
+    padding: 0.5rem;
+  }
+  /* Estilo para cada celda: espacio para mostrar la etiqueta */
+  .table-responsive td {
+    text-align: right;
+    position: relative;
+    padding-left: 50%;
+    border: none;
+    border-bottom: 1px solid #444;
+  }
+  /* Mostrar la etiqueta (data-label) en cada celda */
+  .table-responsive td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0;
+    width: 45%;
+    padding-left: 0.5rem;
+    font-weight: 600;
+    text-align: left;
+    color: var(--color-text);
+  }
+  /* Quitar borde inferior en la última celda */
+  .table-responsive td:last-child {
+    border-bottom: 0;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -293,35 +338,7 @@
                         {% include 'modal_cargar_queue_cliente.html'%}
                         {% include 'modal_eliminar_queue_cliente.html'%}
                         {% include 'modal_asignar_equipo_cliente.html'%}
-
-                        <!-- Botón para eliminar -->
-                        <!-- Botón para bloquear -->
-                        <button class="btn btn-warning btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="#bloqueoClienteModal{{ cliente[0] }}">
-                            <i class="bi bi-lock"></i>
-                        </button>
- 
-                        <!-- Botón para desbloquear -->
-                        <button class="btn btn-warning btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="#desbloqueoClienteModal{{ cliente[0] }}">
-                            <i class="bi bi-unlock-fill"></i>
-                        </button>
-
-                        <!-- Botón para cargar Queue -->
-                        <button type="button" class="btn btn-primary btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="#cargar_queue{{ cliente[0] }}">
-                          <i class="bi bi-bar-chart-steps"></i>
-                        </button>
-
-                        <!-- Botón para cargar eliminar  Queue -->
-                        <button type="button" class="btn btn-primary btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="#elimanr_queue{{ cliente[0] }}">
-                          <i class="bi bi-person-down"></i>
-                        </button>
-                        
-                        <button type="submit" class="btn btn-success btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="#asignarEquipoModal{{ cliente[0] }}">
-                          <i class="bi bi-router-fill"></i>
-                        </button>
-
-                        <button type="submit" class="btn btn-success btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="">
-                          <i class="bi bi-cash"></i>
-                        </button>
+                        {% include 'botones_acciones_cliente.html' %}
                         {% include 'modal_bloquear_cliente.html' %}
                         {% include 'modal_desbloqueo_cliente.html' %}
                       </td>
@@ -407,7 +424,7 @@
       </div>
     </div>
   </div>
-  
+
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
