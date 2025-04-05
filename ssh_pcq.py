@@ -296,13 +296,13 @@ def crearQueueSimple(nombre, direccion_ip, max_limit, credenciales, parent, tiem
     burst_upload = max_upload * 1.5
     burst_download = max_download * 1.5
 
-    # Calcular Burst Threshold (75% del Max Limit)
-    threshold_upload = max_upload * 0.75
-    threshold_download = max_download * 0.75
+    # Calcular Burst Threshold (75% del Max Limit) - Ahora redondeamos a enteros
+    threshold_upload = int(max_upload * 0.75)
+    threshold_download = int(max_download * 0.75)
 
     # Formatear los valores agregando la "M" al final
     burst_limit = f"{burst_upload:.0f}M/{burst_download:.0f}M"
-    burst_threshold = f"{threshold_upload:.1f}M/{threshold_download:.1f}M"
+    burst_threshold = f"{threshold_upload}M/{threshold_download}M"
 
     try:
         # Conexión SSH a MikroTik

@@ -1,19 +1,4 @@
-from flask import Flask, render_template, redirect, session, request, url_for, flash, send_file, jsonify
-from d_consultas import *
-from d_insert import *
-from d_eliminar import *
-from d_update import *
-from ssh_pcq import *
-from d_login import login
-from d_contador import *
-from monitor import obtener_trafico_mikrotik
-from dhcp_leases import get_dhcp_leases
-from bloqueos_bd import estado_bloqueado
-from ssh_pppoe import *
-from get_pools import *
-from pppoe import *
-
-
+from flask import *
 from dashboard import *
 from clientes import *
 from bloqueos import *
@@ -29,6 +14,7 @@ from equipos import *
 from queue_parent import *
 from pppoe_profile import *
 from ticket import *
+from usuarios import *
 
 app = Flask(__name__)
 app.secret_key = 'zerocuatro04/2025'  # Necesario para usar flash
@@ -266,5 +252,24 @@ def editar_ticket(id):
 def actualizar_finalizado(id):
     return procesar_acrualizacion_estado_ticket(id)
 #================================""=======FUNCION DE DHCP LEASES==============================
+
+#======================================FUNCIONES DE LOS USUARIOS==============================
+@app.route("/usuarios")
+def usuarios():
+    return render_template("usuarios.html")
+
+@app.route("/creacion_usuario", methods=["POST"])
+def creacion_usuario():
+    return procesar_creacion_usuario()
+
+@app.route("/editar_usuario/<int:id>", methods=["POST"])
+def editar_usuario(id):
+    pass
+
+@app.route("/eliminar_usuario/<int:id>", methods=["POST"])
+def eliminar_usuario(id):
+    pass
+
+#======================================FUNCIONES DE LOS USUARIOS==============================
 
 app.run(debug=True)

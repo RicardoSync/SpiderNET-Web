@@ -11,3 +11,19 @@ server {
     }
 }
 /etc/nginx/sites-available/default
+
+
+              <!-- PPPoE -->
+              <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="collapse" href="#pppoe" role="button" aria-expanded="false" aria-controls="pppoe">
+                  <i class="bi bi-plug"></i> PPPoE
+                </a>
+                <div class="collapse" id="pppoe">
+                  <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                    <li><a href="#" class="nav-link">PPP Profile</a></li>
+                    <li><a href="#" class="nav-link">Active PPP</a></li>
+                    <li><a href="#" class="nav-link">Active PPP</a></li>
+                    <li><a href="#" class="nav-link">Monitor tráfico</a></li>
+                  </ul>
+                </div>
+              </li>

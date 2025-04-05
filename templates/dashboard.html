@@ -23,13 +23,13 @@
     <style>
       /* Variables de color para consistencia */
       :root {
-        --bg-dark: #121212;
-        --bg-secondary: #1e1e1e;
-        --bg-tertiary: #232323;
-        --color-primary: #ffca28;
-        --color-text: #e0e0e0;
-        --gradient-nav: linear-gradient(90deg, #2b2b2b 0%, #1f1f1f 100%);
-        --gradient-sidebar: linear-gradient(180deg, #2b2b2b 0%, #1f1f1f 100%);
+        --bg-dark: #0D0D24;
+        --bg-secondary: #161628;
+        --bg-tertiary: #222;
+        --color-primary: #0f53c4;
+        --color-text: #fff;
+        --gradient-nav: linear-gradient(90deg, #2b2b44 0%, #161628 100%);
+        --gradient-sidebar: linear-gradient(180deg, #2b2b44 0%, #161628 100%);
       }
 
       /* Global */
@@ -167,7 +167,7 @@
 
       /* Tablas */
       .table thead th {
-        background-color: #3b3b3b;
+        background-color: #2b2b44;
         color: var(--color-primary);
         border: none;
       }
@@ -178,13 +178,14 @@
         background-color: var(--bg-secondary);
       }
       .table-hover tbody tr:hover {
-        background-color: #3a3a3a;
+        background-color: #2a2a3a;
       }
 
       /* Botones personalizados */
       .btn-custom {
         transition: transform 0.2s ease, box-shadow 0.2s ease;
         border-radius: 6px;
+        background: var(--color-primary);
       }
       .btn-custom:hover {
         transform: translateY(-2px);
@@ -219,7 +220,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
       <div class="container-fluid">
         <a class="navbar-brand" href="#">
-          <i class="bi bi-cpu"></i> SpiderNET
+          <i class="bi bi-cpu"></i> AdmiNET
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
@@ -355,30 +356,17 @@
                 </div>
               </li>
 
-              <!-- PPPoE -->
-              <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="collapse" href="#pppoe" role="button" aria-expanded="false" aria-controls="pppoe">
-                  <i class="bi bi-plug"></i> PPPoE
-                </a>
-                <div class="collapse" id="pppoe">
-                  <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
-                    <li><a href="#" class="nav-link">PPP Profile</a></li>
-                    <li><a href="#" class="nav-link">Active PPP</a></li>
-                    <li><a href="#" class="nav-link">Active PPP</a></li>
-                    <li><a href="#" class="nav-link">Monitor tráfico</a></li>
-                  </ul>
-                </div>
-              </li>
+
 
               <!-- SpiderNET -->
               <li class="nav-item">
                 <a class="nav-link" data-bs-toggle="collapse" href="#spidernet" role="button" aria-expanded="false" aria-controls="spidernet">
-                  <i class="bi bi-globe"></i> SpiderNET
+                  <i class="bi bi-globe"></i> AdmiNET
                 </a>
                 <div class="collapse" id="spidernet">
                   <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                     <li>
-                      <a href="{{ url_for('lista_clientes') }}" class="nav-link">Usuarios</a>
+                      <a href="{{ url_for('usuarios') }}" class="nav-link">Usuarios</a>
                     </li>
                     <li>
                       <a href="{{ url_for('clientes_bloqueados') }}" class="nav-link">Datos WISP</a>
@@ -482,7 +470,7 @@
                   <div class="d-flex align-items-center">
                     <i class="bi bi-tools display-4 me-3"></i>
                     <div>
-                      <h5 class="card-title">Soporte Tecnico</h5>
+                      <h5 class="card-title">Soporte</h5>
                       <p class="card-text fs-4">{{ total_soporte or 0 }}</p>
                     </div>
                   </div>

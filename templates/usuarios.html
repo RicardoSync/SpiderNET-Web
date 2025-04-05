@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Queue Parent - AdmiNET</title>
+  <title>Usuarios - AdmiNET</title>
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <!-- Bootstrap Icons -->
@@ -64,9 +64,9 @@
       text-decoration: none;
     }
 
-    /* Contenedor principal */
+    /* Contenedor principal (donde va la tabla y el contenido) */
     .main-content {
-      margin-left: 240px;
+      margin-left: 240px; /* para que no se monte con el sidebar */
       padding: 1rem;
     }
 
@@ -107,7 +107,7 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     }
 
-    /* Responsividad para el sidebar en pantallas pequeñas */
+    /* Responsividad para el sidebar y tabla en pantallas pequeñas */
     @media (max-width: 768px) {
       .sidebar {
         position: fixed;
@@ -163,32 +163,31 @@
 </head>
 <body>
   {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <div class="container mt-2">
-        {% for category, message in messages %}
-          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-          </div>
-        {% endfor %}
-      </div>
-    {% endif %}
+  {% if messages %}
+    <div class="container mt-2">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
   {% endwith %}
-
+  
   <!-- Barra superior -->
   <div class="topbar">
-    <!-- Botón para desplegar el menú lateral en móviles -->
-    <button class="btn btn-sm btn-outline-light d-md-none me-2" onclick="toggleSidebar()">
+    <a href="#" class="brand">usuarios</a>
+    <!-- Botón para mostrar/ocultar sidebar en móvil -->
+    <button class="btn btn-sm btn-outline-light d-md-none" onclick="document.querySelector('.sidebar').classList.toggle('show')">
       <i class="bi bi-list"></i>
     </button>
-    <a href="#" class="brand">Queue Parent</a>
-    <!-- Puedes agregar aquí algún botón extra si es necesario -->
   </div>
 
   <!-- Panel lateral -->
   <div class="sidebar">
-    <h5 class="sidebar-title">Queue Parent</h5>
-    <!-- Opciones del menú -->
+    <h5 class="sidebar-title">usuarios</h5>
+    <!-- Opciones del menú (enlace de ejemplo) -->
     <a href="{{ url_for('dashboard')}}" class="nav-link">
       <i class="bi bi-house"></i> Inicio
     </a>
@@ -198,17 +197,19 @@
   <!-- Contenido principal -->
   <div class="main-content">
     <div class="container-fluid">
-      <!-- Título y botón para crear queue_parent -->
+      <!-- Título y botón para crear usuario -->
       <div class="d-flex justify-content-between align-items-center mt-3">
-        <h1>Queue Parent</h1>
+        <h1>usuarios</h1>
         <button class="btn btn-success btn-custom" data-bs-toggle="modal" data-bs-target="#crearModal">
-          <i class="bi bi-plus"></i> Nuevo Queue Parent
+          <i class="bi bi-plus"></i> Nuevo usuario
         </button>
       </div>
 
-      <!-- Tabla de queue_parents -->
+      <!-- Tabla de usuarios -->
       <div class="card mt-3">
-        <div class="card-header">Lista de Queue Parents</div>
+        <div class="card-header">
+          Lista de usuarios
+        </div>
         <div class="card-body">
           <div class="table-responsive">
             <table id="miTabla" class="table table-dark table-striped table-hover align-middle">
@@ -216,58 +217,59 @@
                 <tr>
                   <th>ID</th>
                   <th>Nombre</th>
-                  <th>Segmento de RED</th>
-                  <th>MAX LIMIT</th>
-                  <th>Mikrotik Asociado</th>
+                  <th>Usuario</th>
+                  <th>Password</th>
+                  <th>Rol</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                {% for queue_parent in queue_parents %}
+                {% for usuario in usuarios %}
                 <tr>
-                  <td data-label="ID">{{ queue_parent[0] }}</td>
-                  <td data-label="Nombre">{{ queue_parent[1] }}</td>
-                  <td data-label="Segmento de RED">{{ queue_parent[2] }}</td>
-                  <td data-label="MAX LIMIT">{{ queue_parent[3] }}</td>
-                  <td data-label="Mikrotik Asociado">{{ queue_parent[4] }}</td>
+                  <td data-label="ID">{{ usuario[0] }}</td>
+                  <td data-label="Nombre">{{ usuario[1] }}</td>
+                  <td data-label="Usuario">{{ usuario[2] }}</td>
+                  <td data-label="Password">{{ usuario[3] }}</td>
+                  <td data-label="Rol">{{ usuario[4] }}</td>
                   <td data-label="Acciones">
-                    <!-- Botón para editar -->
-                    <button class="btn btn-primary btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="#editarModal{{ queue_parent[0] }}">
+                    <!-- Botón para abrir modal de edición -->
+                    <button class="btn btn-primary btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="#editarModal{{ usuario[0] }}">
                       <i class="bi bi-pencil"></i>
                     </button>
                     <!-- Botón para eliminar -->
-                    <button class="btn btn-primary btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="#eliminarModal{{ queue_parent[0] }}">
-                      <i class="bi bi-trash3-fill"></i>
-                    </button>
+                    <a href="{{ url_for('eliminar_usuario', id=usuario[0]) }}"
+                       class="btn btn-danger btn-sm btn-custom"
+                       onclick="return confirm('¿Estás seguro de eliminar este usuario?');">
+                      <i class="bi bi-trash"></i>
+                    </a>
                   </td>
                 </tr>
 
                 <!-- Modal de edición -->
-                <div class="modal fade text-dark" id="editarModal{{ queue_parent[0] }}" tabindex="-1"
-                     aria-labelledby="editarModalLabel{{ queue_parent[0] }}" aria-hidden="true">
+                <div class="modal fade text-dark" id="editarModal{{ usuario[0] }}" tabindex="-1"
+                     aria-labelledby="editarModalLabel{{ usuario[0] }}" aria-hidden="true">
                   <div class="modal-dialog">
                     <div class="modal-content">
                       <div class="modal-header">
-                        <h5 class="modal-title" id="editarModalLabel{{ queue_parent[0] }}">Editar Queue Parent</h5>
+                        <h5 class="modal-title" id="editarModalLabel{{ usuario[0] }}">Editar usuario</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                       </div>
-                      <form action="{{ url_for('editar_queue_parent', id=queue_parent[0]) }}" method="POST">
+                      <form action="{{ url_for('editar_usuario', id=usuario[0]) }}" method="POST">
                         <div class="modal-body">
                           <div class="mb-3">
-                            <label for="nombre{{ queue_parent[0] }}" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" name="nombre" id="nombre{{ queue_parent[0] }}"
-                                   value="{{ queue_parent[1] }}" required />
+                            <label for="nombre{{ usuario[0] }}" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" name="nombre" id="nombre{{ usuario[0] }}"
+                                   value="{{ usuario[1] }}" required />
                           </div>
                           <div class="mb-3">
-                            <label for="max_limit{{ queue_parent[0] }}" class="form-label">MAX LIMIT</label>
-                            <input type="text" class="form-control" name="max_limit" id="max_limit{{ queue_parent[0] }}"
-                                   value="{{ queue_parent[3] }}" required />
+                            <label for="descripcion{{ usuario[0] }}" class="form-label">Descripcion</label>
+                            <input type="text" class="form-control" name="descripcion" id="descripcion{{ usuario[0] }}"
+                                   value="{{ usuario[2] }}" required />
                           </div>
                           <div class="mb-3">
-                            <input type="hidden" name="segmento_red" id="segmento_red{{ queue_parent[0] }}" value="{{ queue_parent[2] }}" required />
-                          </div>
-                          <div class="mb-3">
-                            <input type="hidden" name="mirotik" id="mirotik{{ queue_parent[0] }}" value="{{ queue_parent[4] }}" required />
+                            <label for="precio{{ usuario[0] }}" class="form-label">Precio</label>
+                            <input type="text" class="form-control" name="precio" id="precio{{ usuario[0] }}"
+                                   value="{{ usuario[3] }}" required />
                           </div>
                         </div>
                         <div class="modal-footer">
@@ -278,38 +280,6 @@
                     </div>
                   </div>
                 </div>
-
-                <!-- Modal de eliminar -->
-                <div class="modal fade text-dark" id="eliminarModal{{ queue_parent[0] }}" tabindex="-1"
-                     aria-labelledby="eliminarModal{{ queue_parent[0] }}" aria-hidden="true">
-                  <div class="modal-dialog">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="eliminarModal{{ queue_parent[0] }}">Eliminar Queue Parent</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                      </div>
-                      <form action="{{ url_for('eliminar_queue_parent', id=queue_parent[0]) }}" method="POST">
-                        <div class="modal-body">
-                          <div class="mb-3">
-                            <label for="segmento{{ queue_parent[0] }}" class="form-label">Segmento</label>
-                            <input type="text" class="form-control" name="segmento" id="segmento{{ queue_parent[0] }}"
-                                   value="{{ queue_parent[2] }}" required />
-                          </div>
-                          <div class="mb-3">
-                            <label for="mirotik{{ queue_parent[0] }}" class="form-label">Mikrotik Asociado</label>
-                            <input type="text" class="form-control" name="mirotik" id="mirotik{{ queue_parent[0] }}"
-                                   value="{{ queue_parent[4] }}" required />
-                          </div>
-                        </div>
-                        <div class="modal-footer">
-                          <button type="submit" class="btn btn-primary btn-custom">Eliminar Queue</button>
-                          <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Cerrar</button>
-                        </div>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-
                 {% endfor %}
               </tbody>
             </table>
@@ -319,39 +289,40 @@
     </div> <!-- /container-fluid -->
   </div> <!-- /main-content -->
 
-  <!-- Modal para crear nuevo queue_parent -->
+  <!-- Modal para crear nuevo usuario -->
   <div class="modal fade text-dark" id="crearModal" tabindex="-1" aria-labelledby="crearModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="crearModalLabel">Crear Nuevo Queue Parent</h5>
+          <h5 class="modal-title" id="crearModalLabel">Crear Nuevo usuario</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
-        <form action="{{ url_for('creacion_queue_parent') }}" method="POST">
+        <form action="{{ url_for('creacion_usuario') }}" method="POST">
           <div class="modal-body">
             <div class="mb-3">
               <label for="nombre" class="form-label">Nombre</label>
               <input type="text" class="form-control" name="nombre" id="nombre" required />
             </div>
             <div class="mb-3">
-              <label for="segmento" class="form-label">Segmento de RED</label>
-              <input type="text" class="form-control" name="segmento" id="segmento" placeholder="192.168.10.1" required />
-            </div>
-            <div class="mb-3">
-              <label for="max_limit" class="form-label">MAX LIMIT</label>
-              <input type="text" class="form-control" name="max_limit" id="max_limit" placeholder="30M/30M" required />
-            </div>
-            <div class="mb-3">
-              <label for="lista_microtik" class="form-label">Microtik Administrador</label>
-              <select name="lista_microtik" id="lista_microtik" class="form-control">
-                {% for microtik in microtiks %}
-                <option value="{{ microtik }}">{{ microtik }}</option>
-                {% endfor %}
-              </select>
-            </div>
+                <label for="usuario" class="form-label">Usuario</label>
+                <input type="text" class="form-control" name="usuario" id="usuario" required />
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" name="password" id="password" required />
+              </div>
+              <div class="mb-3">
+                <label for="tipo_permisos" class="form-label">Tipo de usuario</label>
+                <select name="tipo_permisos" id="tipo_permisos" class="form-control">
+                  <option value="Administrador">Administrador</option>
+                  <option value="Tecnico">Técnico</option>
+                  <option value="Cliente">Cliente</option>
+                </select>
+              </div>
+              
           </div>
           <div class="modal-footer">
-            <button type="submit" class="btn btn-success btn-custom">Crear Queue Parent</button>
+            <button type="submit" class="btn btn-success btn-custom">Crear usuario</button>
             <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Cerrar</button>
           </div>
         </form>
@@ -361,10 +332,5 @@
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    function toggleSidebar() {
-      document.querySelector(".sidebar").classList.toggle("show");
-    }
-  </script>
 </body>
 </html>

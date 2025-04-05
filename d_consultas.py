@@ -370,3 +370,23 @@ def obtener_credenciales(id):
     except Exception as r:
         print(f"Error en credenciales de MikroTik por id {r}")
         return False
+    
+def consultar_usuarios():
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+        cursor = cn.cursor()
+        cursor.execute("SELECT id, nombre, usuario, password, rol FROM usuarios")
+        resultado = cursor.fetchall()
+        cursor.close()
+        cn.close()
+        
+        if resultado:
+            return resultado
+        else:
+            return []
+        
+    except Exception as r:
+        print(f"Error en consulta de usuarios {r}")
+        return []
