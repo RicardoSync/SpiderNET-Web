@@ -38,7 +38,7 @@ def procesar_creacion_queue_panret():
 
 def procesar_edicion_queue_parent(id):
     nombre = request.form.get("nombre")
-    max_limint = request.form.get("max_limint")
+    max_limint = request.form.get("max_limit")
     mikrotik = request.form.get("mirotik")
     segmento_red = request.form.get("segmento_red")
     credenciales = consultarCredenciales(mikrotik)

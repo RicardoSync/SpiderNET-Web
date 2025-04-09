@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Spidernet Web</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      padding: 10px;
+    }
+
+    .estado-container {
+      border-radius: 20px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      color: white;
+      margin-bottom: 20px;
+    }
+
+    .estado-container.activo {
+      background-color: #2ecc71;
+    }
+
+    .estado-container.bloqueado {
+      background-color: orange;
+    }
+
+    .estado-texto {
+      margin-bottom: 10px;
+    }
+
+    .menu a {
+      color: white;
+      text-decoration: underline;
+      font-size: 14px;
+    }
+
+    .pagos-container {
+      background-color: #3366ff;
+      border-radius: 20px;
+      padding: 15px;
+    }
+
+    .pago-card {
+      background-color: white;
+      margin: 10px 0;
+      padding: 15px;
+      border-radius: 15px;
+      font-size: 14px;
+      box-shadow: 0px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1.4em;
+    }
+
+    p {
+      margin: 0;
+      font-size: 1em;
+    }
+  </style>
+</head>
+<body>
+  <div class="estado-container {{ 'activo' if cliente.estado == 'Activo' else 'bloqueado' }}">
+    <div class="estado-texto">
+      <h2>{{ cliente.estado }}</h2>
+      <p>{{ cliente.nombre }}</p>
+    </div>
+    <div class="menu">
+      <a href="{{ url_for('equipos_cliente', id_cliente=id_cliente) }}">Ver Equipos</a>
+    </div>
+  </div>
+
+  <div class="pagos-container">
+    {% for pago in pagos %}
+    <div class="pago-card">
+      <strong>{{ pago.nombre }}</strong><br>
+      Cantidad: {{ pago.cantidad }}<br>
+      Monto: ${{ pago.monto }}<br>
+      Fecha: {{ pago.fecha_pago.strftime('%Y-%m-%d') }}
+    </div>
+    {% endfor %}
+  </div>
+</body>
+</html>

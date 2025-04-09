@@ -15,6 +15,7 @@ from queue_parent import *
 from pppoe_profile import *
 from ticket import *
 from usuarios import *
+from panel_clientes import *
 
 app = Flask(__name__)
 app.secret_key = 'zerocuatro04/2025'  # Necesario para usar flash
@@ -29,7 +30,7 @@ def pagina_no_encontrada(error):
 @app.errorhandler(500)
 def error_interno(error):
     return render_template("error.html"), 500
-#------------------------------------------------RUTAS CUANDO OCURRE UN ERROR----------------------------------
+
 
 #AQUI ES A DONDE NOS VAMOS CUANDO SE ENTRA AL SERVIDOR
 @app.route("/")
@@ -43,7 +44,6 @@ def dashboard():
 @app.route("/iniciar_sesion", methods=["POST"])
 def iniciar_sesion():
     return procesar_dashboard_inicio_sesion()
-
 #------------------------------------------------RUTA DE LOS CLIENTES CRUD----------------------------------
 @app.route("/crear_cliente", methods=["POST"])
 def crear_cliente():
@@ -256,7 +256,7 @@ def actualizar_finalizado(id):
 #======================================FUNCIONES DE LOS USUARIOS==============================
 @app.route("/usuarios")
 def usuarios():
-    return render_template("usuarios.html")
+    return procesar_rendender_usuarios()
 
 @app.route("/creacion_usuario", methods=["POST"])
 def creacion_usuario():
@@ -264,11 +264,11 @@ def creacion_usuario():
 
 @app.route("/editar_usuario/<int:id>", methods=["POST"])
 def editar_usuario(id):
-    pass
+    return procesar_actualizacion_usuario(id)
 
-@app.route("/eliminar_usuario/<int:id>", methods=["POST"])
+@app.route("/eliminar_usuario/<int:id>", methods=["GET"])
 def eliminar_usuario(id):
-    pass
+    return procesar_eliminacion_usuario(id)
 
 #======================================FUNCIONES DE LOS USUARIOS==============================
 

@@ -289,8 +289,6 @@
                   <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                     <li>
                       <a href="#" class="nav-link">Pagos de Internet</a>
-                      <a href="#" class="nav-link">Gastos</a>
-                      <a href="#" class="nav-link">Balance</a>
                     </li>
                   </ul>
                 </div>
@@ -355,8 +353,62 @@
                   </ul>
                 </div>
               </li>
-
-
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  data-bs-toggle="collapse"
+                  href="#host-pot"
+                  role="button"
+                  aria-expanded="false"
+                  aria-controls="host-pot"
+                >
+                <i class="bi bi-hdd-rack-fill"></i> HOSTPOT
+                </a>
+                <div class="collapse" id="host-pot">
+                  <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                    <li>
+                      <a href="{{ url_for('fallas') }}" class="nav-link">NOSE</a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  data-bs-toggle="collapse"
+                  href="#pppoe"
+                  role="button"
+                  aria-expanded="false"
+                  aria-controls="pppoe"
+                >
+                <i class="bi bi-hdd-network-fill"></i> PPPoE
+                </a>
+                <div class="collapse" id="pppoe">
+                  <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                    <li><a href="{{ url_for('fallas') }}" class="nav-link">Usuarios</a></li>
+                    <li><a href="{{ url_for('fallas') }}" class="nav-link">Sesiones Activas</a></li>
+                  </ul>
+                </div>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link"
+                  data-bs-toggle="collapse"
+                  href="#tickets"
+                  role="button"
+                  aria-expanded="false"
+                  aria-controls="clientes"
+                >
+                <i class="bi bi-ticket-fill"></i> Tickets 
+                </a>
+                <div class="collapse" id="tickets">
+                  <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+                    <li>
+                      <a href="{{ url_for('fallas') }}" class="nav-link">Tickets</a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
 
               <!-- SpiderNET -->
               <li class="nav-item">

@@ -221,18 +221,12 @@ def creacionAddressList(username, password, host, port, direccion_ip, ether):
 
 def crearQueueParent(name, direccion_ip, max_limit, host, port, username, password, mikrotik):
     try:
-        # Eliminar espacios al inicio y final, y quitar todos los espacios intermedios
-        name = name.strip()            # elimina espacios al inicio y final
-        name = re.sub(r'\s+', '', name) # elimina todos los espacios
-
-        # Opcionalmente, eliminar cualquier carácter que no sea una letra (mayúsculas o minúsculas)
-        name = re.sub(r'[^A-Za-z]', '', name)
-
+        #f'parent="{parent}"
         cliente_ssh = paramiko.SSHClient()
         cliente_ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         cliente_ssh.connect(host, port=port, username=username, password=password)
         address = obtener_subred(direccion_ip)
-        comando = f"/queue/simple/add name={name} target={address} max-limit={max_limit}"
+        comando = f'/queue/simple/add name="{name}" target={address} max-limit={max_limit}'
 
         print(f"Comando enviado: {comando}")
 
@@ -262,18 +256,7 @@ def extract_number(s):
     return 0.0
 
 def crearQueueSimple(nombre, direccion_ip, max_limit, credenciales, parent, tiempo):
-        # Eliminar espacios al inicio y final, y quitar todos los espacios intermedios
-    nombre = nombre.strip()            # elimina espacios al inicio y final
-    nombre = re.sub(r'\s+', '', nombre) # elimina todos los espacios
-
-        # Opcionalmente, eliminar cualquier carácter que no sea una letra (mayúsculas o minúsculas)
-    nombre = re.sub(r'[^A-Za-z]', '', nombre)   
-        # Eliminar espacios al inicio y final, y quitar todos los espacios intermedios
-    parent = parent.strip()            # elimina espacios al inicio y final
-    parent = re.sub(r'\s+', '', parent) # elimina todos los espacios
-
-        # Opcionalmente, eliminar cualquier carácter que no sea una letra (mayúsculas o minúsculas)
-    parent = re.sub(r'[^A-Za-z]', '', parent)   
+  
     """
     Crea un cliente en queue simple con rafaga.
     
@@ -311,10 +294,12 @@ def crearQueueSimple(nombre, direccion_ip, max_limit, credenciales, parent, tiem
         cliente_ssh.connect(host, port=int(port), username=username, password=password)
 
         # Construir el comando
+        # Construir el comando
         comando = (
             f"/queue/simple/add name={nombre} target={direccion_ip} max-limit={max_limit} "
-            f"parent={parent} burst-limit={burst_limit} burst-threshold={burst_threshold} burst-time={tiempo}"
+            f'parent="{parent}" burst-limit={burst_limit} burst-threshold={burst_threshold} burst-time={tiempo}'
         )
+
         print(f"Comando enviado: {comando}")
 
         stdin, stdout, stderr = cliente_ssh.exec_command(comando)
@@ -333,7 +318,6 @@ def crearQueueSimple(nombre, direccion_ip, max_limit, credenciales, parent, tiem
     except Exception as e:
         print(f"Error en conexión SSH: {e}")
         return False
-
 
 def eliminarSimpleQueue(credenciales, direccion_ip):
     """_summary_

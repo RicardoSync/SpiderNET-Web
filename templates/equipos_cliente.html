@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Equipos Instalados</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial; padding: 15px; background: #f0f0f0; }
+    .equipo-card {
+      background: white;
+      border-radius: 15px;
+      padding: 10px;
+      margin-bottom: 10px;
+      box-shadow: 1px 1px 5px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <h2>Equipos del Cliente</h2>
+  {% for equipo in equipos %}
+  <div class="equipo-card">
+    <strong>{{ equipo.nombre }}</strong> ({{ equipo.tipo }})<br>
+    Marca: {{ equipo.marca }} - Modelo: {{ equipo.modelo }}<br>
+    MAC: {{ equipo.mac }} - Serial: {{ equipo.serial }}<br>
+    Estado: {{ equipo.estado }}
+  </div>
+  {% endfor %}
+</body>
+</html>

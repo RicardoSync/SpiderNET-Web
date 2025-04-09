@@ -96,3 +96,18 @@ def eliminarQueueBD(id):
     except Exception as r:
         print(f"Error al eliminar {r}")
         return False
+    
+def eliminarUsuario(id):
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+        cursor = cn.cursor()   
+        cursor.execute("DELETE FROM usuarios WHERE id = %s", (id,))
+        cn.commit()
+        cursor.close()
+        cn.close()
+        return True
+    except Exception as r:
+        print(f"Error al eliminar {r}")
+        return False

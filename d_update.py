@@ -153,3 +153,20 @@ def actualizar_ticket_finalizado(id):
     except Exception as r:
         print(f"Error en actualizar el ticket {r}")
         return False
+    
+def actualizar_usuario(id, nombre, usuario, password):
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+        cursor = cn.cursor()
+        cursor.execute("""UPDATE usuarios SET nombre = %s, usuario = %s, password = %s 
+                        WHERE id = %s""",
+                        (nombre, usuario, password, id))
+        cn.commit()
+        cursor.close()
+        cn.close()
+        return True
+    except Exception as r:
+        print(f"No se logro autorizar el usuario: {r}")
+        return False

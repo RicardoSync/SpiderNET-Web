@@ -159,3 +159,20 @@ def insertar_profile_pppoe(nombre, local_address, remote_address ,address_list, 
     except Exception as r:
         print(f"Error en la creacion de profile en bd {r}")
         return False
+    
+
+def insertar_usuario(nombre, usuario, password, rol):
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+        cursor = cn.cursor()
+        cursor.execute("INSERT INTO usuarios (nombre, usuario, password, rol) VALUES (%s,%s,%s,%s)", 
+                    (nombre, usuario, password, rol))
+        cn.commit()
+        cursor.close()
+        cn.close()
+        return True
+    except Exception as r:
+        print(f"Error al insertar el usuario en sistema {r}")
+        return False
