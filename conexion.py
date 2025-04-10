@@ -5,7 +5,7 @@ def conexion():
         con = mysql.connector.Connect(
             host="localhost",
             port="3306",
-            username="spidernet",
+            username="root",
             password="spidernet",
             database="spidernet_web"
         )

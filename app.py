@@ -16,7 +16,7 @@ from pppoe_profile import *
 from ticket import *
 from usuarios import *
 from panel_clientes import *
-
+from pagos import *
 app = Flask(__name__)
 app.secret_key = 'zerocuatro04/2025'  # Necesario para usar flash
 #------------------------------------------------RUTAS CUANDO OCURRE UN ERROR----------------------------------
@@ -73,6 +73,12 @@ def desbloquear_cliente_pcq(id):
 @app.route("/clientes_bloqueados")
 def clientes_bloqueados():
     return procesar_lista_bloqueados()
+
+@app.route("/registrar_pago/<int:id>", methods=["POST"])
+def registrar_pago(id):
+    return procesar_registro_pago(id)
+
+
 #------------------------------------------------RUTA DE LOS CLIENTES CRUD----------------------------------
 
 #------------------------------------------------RUTA DE LOS MICROTIKS CRUD----------------------------------
@@ -123,6 +129,11 @@ def aplicar_reglas():
 @app.route('/reiniciar_mikrotik/<int:id>', methods=["POST"])
 def reiniciar_mikrotik(id):
     return procesar_reinicio_mikrotid(id)
+
+@app.route("/probar_coneion/<int:id>", methods=["POST"])
+def probar_coneion_mk(id):
+    print("pruba de conexion")
+    return redirect(url_for("lista_microtiks"))
 
 @app.route("/dios_ayudame")
 def dios_ayudame():

@@ -75,7 +75,6 @@ def bloquear_cliente_address_list(credenciales, ip_cliente):
         print(f"Error en la conexion SSH: {r}")
         return False
     
-
 def desbloqueo_mantecoso(credenciales, ip_cliente):
     username = credenciales[0]
     password = credenciales[1]
@@ -118,7 +117,6 @@ def desbloqueo_mantecoso(credenciales, ip_cliente):
         print(f"Error en la conexión SSH: {e}")
         return False
 
-
 def get_interfaces(host, port, username, password):
     try:
         client = paramiko.SSHClient()
@@ -147,7 +145,6 @@ def get_interfaces(host, port, username, password):
         print("Error al obtener interfaces:", e)
         return []
     
-
 def creacionAddressList(username, password, host, port, direccion_ip, ether):
     try:
         cliente_ssh = paramiko.SSHClient()
@@ -247,7 +244,6 @@ def crearQueueParent(name, direccion_ip, max_limit, host, port, username, passwo
         print(f"Error en conexion SSH {r}")
         return False
     
-
 def extract_number(s):
     """Extrae el valor numérico de una cadena, por ejemplo, '15M' → 15.0"""
     match = re.search(r"(\d+(?:\.\d+)?)", s)
@@ -296,7 +292,7 @@ def crearQueueSimple(nombre, direccion_ip, max_limit, credenciales, parent, tiem
         # Construir el comando
         # Construir el comando
         comando = (
-            f"/queue/simple/add name={nombre} target={direccion_ip} max-limit={max_limit} "
+            f'/queue/simple/add name="{nombre}" target={direccion_ip} max-limit={max_limit} '
             f'parent="{parent}" burst-limit={burst_limit} burst-threshold={burst_threshold} burst-time={tiempo}'
         )
 
