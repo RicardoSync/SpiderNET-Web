@@ -366,10 +366,13 @@ def obtener_credenciales(id):
         resultado = cursor.fetchall()
         cursor.close()
         cn.close()
-        return resultado
+        if resultado:
+            return resultado
+        else:
+            return []
     except Exception as r:
         print(f"Error en credenciales de MikroTik por id {r}")
-        return False
+        return []
     
 def consultar_usuarios():
     try:
@@ -389,4 +392,22 @@ def consultar_usuarios():
         
     except Exception as r:
         print(f"Error en consulta de usuarios {r}")
+        return []
+    
+def obtener_credenciales_mikrotik_con_id(id):
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+        cursor = cn.cursor()
+        cursor.execute("SELECT nombre, ip, username, password, port FROM credenciales_microtik WHERE id = %s", (id,))
+        resultado = cursor.fetchone()
+        if resultado:
+            return resultado
+        else:
+            return []
+        cursor.close()
+        cn.close()
+    except Exception as r:
+        print(f"Error en las credenciales del mikrotik {r}")
         return []

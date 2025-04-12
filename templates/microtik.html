@@ -191,12 +191,18 @@
                           <button class="btn btn-warning btn-sm btn-custom configurar-btn" data-id="{{ mikrotik[0] }}" data-bs-toggle="modal" data-bs-target="#configuracionPCQModel{{ mikrotik[0] }}">
                             <i class="bi bi-gear-fill"></i>
                           </button>
-                            <!-- Botón para crear perfil PPP -->
-                            <!-- 
-                            <button class="btn btn-info btn-sm btn-custom configurar-btn" data-id="{{ mikrotik[0] }}" data-bs-toggle="modal" data-bs-target="#profile_ppp_create{{ mikrotik[0] }}">
-                            <i class="bi bi-menu-button-fill"></i>
-                            </button>
-                            -->
+                          <!-- Botón para obtener id de mikrotik y llamar modal cargar queue simple -->
+                          <!-- Botón para abrir el modal de carga de Simple Queues -->
+                          <button class="btn btn-primary btn-sm btn-custom" data-bs-toggle="modal" data-bs-target="#modalCargarQueueSimple{{ mikrotik[0] }}">
+                            <i class="bi bi-cloud-upload-fill"></i>
+                          </button>
+
+                          <!-- Botón para crear perfil PPP -->
+                          <!-- 
+                          <button class="btn btn-info btn-sm btn-custom configurar-btn" data-id="{{ mikrotik[0] }}" data-bs-toggle="modal" data-bs-target="#profile_ppp_create{{ mikrotik[0] }}">
+                          <i class="bi bi-menu-button-fill"></i>
+                          </button>
+                          -->
                           <!-- Botón para aplicar las reglas -->
                           <button class="btn btn-primary btn-sm btn-custom configurar-btn" data-id="{{ mikrotik[0] }}" data-bs-toggle="modal" data-bs-target="#aplicarReglas{{ mikrotik[0] }}">
                             <i class="bi bi-fire"></i>
@@ -205,12 +211,29 @@
                           <button class="btn btn-primary btn-sm btn-custom configurar-btn" data-id="{{ mikrotik[0] }}" data-bs-toggle="modal" data-bs-target="#modal_reiniciar{{ mikrotik[0] }}">
                             <i class="bi bi-bootstrap-reboot"></i>
                           </button>
-
-                  
                           <!-- Inclusión de archivos modales -->
                           {% include 'modal_profile.html' %}
                           {% include 'modal_reinicio.html' %}
                         </td>
+                          <div class="modal fade text-dark" id="modalCargarQueueSimple{{ mikrotik[0] }}" tabindex="-1" aria-labelledby="modalCargarQueueSimpleLabel{{ mikrotik[0] }}" aria-hidden="true">
+                            <div class="modal-dialog">
+                              <form action="{{ url_for('cargar_queues', id=mikrotik[0]) }}" method="POST">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <h5 class="modal-title" id="modalCargarQueueSimpleLabel{{ mikrotik[0] }}">Confirmación</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                  </div>
+                                  <div class="modal-body">
+                                    <p>¿Deseas cargar todos tus clientes de simple queue en el sistema?</p>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="submit" class="btn btn-success">Sí, cargar</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                  </div>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
                       </tr>
                       {% endfor %}
                     </tbody>
@@ -262,7 +285,9 @@
         </div>
       </div>
     </div>
-    
+    <!-- Modal de Confirmación para Cargar Simple Queue -->
+
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- jQuery (para AJAX) -->

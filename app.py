@@ -17,6 +17,8 @@ from ticket import *
 from usuarios import *
 from panel_clientes import *
 from pagos import *
+from registro_simplequeue import *
+
 app = Flask(__name__)
 app.secret_key = 'zerocuatro04/2025'  # Necesario para usar flash
 #------------------------------------------------RUTAS CUANDO OCURRE UN ERROR----------------------------------
@@ -282,5 +284,11 @@ def eliminar_usuario(id):
     return procesar_eliminacion_usuario(id)
 
 #======================================FUNCIONES DE LOS USUARIOS==============================
+@app.route("/cargar_queues/<int:id>", methods=["POST"])
+def cargar_queues(id):
+    obtener_datos_mikrotik_cargar_simple_queue(id)
+    return redirect(url_for("lista_microtiks"))
+
+
 
 app.run(debug=True)
