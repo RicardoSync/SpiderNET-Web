@@ -1,0 +1,14 @@
+sudo apt install libapache2-mod-wsgi-py3
+sudo chown -R www-data:www-data /var/www/html/adminet
+sudo chmod -R 755 /var/www/html/adminet
+-- Crear el usuario
+CREATE USER 'adminet'@'localhost' IDENTIFIED BY 'adminet';
+
+-- Darle todos los privilegios sobre todas las bases de datos
+GRANT ALL PRIVILEGES ON *.* TO 'adminet'@'localhost' WITH GRANT OPTION;
+
+-- Aplicar los cambios
+FLUSH PRIVILEGES;
+find /var/www/html/adminet -name "*.pyc" -delete
+sudo systemctl restart apache2
+sudo pip3 install --break-system-packages -r requirements.txt
