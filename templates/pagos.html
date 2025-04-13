@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pagos</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+
+  <style>
+    body {
+      background-color: #0D0D24;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+    }
+
+    .navbar {
+      background-color: #2b2b44;
+      border-bottom: 1px solid #444;
+    }
+    .navbar-brand { font-weight: 500; }
+
+    .sidebar {
+      background-color: #2b2b44;
+      width: 240px;
+      min-height: 100vh;
+      border-right: 1px solid #444;
+      position: fixed;
+      top: 0;
+      left: 0;
+      padding-top: 1rem;
+      transition: left 0.3s ease;
+    }
+    .sidebar .sidebar-title {
+      color: #fff;
+      font-weight: 500;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .sidebar .nav-link {
+      color: #fff;
+      padding: 0.75rem 1rem;
+      display: block;
+      text-decoration: none;
+    }
+    .sidebar .nav-link:hover {
+      background-color: #161628;
+      text-decoration: none;
+    }
+
+    .main-content {
+      margin-left: 240px; /* para que no se monte con el sidebar */
+      padding: 1rem;
+    }
+
+    .card {
+      background-color: #161628;
+      border: none;
+    }
+    .card-header {
+      background-color: #2b2b44;
+      border-bottom: 1px solid #444;
+      font-weight: 500;
+    }
+    .table thead th {
+      background-color: #2b2b44;
+      color: #0f53c4;
+    }
+    .table-responsive {
+      overflow-x: auto;
+    }
+    .table-striped > tbody > tr:nth-of-type(odd) {
+      background-color: #222;
+    }
+    .table-striped > tbody > tr:nth-of-type(even) {
+      background-color: #161628;
+    }
+    .table-hover tbody tr:hover {
+      background-color: #2a2a3a;
+    }
+
+    .btn-custom {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-custom:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        width: 80%;
+        left: -80%;
+        transition: left 0.3s ease;
+        z-index: 1000;
+      }
+      .sidebar.show {
+        left: 0;
+      }
+      .main-content {
+        margin-left: 0;
+      }
+      .table-responsive thead {
+        display: none;
+      }
+      .table-responsive table,
+      .table-responsive tbody,
+      .table-responsive tr,
+      .table-responsive td {
+        display: block;
+        width: 100%;
+      }
+      .table-responsive tr {
+        margin-bottom: 1rem;
+        border: 1px solid #444;
+        border-radius: 5px;
+        padding: 0.5rem;
+      }
+      .table-responsive td {
+        text-align: right;
+        position: relative;
+        padding-left: 50%;
+        border: none;
+        border-bottom: 1px solid #444;
+      }
+      .table-responsive td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 0;
+        width: 45%;
+        padding-left: 0.5rem;
+        font-weight: 600;
+        text-align: left;
+      }
+      .table-responsive td:last-child {
+        border-bottom: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="container mt-2">
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  {% endwith %}
+  
+  <!-- Barra superior -->
+  <div class="topbar">
+    <a href="#" class="brand">Pagos registrados</a>
+    <!-- Botón para mostrar/ocultar sidebar en móvil -->
+    <button class="btn btn-sm btn-outline-light d-md-none" onclick="document.querySelector('.sidebar').classList.toggle('show')">
+      <i class="bi bi-list"></i>
+    </button>
+  </div>
+
+  <!-- Panel lateral -->
+  <div class="sidebar">
+    <h5 class="sidebar-title">Pagos</h5>
+    <!-- Opciones del menú (enlace de ejemplo) -->
+    <a href="{{ url_for('dashboard')}}" class="nav-link">
+      <i class="bi bi-house"></i> Inicio
+    </a>
+    <!-- Agrega más enlaces según sea necesario -->
+  </div>
+
+<!-- Encabezado y barra lateral se mantienen igual -->
+
+<!-- Contenido principal -->
+<div class="main-content">
+    <div class="container-fluid">
+      <div class="d-flex justify-content-between align-items-center mt-3">
+        <h1>Pagos Registrados</h1>
+      </div>
+  
+      <!-- Formulario de búsqueda -->
+      <form method="GET" action="{{ url_for('pagos') }}" class="row g-3 mb-3">
+        <div class="col-md-4">
+          <input type="text" class="form-control" name="nombre" placeholder="Buscar por nombre" value="{{ request.args.get('nombre', '') }}">
+        </div>
+        <div class="col-md-3">
+          <input type="date" class="form-control" name="fecha_inicio" value="{{ request.args.get('fecha_inicio', '') }}">
+        </div>
+        <div class="col-md-3">
+          <input type="date" class="form-control" name="fecha_fin" value="{{ request.args.get('fecha_fin', '') }}">
+        </div>
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+        </div>
+      </form>
+  
+      <!-- Tabla de pagos -->
+      <div class="card">
+        <div class="card-header">
+          Lista de Pagos
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-dark table-striped table-hover align-middle">
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Monto</th>
+                  <th>Fecha de Pago</th>
+                  <th>Método de Pago</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for pago in pagos %}
+                <tr>
+                  <td data-label="Cliente">{{ pago[0] }}</td>
+                  <td data-label="Monto">${{ pago[1] }}</td>
+                  <td data-label="Fecha de Pago">{{ pago[2] }}</td>
+                  <td data-label="Método">{{ pago[3] }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                  <td colspan="4" class="text-center">No se encontraron pagos con los filtros aplicados.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal para crear nuevo servicio -->
+  <div class="modal fade text-dark" id="crearModal" tabindex="-1" aria-labelledby="crearModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="crearModalLabel">Crear Nuevo Servicio</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <form action="{{ url_for('creacion_servicio') }}" method="POST">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="nombreNuevo" class="form-label">Nombre</label>
+              <input type="text" class="form-control" name="nombre" id="nombreNuevo" required />
+            </div>
+            <div class="mb-3">
+              <label for="descripcion" class="form-label">Descripcion</label>
+              <input type="text" class="form-control" name="descripcion" id="descripcion" placeholder="Cuenta disney+ solo una pantalla" required />
+            </div>
+            <div class="mb-3">
+              <label for="precioNuevo" class="form-label">Precio</label>
+              <input type="text" class="form-control" name="precio" id="precioNuevo" required />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success btn-custom">Crear servicio</button>
+            <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

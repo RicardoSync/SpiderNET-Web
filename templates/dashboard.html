@@ -267,9 +267,6 @@
                     <li>
                       <a href="{{ url_for('clientes_bloqueados') }}" class="nav-link">Bloqueados</a>
                     </li>
-                    <li>
-                      <a href="{{ url_for('fallas') }}" class="nav-link">Tickets</a>
-                    </li>
                   </ul>
                 </div>
               </li>
@@ -288,7 +285,7 @@
                 <div class="collapse" id="finanzas">
                   <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                     <li>
-                      <a href="#" class="nav-link">Pagos de Internet</a>
+                      <a href="{{ url_for('pagos')}}" class="nav-link">Pagos de Internet</a>
                     </li>
                   </ul>
                 </div>
@@ -367,7 +364,13 @@
                 <div class="collapse" id="host-pot">
                   <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                     <li>
-                      <a href="{{ url_for('fallas') }}" class="nav-link">NOSE</a>
+                      <a href="{{ url_for('fallas') }}" class="nav-link">Creacion de Perfiles</a>
+                    </li>
+                    <li>
+                      <a href="{{ url_for('fallas') }}" class="nav-link">Creacion tickets</a>
+                    </li>
+                    <li>
+                      <a href="{{ url_for('fallas') }}" class="nav-link">Usuarios Activos</a>
                     </li>
                   </ul>
                 </div>
@@ -419,9 +422,6 @@
                   <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
                     <li>
                       <a href="{{ url_for('usuarios') }}" class="nav-link">Usuarios</a>
-                    </li>
-                    <li>
-                      <a href="{{ url_for('clientes_bloqueados') }}" class="nav-link">Datos WISP</a>
                     </li>
                   </ul>
                 </div>

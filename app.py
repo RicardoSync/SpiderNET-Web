@@ -81,6 +81,10 @@ def registrar_pago(id):
     return procesar_registro_pago(id)
 
 
+
+@app.route("/pagos", methods=["GET"])
+def pagos():
+    return procesar_lista_de_pagos()
 #------------------------------------------------RUTA DE LOS CLIENTES CRUD----------------------------------
 
 #------------------------------------------------RUTA DE LOS MICROTIKS CRUD----------------------------------

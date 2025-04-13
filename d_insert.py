@@ -176,3 +176,19 @@ def insertar_usuario(nombre, usuario, password, rol):
     except Exception as r:
         print(f"Error al insertar el usuario en sistema {r}")
         return False
+    
+def insertar_pago_cliente(id_cliente, monto, metodo_pago, cantidad, cambio):
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+        cursor = cn.cursor()
+        cursor.execute("INSERT INTO pagos (id_cliente, monto, metodo_pago, cantidad, cambio) VALUES (%s,%s,%s,%s, %s)",
+                       (id_cliente, monto, metodo_pago, cantidad, cambio))
+        cn.commit()
+        cursor.close()
+        cn.close()
+        return True
+    except Exception as r:
+        print(f"Error al insertar el pago del cliente {r}")
+        return False

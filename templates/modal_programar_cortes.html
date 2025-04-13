@@ -1,0 +1,23 @@
+<div class="modal fade text-dark" id="modal_programar_cortes{{ cliente[0] }}" tabindex="-1" aria-labelledby="modal_programar_cortesLabel{{ cliente[0] }}" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modal_programar_cortesLabel{{ cliente[0] }}">Programar corte</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <!--<form action="{{ url_for('programar_corte', id=cliente[0]) }}" method="POST"> >-->
+          
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="nombre_cliente{{ cliente[0] }}" class="form-label">Dia de Corte</label>
+              <input type="text" class="form-control" name="dia_corte" id="dia_corte{{ cliente[0] }}" value="{{ cliente[5] }}" required readonly/>
+            </div>
+
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success">Programar Corte</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>

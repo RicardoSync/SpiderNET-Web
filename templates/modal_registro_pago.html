@@ -1,33 +1,52 @@
-                        <!-- Modal para cargar Queue -->
-                        <div class="modal fade text-dark" id="registrar_pago{{ cliente[0] }}" tabindex="-1" aria-labelledby="registrar_pagoLabel{{ cliente[0] }}" aria-hidden="true">
-                            <div class="modal-dialog">
-                              <div class="modal-content">
-                                <div class="modal-header">
-                                  <h5 class="modal-title" id="registrar_pagoLabel{{ cliente[0] }}">Registro de Pago</h5>
-                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                                </div>
-                                <form action="{{ url_for('registrar_pago', id=cliente[0]) }}" method="POST">
-                                  <div class="modal-body">
-                                    <div class="mb-3">
-                                      <label for="nombre{{ cliente[0] }}" class="form-label">Nombre</label>
-                                      <input type="text" class="form-control" name="nombre" id="nombre{{ cliente[0] }}" value="{{ cliente[1] }}" required readonly/>
-                                    </div>
-                                    <div class="mb-3">
-                                      <label for="Paquete Instalado{{ cliente[0] }}" class="form-label">Paquete Instalado</label>
-                                      <input type="text" class="form-control" name="paquete_cliente" id="paquete_cliente{{ cliente[0] }}" value="{{ cliente[2] }}" required readonly/>
-                                    </div>
-                                    <div class="mb-3">
-                                      <input type="hidden" class="form-control" name="direccion_ip" id="direccion_ip{{ cliente[0] }}" value="{{ cliente[4] }}" required/>
-                                    </div>
-                                    <div class="mb-3">
-                                      <input type="hidden" class="form-control" name="mikrotik" id="mikrotik{{ cliente[0] }}" value="{{ cliente[8] }}" required/>
-                                    </div>
-                                  </div>
-                                  <div class="modal-footer">
-                                    <button type="submit" class="btn btn-primary btn-custom">Registrar</button>
-                                    <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Cerrar</button>
-                                  </div>
-                                </form>
-                              </div>
-                            </div>
-                          </div>
+<!-- Modal para cargar Queue -->
+<div class="modal fade text-dark" id="registrar_pago{{ cliente[0] }}" tabindex="-1" aria-labelledby="registrar_pagoLabel{{ cliente[0] }}" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="registrar_pagoLabel{{ cliente[0] }}">Registro de Pago</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <form action="{{ url_for('registrar_pago', id=cliente[0]) }}" method="POST">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="nombre{{ cliente[0] }}" class="form-label">Nombre</label>
+            <input type="text" class="form-control" name="nombre" id="nombre{{ cliente[0] }}" value="{{ cliente[1] }}" required readonly />
+          </div>
+
+          <div class="mb-3">
+            <label for="paquete_cliente{{ cliente[0] }}" class="form-label">Paquete Instalado</label>
+            <input type="hidden" class="form-control" name="paquete_cliente" id="paquete_cliente{{ cliente[0] }}" value="{{ cliente[2] }}" required readonly />
+          </div>
+
+          <div class="mb-3">
+            <input type="text" class="form-control" name="dia_cote" id="dia_cote{{ cliente[0] }}" value="{{ cliente[5] }}" required readonly />
+          </div>
+
+          <input type="hidden" class="form-control" name="direccion_ip" value="{{ cliente[4] }}" required />
+          <input type="hidden" class="form-control" name="mikrotik" value="{{ cliente[8] }}" required />
+
+          <div class="mb-3">
+            <label for="metodo_pago{{ cliente[0] }}" class="form-label">Método de Pago</label>
+            <select class="form-select" name="metodo_pago" id="metodo_pago{{ cliente[0] }}" required>
+              <option value="">Selecciona un método</option>
+              <option value="Efectivo">Efectivo</option>
+              <option value="Transferencia">Transferencia</option>
+              <option value="Tarjeta">Tarjeta</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="cantidad_pago{{ cliente[0] }}" class="form-label">Cantidad con la que paga</label>
+            <input type="number" step="0.01" min="0" class="form-control" name="cantidad_pago" id="cantidad_pago{{ cliente[0] }}" placeholder="Ej. 500.00" required />
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary btn-custom">Registrar</button>
+          <button type="button" class="btn btn-secondary btn-custom" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

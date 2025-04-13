@@ -411,3 +411,41 @@ def obtener_credenciales_mikrotik_con_id(id):
     except Exception as r:
         print(f"Error en las credenciales del mikrotik {r}")
         return []
+    
+def obtener_precio_paquete(nombre):
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+        cursor = cn.cursor()
+        cursor.execute("SELECT precio FROM paquetes WHERE nombre = %s", (nombre,))
+        resultado = cursor.fetchone()
+        if resultado:
+            return resultado
+        else:
+            return []
+        cursor.close()
+        cn.close()
+    except Exception as r:
+        print(f"Error en las credenciales del mikrotik {r}")
+        return []
+    
+def consultar_pagos_registrados():
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+        cursor = cn.cursor()
+        cursor.execute("""
+                        SELECT c.nombre, p.monto, p.fecha_pago, p.metodo_pago
+                            FROM pagos p
+                        LEFT JOIN clientes c ON p.id_cliente = c.id;
+                    """)
+        resultado = cursor.fetchall()
+        cursor.close()
+        cn.close()
+        
+        return resultado
+    except Exception as r:
+        print(f"Error en la consulta de los pagos {r}")
+        return []
