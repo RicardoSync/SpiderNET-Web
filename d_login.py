@@ -8,13 +8,16 @@ def login(usernanme, password):
         
         cursor = cn.cursor()
         cursor.execute("SELECT usuario, password, rol FROM usuarios WHERE usuario = %s AND password = %s", (usernanme, password))
-        resultado = cursor.fetchall()
+        resultado = cursor.fetchone()
         
         cursor.close()
         cn.close()
         
-        return resultado
-    
+        if resultado is not None:
+            return resultado[2]  # 0=admin, 1=tecnico, 2=cliente
+        else:
+            return False  # usuario no encontrado o credenciales incorrectas
+
     except Exception as r:
         print(f"Error de sesion {r}")
         return False

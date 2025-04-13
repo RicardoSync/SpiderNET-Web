@@ -21,10 +21,19 @@ def procesar_dashboard_inicio_sesion():
         username = request.form.get("username")
         password = request.form.get("password")
 
-        ok = login(username, password)
-        if ok:
-            print(ok)
+        tipo_usuario = login(username, password)  # retorna 0, 1, 2 o False
+
+        if tipo_usuario == 0:
             return redirect(url_for("dashboard"))
+
+        elif tipo_usuario == 1:
+            print("Inicio sesión un TÉCNICO")
+            return render_template("tecnico_inicio.html")
+
+        elif tipo_usuario == 2:
+            print("Inicio sesión un CLIENTE")
+            return render_template("cliente_inicio.html")
+
         else:
+            flash("Usuario o contraseña incorrectos.")
             return render_template("login.html")
-        

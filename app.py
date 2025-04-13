@@ -1,40 +1,40 @@
 from flask import *
-from dashboard import *
-from clientes import *
+
 from bloqueos import *
-from mikrotik import *
-from interfaces import *
+from clientes import *
 from config_pcq import *
-from parent import *
-from mikrotik_toosl import *
-from ip_pools import *
-from paquetes import *
-from servicios import *
+from dashboard import *
 from equipos import *
-from queue_parent import *
+from interfaces import *
+from ip_pools import *
+from mikrotik import *
+from mikrotik_toosl import *
+from paquetes import *
+from panel_clientes import *
+from parent import *
+from pagos import *
 from pppoe_profile import *
+from queue_parent import *
+from registro_simplequeue import *
+from servicios import *
 from ticket import *
 from usuarios import *
-from panel_clientes import *
-from pagos import *
-from registro_simplequeue import *
 
 app = Flask(__name__)
 app.secret_key = 'zerocuatro04/2025'  # Necesario para usar flash
-#------------------------------------------------RUTAS CUANDO OCURRE UN ERROR----------------------------------
 
-# Error 404 (Página no encontrada)
+#------------------------------------------------ ERRORES ----------------------------------
+
 @app.errorhandler(404)
 def pagina_no_encontrada(error):
     return render_template("error.html"), 404
 
-# Error 500 (Error interno del servidor)
 @app.errorhandler(500)
 def error_interno(error):
     return render_template("error.html"), 500
 
+#------------------------------------------------ LOGIN Y DASHBOARD ----------------------------------
 
-#AQUI ES A DONDE NOS VAMOS CUANDO SE ENTRA AL SERVIDOR
 @app.route("/")
 def raiz():
     return render_template("login.html")
@@ -46,7 +46,9 @@ def dashboard():
 @app.route("/iniciar_sesion", methods=["POST"])
 def iniciar_sesion():
     return procesar_dashboard_inicio_sesion()
-#------------------------------------------------RUTA DE LOS CLIENTES CRUD----------------------------------
+
+#------------------------------------------------ CRUD CLIENTES ----------------------------------
+
 @app.route("/crear_cliente", methods=["POST"])
 def crear_cliente():
     return procesar_cliente_creacion()
@@ -62,7 +64,6 @@ def eidtar_cliente(id):
 @app.route("/eliminar_cliente<int:id>", methods=["POST"])
 def eliminar_cliente(id):
     return procesar_elimiacion_del_cliente(id)
-
 
 @app.route('/bloquear_cliente_pcq/<int:id>', methods=["POST"])
 def bloquear_cliente_pcq(id):
@@ -80,14 +81,12 @@ def clientes_bloqueados():
 def registrar_pago(id):
     return procesar_registro_pago(id)
 
-
-
 @app.route("/pagos", methods=["GET"])
 def pagos():
     return procesar_lista_de_pagos()
-#------------------------------------------------RUTA DE LOS CLIENTES CRUD----------------------------------
 
-#------------------------------------------------RUTA DE LOS MICROTIKS CRUD----------------------------------
+#------------------------------------------------ CRUD MIKROTIK ----------------------------------
+
 @app.route("/crear_mikrotik", methods=["POST"])
 def crear_mikrotik():
     return procesar_creacion_mikrotik()
@@ -123,7 +122,7 @@ def crear_queue_parent():
 @app.route("/cargar_queue", methods=["POST"])
 def cargar_queue():
     return procesar_cargar_queue()
- 
+
 @app.route("/eliminar_queue_simple/<int:id>", methods=["POST"])
 def eliminar_queue_simple(id):
     return procesar_eliminar_queue_simple(id)
@@ -157,11 +156,14 @@ def consultar_ip_pools():
 @app.route("/crear_ppp_profile/<int:id>", methods=["POST"])
 def crear_ppp_profile(id):
     return procesar_creacion_ppp_profile(id)
-#------------------------------------------------RUTA DE LOS MICROTIKS CRUD----------------------------------
 
+@app.route("/cargar_queues/<int:id>", methods=["POST"])
+def cargar_queues(id):
+    obtener_datos_mikrotik_cargar_simple_queue(id)
+    return redirect(url_for("lista_microtiks"))
 
+#------------------------------------------------ CRUD PAQUETES ----------------------------------
 
-#------------------------------------------------RUTA DE LOS PAQUETES CRUD----------------------------------
 @app.route('/lista_paquetes')
 def lista_paquetes():
     return procesar_lista_paquetes()
@@ -177,10 +179,9 @@ def editar_paquete(id):
 @app.route('/eliminar_paquete/<int:id>')
 def eliminar_paquete(id):
     return procesar_eliminar_paquete(id)
-#------------------------------------------------RUTA DE LOS PAQUETES CRUD----------------------------------
 
+#------------------------------------------------ CRUD SERVICIOS ----------------------------------
 
-#------------------------------------------------RUTA DE LOS SERVICIOS CRUD----------------------------------
 @app.route("/creacion_servicio", methods=["POST"])
 def creacion_servicio():
     return procesar_creacion_servicio()
@@ -196,10 +197,9 @@ def editar_servicio(id):
 @app.route("/eliminar_servicio/<int:id>")
 def eliminar_servicio(id):
     return procesar_eliminar_servicio(id)
-#------------------------------------------------RUTA DE LOS SERVICIOS CRUD----------------------------------
 
-#=======================================ASIGNACION DE LOS EQUIPOS==============================
-# Ruta para procesar la asignación del equipo
+#------------------------------------------------ EQUIPOS ----------------------------------
+
 @app.route('/asignar_equipo/<int:id>', methods=['POST'])
 def asignar_equipo(id):
     return procesar_asignacion_equipo(id)
@@ -215,9 +215,9 @@ def editar_equipo(id):
 @app.route("/eliminar_equipo/<int:id>")
 def eliminar_equipo(id):
     return procesar_eliminar_equipos(id)
-#=======================================ASIGNACION DE LOS EQUIPOS==============================
 
-#=======================================FUNCION DE QUEUE PARENT==============================
+#------------------------------------------------ QUEUE PARENT ----------------------------------
+
 @app.route("/creacion_queue_parent", methods=["POST"])
 def creacion_queue_parent():
     return procesar_creacion_queue_panret()
@@ -232,27 +232,20 @@ def editar_queue_parent(id):
 
 @app.route("/eliminar_queue_parent/<int:id>", methods=["POST"])
 def eliminar_queue_parent(id):
-    return procesar_eliminacion_queue_parent_no(id)     
-#=======================================FUNCION DE QUEUE PARENT==============================
+    return procesar_eliminacion_queue_parent_no(id)
 
+#------------------------------------------------ PPPoE PROFILES ----------------------------------
 
-
-#=======================================FUNCION DE DHCP LEASES==============================
-
-# Ruta para renderizar la página de perfiles PPPoE
 @app.route("/pppoe_profiles")
 def pppoe_profiles():
     return procesar_render_profile()
-# Ruta para crear un nuevo perfil PPPoE
+
 @app.route("/crear_profile", methods=["POST"])
 def crear_profile():
     return procesar_creacion_ppp_profile_chido()
 
+#------------------------------------------------ TICKETS ----------------------------------
 
-#=======================================FUNCION DE DHCP LEASES==============================
-
-
-#=======================================FUNCION DE DHCP LEASES==============================
 @app.route("/crear_ticket", methods=["POST"])
 def crear_ticket():
     return procesar_creacion_tikcet()
@@ -264,13 +257,13 @@ def fallas():
 @app.route("/editar_ticket/<int:id>", methods=["POST"])
 def editar_ticket(id):
     return procesar_edicion_ticket(id)
-    
+
 @app.route("/actualizar_finalizado/<int:id>", methods=["POST"])
 def actualizar_finalizado(id):
     return procesar_acrualizacion_estado_ticket(id)
-#================================""=======FUNCION DE DHCP LEASES==============================
 
-#======================================FUNCIONES DE LOS USUARIOS==============================
+#------------------------------------------------ USUARIOS ----------------------------------
+
 @app.route("/usuarios")
 def usuarios():
     return procesar_rendender_usuarios()
@@ -287,12 +280,6 @@ def editar_usuario(id):
 def eliminar_usuario(id):
     return procesar_eliminacion_usuario(id)
 
-#======================================FUNCIONES DE LOS USUARIOS==============================
-@app.route("/cargar_queues/<int:id>", methods=["POST"])
-def cargar_queues(id):
-    obtener_datos_mikrotik_cargar_simple_queue(id)
-    return redirect(url_for("lista_microtiks"))
-
-
+#------------------------------------------------ INICIAR APP ----------------------------------
 
 app.run(debug=True)
