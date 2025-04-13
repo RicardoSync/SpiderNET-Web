@@ -1,0 +1,39 @@
+
+<div class="modal fade text-dark" id="programar_corte{{ cliente[0] }}" tabindex="-1" aria-labelledby="programar_corteLabel{{ cliente[0] }}" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="programar_corteLabel{{ cliente[0] }}">Programar Corte</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <form action="{{ url_for('programar_tarea', id=cliente[0]) }}" method="POST">
+          <div class="modal-body">
+            <div class="mb-3">
+                <label for="name" class="form-label">Nombre Cliente</label>
+                <input type="text" class="form-control" name="name" id="name{{ cliente[0] }}" value="{{ cliente[1] }}" required readonly/>
+            </div>
+
+            <div class="mb-3">
+                <label for="direccion_ip" class="form-label">Direccion IP</label>
+                <input type="text" class="form-control" name="direccion_ip" id="direccion_ip{{ cliente[0] }}"  value="{{ cliente[4]}}" required readonly/>
+            </div>
+
+            <div class="mb-3">
+                <label for="dia_corte" class="form-label">Dia Corte</label>
+                <input type="text" class="form-control" name="dia_corte" id="dia_corte{{ cliente[0] }}"  value="{{ cliente[5]}}" required readonly/>
+            </div>
+
+            <div class="mb-3">
+                <label for="mikrotik_administrador" class="form-label">MikroTik Administrador</label>
+                <input type="text" class="form-control" name="mikrotik_administrador" id="mikrotik_administrador{{ cliente[0] }}"  value="{{ cliente[8]}}" required readonly/>
+            </div>
+            
+            
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-success">Programar Corte</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>

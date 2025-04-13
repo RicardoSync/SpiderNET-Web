@@ -1,6 +1,7 @@
 from flask import *
 from d_contador import *
 from d_login import *
+from d_consultas import *
 
 def procesar_dashboard_raiz():
     total_clientes = contador_clientes()  # Llamada a la función
@@ -21,19 +22,22 @@ def procesar_dashboard_inicio_sesion():
         username = request.form.get("username")
         password = request.form.get("password")
 
-        tipo_usuario = login(username, password)  # retorna 0, 1, 2 o False
+        tipo_usuario = login(username, password)
 
         if tipo_usuario == 0:
             return redirect(url_for("dashboard"))
-
         elif tipo_usuario == 1:
-            print("Inicio sesión un TÉCNICO")
             return render_template("tecnico_inicio.html")
-
         elif tipo_usuario == 2:
-            print("Inicio sesión un CLIENTE")
-            return render_template("cliente_inicio.html")
-
+            return redirect(url_for("cliente_panel", id_cliente=username))
         else:
             flash("Usuario o contraseña incorrectos.")
             return render_template("login.html")
+    return render_template("login.html")
+
+
+def procesar_el_cliente(id_cliente):
+    cliente = obtener_info_cliente(id_cliente)
+    pagos = obtener_pagos_cliente(id_cliente)
+    paquete = obtener_nombre_paquete(cliente["id_paquete"]) if cliente else "Desconocido"
+    return render_template("cliente_inicio.html", cliente=cliente, pagos=pagos, paquete=paquete)

@@ -19,6 +19,7 @@ from registro_simplequeue import *
 from servicios import *
 from ticket import *
 from usuarios import *
+from cortes_clientes_programar import *
 
 app = Flask(__name__)
 app.secret_key = 'zerocuatro04/2025'  # Necesario para usar flash
@@ -46,6 +47,15 @@ def dashboard():
 @app.route("/iniciar_sesion", methods=["POST"])
 def iniciar_sesion():
     return procesar_dashboard_inicio_sesion()
+
+@app.route("/cliente/<int:id_cliente>")
+def cliente_panel(id_cliente):
+    return procesar_el_cliente(id_cliente=id_cliente)
+
+@app.route("/logout")
+def logout():
+    # Puedes limpiar sesión aquí si usas session.clear()
+    return redirect(url_for("raiz"))  # redirige a la página de login
 
 #------------------------------------------------ CRUD CLIENTES ----------------------------------
 
@@ -84,6 +94,10 @@ def registrar_pago(id):
 @app.route("/pagos", methods=["GET"])
 def pagos():
     return procesar_lista_de_pagos()
+
+@app.route("/programar_tarea/<int:id>", methods=["POST"])
+def programar_tarea(id):
+    return procesar_programacion_tarea_corte(id)
 
 #------------------------------------------------ CRUD MIKROTIK ----------------------------------
 

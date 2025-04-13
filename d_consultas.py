@@ -449,3 +449,43 @@ def consultar_pagos_registrados():
     except Exception as r:
         print(f"Error en la consulta de los pagos {r}")
         return []
+    
+
+def obtener_info_cliente(id_cliente):
+    try:
+        cn = conexion()
+        cursor = cn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM clientes WHERE id = %s", (id_cliente,))
+        resultado = cursor.fetchone()
+        cursor.close()
+        cn.close()
+        return resultado
+    except Exception as e:
+        print(f"Error al obtener cliente: {e}")
+        return None
+
+def obtener_pagos_cliente(id_cliente):
+    try:
+        cn = conexion()
+        cursor = cn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM pagos WHERE id_cliente = %s ORDER BY fecha_pago DESC", (id_cliente,))
+        pagos = cursor.fetchall()
+        cursor.close()
+        cn.close()
+        return pagos
+    except Exception as e:
+        print(f"Error al obtener pagos: {e}")
+        return []
+
+def obtener_nombre_paquete(id_paquete):
+    try:
+        cn = conexion()
+        cursor = cn.cursor()
+        cursor.execute("SELECT nombre FROM paquetes WHERE id = %s", (id_paquete,))
+        resultado = cursor.fetchone()
+        cursor.close()
+        cn.close()
+        return resultado[0] if resultado else "Desconocido"
+    except Exception as e:
+        print(f"Error al obtener nombre del paquete: {e}")
+        return "Desconocido"
