@@ -24,16 +24,19 @@ def procesar_dashboard_inicio_sesion():
 
         tipo_usuario = login(username, password)
 
+        if tipo_usuario is False:
+            flash("❌ Usuario o contraseña incorrectos.")
+            return render_template("login.html")
+
         if tipo_usuario == 0:
             return redirect(url_for("dashboard"))
+
         elif tipo_usuario == 1:
             return render_template("tecnico_inicio.html")
+
         elif tipo_usuario == 2:
             return redirect(url_for("cliente_panel", id_cliente=username))
-        else:
-            flash("Usuario o contraseña incorrectos.")
-            return render_template("login.html")
-    return render_template("login.html")
+
 
 
 def procesar_el_cliente(id_cliente):
