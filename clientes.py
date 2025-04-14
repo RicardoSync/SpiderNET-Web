@@ -26,18 +26,37 @@ def procesar_cliente_creacion():
 def procesar_lista_clientes():
     try:
         page = int(request.args.get("page", 1))
-        por_pagina = int(request.args.get("limit", 10))  # Puedes dejarlo fijo si quieres
+        por_pagina = int(request.args.get("limit", 10))
         offset = (page - 1) * por_pagina
 
         cn = conexion()
         cursor = cn.cursor()
 
-        # Total de registros para calcular páginas
+        # Total de registros para calcular cuántas páginas hay
         cursor.execute("SELECT COUNT(*) FROM clientes")
         total_clientes = cursor.fetchone()[0]
 
-        # Traer solo los registros paginados
-        cursor.execute("SELECT * FROM clientes LIMIT %s OFFSET %s", (por_pagina, offset))
+        # Consulta con JOINs y sin modificar el formato de fecha
+        sql = """
+            SELECT 
+                c.id,
+                c.nombre,
+                p.nombre AS paquete,
+                c.fecha_registro,
+                c.ip_cliente,
+                c.dia_corte,
+                a.nombre AS antena_ap,
+                sp.nombre AS servicio_plataforma,
+                cm.nombre AS microtik_nombre
+            FROM clientes c
+            LEFT JOIN paquetes p ON c.id_paquete = p.id
+            LEFT JOIN credenciales_microtik cm ON c.id_microtik = cm.id
+            LEFT JOIN antenasap a ON c.id_antena_ap = a.idantenasAp
+            LEFT JOIN serviciosplataforma sp ON c.id_servicio_plataforma = sp.idPlataformas
+            ORDER BY c.id ASC
+            LIMIT %s OFFSET %s
+        """
+        cursor.execute(sql, (por_pagina, offset))
         clientes = cursor.fetchall()
 
         cursor.close()
@@ -57,8 +76,9 @@ def procesar_lista_clientes():
             microtiks=consultarMicrotik(),
             queues_colas=consultarQeue()
         )
+
     except Exception as e:
-        print(f"❌ Error en paginación: {e}")
+        print(f"❌ Error en paginación avanzada: {e}")
         return render_template("error.html"), 500
 
 def procesar_edicion_del_cliente(id):
