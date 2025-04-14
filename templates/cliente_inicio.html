@@ -9,24 +9,52 @@
 
   <style>
     body {
-      background-color: #1f1f2e;
-      color: #fff;
+      background-color: #0d1117;
+      color: #e6edf3;
       font-family: 'Segoe UI', sans-serif;
       padding: 20px;
     }
 
+    .navbar {
+      background-color: #161b22;
+      border-radius: 10px;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+      animation: slideDown 0.5s ease;
+    }
+
+    .navbar-brand {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #58a6ff;
+    }
+
+    .navbar .dropdown-menu {
+      background-color: #1f2937;
+      border: none;
+    }
+
+    .navbar .dropdown-item {
+      color: #e6edf3;
+    }
+
+    .navbar .dropdown-item:hover {
+      background-color: #374151;
+    }
+
     .info-cliente {
-      background-color: #2b2b3c;
+      background-color: #161b22;
       border-radius: 16px;
       padding: 20px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
       animation: slideIn 0.6s ease;
       display: flex;
       align-items: center;
     }
 
     .avatar {
-      background-color: #94e2d5;
+      background-color: #58a6ff;
       border-radius: 50%;
       width: 70px;
       height: 70px;
@@ -35,7 +63,7 @@
       justify-content: center;
       font-size: 1.8rem;
       font-weight: bold;
-      color: #1f1f2e;
+      color: #0d1117;
       margin-right: 20px;
       flex-shrink: 0;
     }
@@ -53,22 +81,22 @@
       font-weight: 600;
     }
 
-    .activo { background-color: #4ade80; color: #111; }
+    .activo { background-color: #22c55e; color: #111; }
     .bloqueado { background-color: #facc15; color: #111; }
-    .suspendido { background-color: #f87171; color: #fff; }
+    .suspendido { background-color: #ef4444; color: #fff; }
     .cancelado { background-color: #6b7280; color: #fff; }
 
     .titulo-seccion {
       font-size: 1.4rem;
       font-weight: 600;
-      color: #7dd3fc;
+      color: #58a6ff;
       margin: 25px 0 15px;
       text-shadow: 1px 1px #000;
     }
 
     .pago-card {
-      background-color: #2d2d42;
-      border-left: 6px solid #94e2d5;
+      background-color: #1e293b;
+      border-left: 6px solid #58a6ff;
       border-radius: 12px;
       padding: 15px 20px;
       margin-bottom: 15px;
@@ -87,12 +115,39 @@
     }
 
     .pago-card small {
-      color: #d4d4d8;
+      color: #cbd5e1;
     }
 
     .pago-card i {
-      color: #94e2d5;
+      color: #58a6ff;
       margin-right: 10px;
+    }
+
+    .boton-flotante {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #f43f5e;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 1.6rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      transition: 0.3s ease;
+    }
+
+    .boton-flotante:hover {
+      transform: scale(1.1);
+      background: #e11d48;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 0.9rem;
+      color: #8b949e;
     }
 
     @keyframes fadeIn {
@@ -105,28 +160,18 @@
       to { transform: translateY(0); opacity: 1; }
     }
 
-    .boton-flotante {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #7dd3fc;
-      color: #000;
-      border: none;
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-      font-size: 1.6rem;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-      transition: 0.3s ease;
-    }
-
-    .boton-flotante:hover {
-      transform: scale(1.1);
-      background: #38bdf8;
+    @keyframes slideDown {
+      from { transform: translateY(-30px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
     }
   </style>
 </head>
 <body>
+
+  <nav class="navbar d-flex justify-content-between align-items-center">
+    <div class="navbar-brand">AdmiNET</div>
+    <div class="dropdown">
+  </nav>
 
   <div class="info-cliente">
     <div class="avatar">
@@ -151,15 +196,20 @@
   <p class="text-muted">No hay pagos registrados aún.</p>
   {% endfor %}
 
-  <button class="boton-flotante" onclick="cerrarSesion()">
+  <button class="boton-flotante" onclick="cerrarSesion()" title="Cerrar sesión">
     <i class="bi bi-box-arrow-right"></i>
   </button>
-  
+
+  <footer>
+    <p>©Software Escobedo. Todos los derechos reservados.</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     function cerrarSesion() {
-      window.location.href = "/logout";  // <- puedes cambiarlo según tu ruta real
+      window.location.href = "/logout";
     }
   </script>
-  
+
 </body>
 </html>

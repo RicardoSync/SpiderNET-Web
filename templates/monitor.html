@@ -260,13 +260,14 @@
     data: {
       labels: [],
       datasets: [
-        {
+              {
           label: 'rx-bits-per-second',
           data: [],
           borderColor: 'rgba(255,202,40,1)',
           backgroundColor: 'rgba(255,202,40,0.2)',
           fill: true,
-          tension: 0.4
+          tension: 0.5,
+          spanGaps: true
         },
         {
           label: 'tx-bits-per-second',
@@ -274,7 +275,7 @@
           borderColor: 'rgba(0,123,255,1)',
           backgroundColor: 'rgba(0,123,255,0.2)',
           fill: true,
-          tension: 0.4
+          tension: 0.5
         }
       ]
     },
@@ -365,40 +366,52 @@
           row.appendChild(cellValue);
           tbody.appendChild(row);
         }
-        
+
         // Actualiza la gráfica
         const now = new Date().toLocaleTimeString();
         if (chart) {
-          chart.data.labels.push(now);
-          // rx
-          let rxValue = data["rx-bits-per-second"];
-          if (typeof rxValue === "string") {
-            rxValue = parseFloat(rxValue.replace("Mbps", ""));
-          }
-          chart.data.datasets[0].data.push(rxValue);
-          
-          // tx
-          let txValue = data["tx-bits-per-second"];
-          if (typeof txValue === "string") {
-            if (txValue.includes("Mbps")) {
-              txValue = parseFloat(txValue.replace("Mbps", ""));
-            } else if (txValue.includes("kbps")) {
-              txValue = parseFloat(txValue.replace("kbps", "")) / 1000;
-            } else {
-              txValue = parseFloat(txValue);
-            }
-          }
-          chart.data.datasets[1].data.push(txValue);
-          
-          // Mantener sólo los últimos 20 puntos
-          if (chart.data.labels.length > 20) {
+          // Limpiar antes de agregar
+          if (chart.data.labels.length >= 20) {
             chart.data.labels.shift();
             chart.data.datasets.forEach(dataset => dataset.data.shift());
           }
+
+          // Procesar RX
+          let rxValue = data["rx-bits-per-second"];
+
+          if (typeof rxValue === "string") {
+            if (rxValue.toLowerCase().includes("mbps")) {
+              rxValue = parseFloat(rxValue.toLowerCase().replace("mbps", "").trim());
+            } else if (rxValue.toLowerCase().includes("kbps")) {
+              rxValue = parseFloat(rxValue.toLowerCase().replace("kbps", "").trim()) / 1000;
+            } else {
+              rxValue = parseFloat(rxValue.trim()) / 1_000_000;
+            }
+          }
+
+          let txValue = data["tx-bits-per-second"];
+
+          if (typeof txValue === "string") {
+            if (txValue.toLowerCase().includes("mbps")) {
+              txValue = parseFloat(txValue.toLowerCase().replace("mbps", "").trim());
+            } else if (txValue.toLowerCase().includes("kbps")) {
+              txValue = parseFloat(txValue.toLowerCase().replace("kbps", "").trim()) / 1000;
+            } else {
+              // Asumir que es bps y convertir a Mbps
+              txValue = parseFloat(txValue.trim()) / 1_000_000;
+            }
+          }
+
+
+          // Agregar datos nuevos
+          chart.data.labels.push(now);
+          chart.data.datasets[0].data.push(parseFloat(rxValue.toFixed(2)));
+          chart.data.datasets[1].data.push(parseFloat(txValue.toFixed(2)));
+
           chart.update();
         }
       })
-      .catch(error => console.error('Error al actualizar tráfico:', error));
+
     }
     
     // Inicia el monitoreo

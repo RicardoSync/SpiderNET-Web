@@ -24,11 +24,42 @@ def procesar_cliente_creacion():
             return redirect(url_for("lista_clientes"))
         
 def procesar_lista_clientes():
-    cliente = consultarClientes()
-    antenas = consutlarAntena()
-    paquetes = consutlarPaquete()
-    return render_template("lista_clientes.html", clientes=cliente, antens=antenas, paquetes=paquetes, servicios=consultarServicio(),
-                           microtiks=consultarMicrotik(), queues_colas=consultarQeue())
+    try:
+        page = int(request.args.get("page", 1))
+        por_pagina = int(request.args.get("limit", 10))  # Puedes dejarlo fijo si quieres
+        offset = (page - 1) * por_pagina
+
+        cn = conexion()
+        cursor = cn.cursor()
+
+        # Total de registros para calcular páginas
+        cursor.execute("SELECT COUNT(*) FROM clientes")
+        total_clientes = cursor.fetchone()[0]
+
+        # Traer solo los registros paginados
+        cursor.execute("SELECT * FROM clientes LIMIT %s OFFSET %s", (por_pagina, offset))
+        clientes = cursor.fetchall()
+
+        cursor.close()
+        cn.close()
+
+        total_paginas = (total_clientes + por_pagina - 1) // por_pagina
+
+        return render_template(
+            "lista_clientes.html",
+            clientes=clientes,
+            pagina=page,
+            total_paginas=total_paginas,
+            por_pagina=por_pagina,
+            antens=consutlarAntena(),
+            paquetes=consutlarPaquete(),
+            servicios=consultarServicio(),
+            microtiks=consultarMicrotik(),
+            queues_colas=consultarQeue()
+        )
+    except Exception as e:
+        print(f"❌ Error en paginación: {e}")
+        return render_template("error.html"), 500
 
 def procesar_edicion_del_cliente(id):
     if request.method == "POST":

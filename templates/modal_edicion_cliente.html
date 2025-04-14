@@ -30,23 +30,6 @@
                                       <input type="text" class="form-control" name="dia_corte" id="dia_corte" value="{{ cliente[5]}}">
                                     </div>
   
-                                    <div class="mb-3">
-                                    <label for="lista_antenas" class="form-label">Antena AP (Nueva / Actual)</label>
-                                      <select name="lista_antenas" id="lista_antenas" class="form-control">
-                                          {% for antena in antens%}
-                                          <option value="{{ antena }}">{{ antena }}</option>
-                                          {%endfor%}
-                                      </select>
-                                    </div>
-  
-                                    <div class="mb-3">
-                                    <label for="lista_servicio" class="form-label">Servicio (Nueva / Actual)</label>
-                                      <select name="lista_servicio" id="lista_servicio" class="form-control">
-                                          {% for servicio in servicios%}
-                                          <option value="{{ servicio }}">{{ servicio }}</option>
-                                          {%endfor%}
-                                      </select>
-                                    </div>
   
                                     <div class="mb-3">
                                     <label for="lista_microtik" class="form-label">Microtik Administrador (Nueva / Actual)</label>

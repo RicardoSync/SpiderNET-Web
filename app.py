@@ -54,9 +54,8 @@ def cliente_panel(id_cliente):
 
 @app.route("/logout")
 def logout():
-    # Puedes limpiar sesión aquí si usas session.clear()
-    return redirect(url_for("raiz"))  # redirige a la página de login
-
+    session.clear()  # <- si estás usando sesión
+    return redirect(url_for("raiz"))  # raíz puede ser tu login
 #------------------------------------------------ CRUD CLIENTES ----------------------------------
 
 @app.route("/crear_cliente", methods=["POST"])

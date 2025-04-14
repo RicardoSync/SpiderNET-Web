@@ -15,7 +15,8 @@ def procesar_dashboard_raiz():
                         total_microtiks=total_microtiks,
                         total_instalaciones=contado_instalaciones(),
                         total_soporte=contador_soporte(),
-                        total_tickets=contador_tickets())
+                        total_tickets=contador_tickets(),
+                        pago=consultar_pagos_registrados())
 
 def procesar_dashboard_inicio_sesion():
     if request.method == "POST":

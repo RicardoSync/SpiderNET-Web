@@ -450,7 +450,35 @@ def consultar_pagos_registrados():
         print(f"Error en la consulta de los pagos {r}")
         return []
     
+def consultar_pagos_registrados_dashboard():
+    try:
+        cn = conexion()
+        if cn is None:
+            conexion().reconnect()
+        cursor = cn.cursor()
+        cursor.execute("""
+                        SELECT c.nombre, p.monto, p.fecha_pago, p.metodo_pago
+                            FROM pagos p
+                        LEFT JOIN clientes c ON p.id_cliente = c.id;
+                    """)
+        cursor.close()
+        cn.close()
+        resultado = cursor.fetchall()
+        pagos = []
+        for fila in resultado:
+            pagos.append({
+                "cliente": fila[0],
+                "monto": fila[1],
+                "fecha": fila[2],
+                "metodo": fila[3],
+                "paquete": "-"  # Puedes unir otra tabla si quieres el paquete
+            })
+        return pagos
 
+    except Exception as r:
+        print(f"Error en la consulta de los pagos {r}")
+        return []
+    
 def obtener_info_cliente(id_cliente):
     try:
         cn = conexion()
