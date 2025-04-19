@@ -12,3 +12,8 @@ FLUSH PRIVILEGES;
 find /var/www/html/adminet -name "*.pyc" -delete
 sudo systemctl restart apache2
 sudo pip3 install --break-system-packages -r requirements.txt
+
+
+pir errores:
+find . -name "*.pyc" -delete
+find . -name "__pycache__" -type d -exec rm -r {} +

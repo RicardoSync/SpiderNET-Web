@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DHCP Leases</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+  <style>
+    :root {
+      --bg-dark: #0D0D24;
+      --bg-secondary: #161628;
+      --bg-tertiary: #222;
+      --color-primary: #0f53c4;
+      --color-text: #fff;
+    }
+    body {
+      background-color: var(--bg-dark);
+      color: var(--color-text);
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
+    }
+    .navbar {
+      background: linear-gradient(90deg, #2b2b44 0%, #161628 100%);
+      border-bottom: 1px solid #444;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+    }
+    .navbar-brand { font-weight: 600; font-size: 1.6rem; letter-spacing: 0.05rem; }
+    .sidebar {
+      background: linear-gradient(180deg, #2b2b44 0%, #161628 100%);
+      min-height: calc(100vh - 56px);
+      border-right: 1px solid #444;
+      padding-top: 1rem;
+      position: fixed;
+      top: 56px;
+      left: 0;
+      z-index: 1000;
+      width: 250px;
+    }
+    .sidebar .nav-link {
+      color: var(--color-text);
+      padding: 0.75rem 1rem;
+      transition: background 0.3s;
+    }
+    .sidebar .nav-link:hover { background-color: #343434; border-left: 3px solid var(--color-primary); }
+    main { margin-left: 250px; padding-top: 5rem; }
+    @media (max-width: 767.98px) {
+      .sidebar { transform: translateX(-100%); width: 100%; max-width: 300px; }
+      .sidebar.show { transform: translateX(0); }
+      main { margin-left: 0; width: 100%; padding-top: 5rem; }
+    }
+    .card { background-color: var(--bg-secondary); border: none; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); }
+    .card-header { background-color: #2b2b44; border-bottom: 1px solid #444; font-weight: 600; color: var(--color-primary); }
+    .table thead th { background-color: #2b2b44; color: var(--color-primary); border: none; }
+    .table-striped > tbody > tr:nth-of-type(odd) { background-color: var(--bg-tertiary); }
+    .table-striped > tbody > tr:nth-of-type(even) { background-color: var(--bg-secondary); }
+    .table-hover tbody tr:hover { background-color: #2a2a3a; }
+    .btn-custom { transition: transform 0.2s ease; border-radius: 4px; }
+    .btn-custom:hover { transform: translateY(-2px); }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#"><i class="bi bi-people-fill"></i> AdmiNET</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row">
+      <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+        <div class="position-sticky pt-3">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('dashboard') }}">
+                <i class="bi bi-house-fill"></i> Inicio
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <div class="my-4">
+          <div class="card">
+            <div class="card-header">Leases DHCP</div>
+            <div class="card-body">
+              <form method="post" action="{{ url_for('mikrotik_bp.ver_dhcp_leases') }}">
+                <div class="row g-3 mb-3">
+                  <div class="col-md-6">
+                    <label for="mikrotik" class="form-label">MikroTik</label>
+                    <select name="mikrotik_nombre" class="form-select" required>
+                      <option value="" disabled selected>-- Selecciona --</option>
+                      {% for mikrotik in microtiks %}
+                      <option value="{{ mikrotik['nombre'] }}" {% if nombre_mikrotik == mikrotik['nombre'] %}selected{% endif %}>{{ mikrotik['nombre'] }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                  <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search"></i> Consultar</button>
+                  </div>
+                </div>
+              </form>
+
+              {% if leases %}
+              <div class="table-responsive">
+                <table class="table table-dark table-striped table-hover align-middle">
+                  <thead>
+                    <tr>
+                      <th>IP</th>
+                      <th>MAC</th>
+                      <th>Hostname</th>
+                      <th>Estado</th>
+                      <th>Expira</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for lease in leases %}
+                    <tr>
+                      <td>{{ lease['address'] }}</td>
+                      <td>{{ lease['mac-address'] }}</td>
+                      <td>{% if lease['host-name'] %}{{ lease['host-name'] }}{% else %}<span class="text-muted fst-italic">sin nombre</span>{% endif %}</td>
+                      <td>{{ lease['status'] }}</td>
+                      <td>{{ lease['expires-after'] }}</td>
+                      <td>
+                        <form action="{{ url_for('mikrotik_bp.make_static') }}" method="post" class="d-inline">
+                          <input type="hidden" name="ip" value="{{ lease['address'] }}">
+                          <input type="hidden" name="mikrotik" value="{{ nombre_mikrotik }}">
+                          <button class="btn btn-warning btn-sm btn-custom" title="Hacer Estático">
+                            <i class="bi bi-pin-angle"></i>
+                          </button>
+                        </form>
+                        <button class="btn btn-success btn-sm btn-custom" title="Registrar" data-bs-toggle="modal" data-bs-target="#modalRegistrar" onclick="cargarDatosModal('{{ lease['address'] }}', '{{ lease['host-name'] }}')">
+                          <i class="bi bi-person-check"></i>
+                        </button>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              {% endif %}
+
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="modal fade text-dark" id="modalRegistrar" tabindex="-1" aria-labelledby="modalRegistrarLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Registrar Dispositivo</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <p><strong>IP:</strong> <span id="modalIp"></span></p>
+          <p><strong>Hostname:</strong> <span id="modalHostname"></span></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function cargarDatosModal(ip, hostname) {
+      document.getElementById('modalIp').textContent = ip;
+      document.getElementById('modalHostname').textContent = hostname;
+    }
+  </script>
+</body>
+</html>

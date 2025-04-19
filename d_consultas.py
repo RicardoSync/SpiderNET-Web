@@ -1,5 +1,18 @@
 from conexion import conexion
 
+def consultar_lista_microtiks():
+    try:
+        cn = conexion()
+        cursor = cn.cursor(dictionary=True)
+        cursor.execute("SELECT nombre FROM credenciales_microtik")
+        resultado = cursor.fetchall()
+        cursor.close()
+        cn.close()
+        return resultado
+    except Exception as e:
+        print(f"Error al obtener lista de MikroTiks: {e}")
+        return []
+
 def consultarMicrotik():
     try:
         cn = conexion()

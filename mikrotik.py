@@ -5,6 +5,8 @@ from d_eliminar import *
 from flask import *
 from ssh_pcq import *
 from ssh_pppoe import *
+from utils import *
+
 
 def procesar_creacion_mikrotik():
     if request.method == "POST":
@@ -14,14 +16,17 @@ def procesar_creacion_mikrotik():
         ip = request.form.get("ipNuevo")
         port = request.form.get("portNuevo")
 
-        ok = insertMicrotik(nombre, ip, username, password, port)
-        if ok:
-            flash("Microtik registrado con exito", "success")
-            return redirect(url_for("lista_microtiks"))
-        else:
-            flash("No se registro el microtik", "danger")
+        if not verificar_ssh_mikrotik(ip, port, username, password):
+            flash("❌ No se pudo establecer conexión SSH con el MikroTik. Verifica IP, puerto o credenciales.", "danger")
             return redirect(url_for("lista_microtiks"))
 
+        ok = insertMicrotik(nombre, ip, username, password, port)
+        if ok:
+            flash("✅ MikroTik registrado correctamente", "success")
+        else:
+            flash("❌ Error al registrar el MikroTik en la base de datos", "danger")
+
+        return redirect(url_for("lista_microtiks"))
 
     return redirect(url_for("lista_microtiks"))
 

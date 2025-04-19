@@ -2,6 +2,7 @@ from flask import *
 from d_contador import *
 from d_login import *
 from d_consultas import *
+from datetime import timedelta
 
 def procesar_dashboard_raiz():
     total_clientes = contador_clientes()  # Llamada a la función
@@ -29,16 +30,17 @@ def procesar_dashboard_inicio_sesion():
             flash("❌ Usuario o contraseña incorrectos.")
             return render_template("login.html")
 
+        session.permanent = True
+        app.permanent_session_lifetime = timedelta(minutes=15)
+        session['usuario'] = username
+        session['rol'] = tipo_usuario
+
         if tipo_usuario == 0:
             return redirect(url_for("dashboard"))
-
         elif tipo_usuario == 1:
             return render_template("tecnico_inicio.html")
-
         elif tipo_usuario == 2:
             return redirect(url_for("cliente_panel", id_cliente=username))
-
-
 
 def procesar_el_cliente(id_cliente):
     cliente = obtener_info_cliente(id_cliente)
